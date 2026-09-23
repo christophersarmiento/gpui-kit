@@ -1,0 +1,588 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Recrate — Library</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0;background:#0a0a0a;color:#fafafa;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI Variable Text","Segoe UI",system-ui,"Noto Sans SC",sans-serif;-webkit-font-smoothing:antialiased}
+button,input{font:inherit;color:inherit}
+a{color:#fafafa;text-decoration:none}a:hover{color:#ffffff}
+.ghost:hover{background:#262626}
+.btn:hover{background:#292929}
+.nav:hover{background:#262626}
+.row:not(.sel):hover{background:#26262699}
+.row.even{background:#17171766}
+.row.sel{background:#1e40af33;box-shadow:inset 0 0 0 1px #1d4ed8}
+.srow:hover{background:#26262699}
+.toggle.on{background:#404040}
+button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid #737373;outline-offset:1px}
+input::placeholder{color:#a3a3a3}
+</style>
+</helmet>
+<div style="position: relative; width: 1440px; height: 900px; display: flex; flex-direction: column; background: #0a0a0a; color: #fafafa; overflow: hidden;">
+
+<!-- Title bar -->
+<div style="height: 36px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: #171717; border-bottom: 1px solid #262626; font-size: 13px; color: #a3a3a3;">
+<span><span style="color: #fafafa; font-weight: 500;">Warehouse — Oct 2026</span> · Recrate</span>
+</div>
+
+<!-- Toolbar -->
+<div style="height: 48px; flex-shrink: 0; display: flex; align-items: center; gap: 8px; padding: 0 16px; border-bottom: 1px solid #262626;">
+<label style="position: relative; display: flex; align-items: center; width: 320px;">
+<span style="position: absolute; left: 10px; display: flex; color: #a3a3a3;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg></span>
+<input type="search" aria-label="Search collection" placeholder="Search title, artist, key or BPM" style="width: 100%; height: 32px; box-sizing: border-box; padding: 0 10px 0 32px; background: #0a0a0a; border: 1px solid #2f2f2f; border-radius: 6px; font-size: 14px; outline: none;">
+</label>
+<button type="button" class="btn" style="height: 32px; display: flex; align-items: center; gap: 8px; padding: 0 12px; background: #262626; border: 0; border-radius: 6px; font-size: 14px;">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="21" x2="14" y1="4" y2="4"></line><line x1="10" x2="3" y1="4" y2="4"></line><line x1="21" x2="12" y1="12" y2="12"></line><line x1="8" x2="3" y1="12" y2="12"></line><line x1="21" x2="16" y1="20" y2="20"></line><line x1="12" x2="3" y1="20" y2="20"></line><line x1="14" x2="14" y1="2" y2="6"></line><line x1="8" x2="8" y1="10" y2="14"></line><line x1="16" x2="16" y1="18" y2="22"></line></svg>
+Filter</button>
+<div style="flex-grow: 1;"></div>
+<button type="button" class="btn" onClick="{{openAnalysis}}" aria-haspopup="dialog" style="height: 32px; display: flex; align-items: center; gap: 8px; padding: 0 12px; background: #262626; border: 0; border-radius: 6px; font-size: 14px;">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 13a2 2 0 0 0 2-2V7a2 2 0 0 1 4 0v13a2 2 0 0 0 4 0V4a2 2 0 0 1 4 0v13a2 2 0 0 0 4 0v-4a2 2 0 0 1 2-2"></path></svg>
+Analyze</button>
+<div style="position: relative;">
+<button type="button" class="btn" onClick="{{toggleImportMenu}}" aria-haspopup="menu" aria-expanded="{{importMenu}}" style="height: 32px; display: flex; align-items: center; gap: 8px; padding: 0 12px; background: #262626; border: 0; border-radius: 6px; font-size: 14px;">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"></path><path d="m8 11 4 4 4-4"></path><path d="M8 5H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-4"></path></svg>
+Import<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></button>
+<sc-if value="{{importMenu}}" hint-placeholder-val="{{false}}">
+<div role="menu" aria-label="Import" style="position: absolute; right: 0; top: 36px; z-index: 5; width: 240px; box-sizing: border-box; display: flex; flex-direction: column; padding: 4px; background: #0a0a0a; border: 1px solid #262626; border-radius: 6px; box-shadow: 0px 4px 8px -2px rgba(0,0,0,0.18);">
+<button type="button" role="menuitem" class="ghost" onClick="{{openImport}}" style="height: 44px; display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 2px; padding: 0 8px; background: transparent; border: 0; border-radius: 4px; text-align: left; font-size: 14px;">Music files…<span style="font-size: 12px; color: #a3a3a3;">Folders or files from your computer</span></button>
+<button type="button" role="menuitem" class="ghost" onClick="{{openMigrate}}" style="height: 44px; display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 2px; padding: 0 8px; background: transparent; border: 0; border-radius: 4px; text-align: left; font-size: 14px;">rekordbox library…<span style="font-size: 12px; color: #a3a3a3;">Tracks, playlists, cues and My Tag</span></button>
+</div>
+</sc-if>
+</div>
+<button type="button" class="ghost" onClick="{{openSettings}}" aria-haspopup="dialog" aria-label="Settings…" title="Settings… (⌘,)" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; padding: 0; background: transparent; border: 0; border-radius: 6px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"></path><circle cx="12" cy="12" r="3"></circle></svg></button>
+</div>
+
+<div style="flex-grow: 1; display: flex; min-height: 0;">
+
+<!-- Sidebar -->
+<nav aria-label="Library" style="width: 240px; flex-shrink: 0; display: flex; flex-direction: column; gap: 24px; padding: 12px 8px; box-sizing: border-box; background: #0a0a0a; border-right: 1px solid #262626; color: #f5f5f5; font-size: 14px;">
+<div style="display: flex; flex-direction: column; gap: 2px;">
+<div style="padding: 0 8px 4px; font-size: 12px; font-weight: 500; color: #a3a3a3;">Library</div>
+<button type="button" class="nav" style="height: 28px; display: flex; align-items: center; gap: 8px; padding: 0 8px; background: transparent; border: 0; border-radius: 6px; text-align: left;">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m16 6 4 14"></path><path d="M12 6v14"></path><path d="M8 8v12"></path><path d="M4 4v16"></path></svg>
+<span style="flex-grow: 1;">Collection</span><span style="font-size: 12px; color: #a3a3a3; font-variant-numeric: tabular-nums;">2,418</span></button>
+<button type="button" class="nav" style="height: 28px; display: flex; align-items: center; gap: 8px; padding: 0 8px; background: transparent; border: 0; border-radius: 6px; text-align: left;">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+<span style="flex-grow: 1;">Recently added</span><span style="font-size: 12px; color: #a3a3a3; font-variant-numeric: tabular-nums;">46</span></button>
+<button type="button" class="nav" onClick="{{openAnalysis}}" aria-haspopup="dialog" style="height: 28px; display: flex; align-items: center; gap: 8px; padding: 0 8px; background: transparent; border: 0; border-radius: 6px; text-align: left;">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 13a2 2 0 0 0 2-2V7a2 2 0 0 1 4 0v13a2 2 0 0 0 4 0V4a2 2 0 0 1 4 0v13a2 2 0 0 0 4 0v-4a2 2 0 0 1 2-2"></path></svg>
+<span style="flex-grow: 1;">Needs analysis</span><span style="font-size: 12px; color: #a3a3a3; font-variant-numeric: tabular-nums;">12</span></button>
+<a href="Tags.dc.html" class="nav" style="height: 28px; display: flex; align-items: center; gap: 8px; padding: 0 8px; border-radius: 6px; color: #f5f5f5;">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z"></path><circle cx="7.5" cy="7.5" r=".5" fill="currentColor"></circle></svg>
+<span style="flex-grow: 1;">Tags</span><span style="font-size: 12px; color: #a3a3a3; font-variant-numeric: tabular-nums;">22</span></a>
+<button type="button" class="nav" onClick="{{openRelink}}" aria-haspopup="dialog" style="height: 28px; display: flex; align-items: center; gap: 8px; padding: 0 8px; background: transparent; border: 0; border-radius: 6px; text-align: left;">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 17H7A5 5 0 0 1 7 7h2"></path><path d="M15 7h2a5 5 0 1 1 0 10h-2"></path><line x1="8" x2="16" y1="12" y2="12"></line></svg>
+<span style="flex-grow: 1;">Missing files</span><span style="display: flex; align-items: center; gap: 4px; font-size: 12px; color: #a3a3a3; font-variant-numeric: tabular-nums;"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 9999px; background: #facc15;"></span>5</span></button>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 2px;">
+<div style="display: flex; align-items: center; padding: 0 0 4px 8px;">
+<span style="flex-grow: 1; font-size: 12px; font-weight: 500; color: #a3a3a3;">Playlists</span>
+<button type="button" class="ghost" aria-label="New playlist" style="width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; padding: 0; background: transparent; border: 0; border-radius: 3px; color: #a3a3a3;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg></button>
+</div>
+<button type="button" aria-expanded="true" class="nav" style="height: 28px; display: flex; align-items: center; gap: 4px; padding: 0 8px 0 4px; background: transparent; border: 0; border-radius: 6px; text-align: left;">
+<span style="width: 14px; display: flex; color: #a3a3a3;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></span>
+<span style="display: flex; gap: 8px; align-items: center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"></path></svg>Sets</span></button>
+<button type="button" aria-current="true" style="height: 28px; display: flex; align-items: center; gap: 8px; padding: 0 8px 0 26px; background: #262626; border: 0; border-radius: 6px; text-align: left; font-weight: 500;">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15V6"></path><path d="M18.5 18a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z"></path><path d="M12 12H3"></path><path d="M16 6H3"></path><path d="M12 18H3"></path></svg>
+<span style="flex-grow: 1;">Warehouse — Oct 2026</span></button>
+<button type="button" class="nav" style="height: 28px; display: flex; align-items: center; gap: 8px; padding: 0 8px 0 26px; background: transparent; border: 0; border-radius: 6px; text-align: left;">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15V6"></path><path d="M18.5 18a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z"></path><path d="M12 12H3"></path><path d="M16 6H3"></path><path d="M12 18H3"></path></svg>
+<span style="flex-grow: 1;">Sunday rooftop</span></button>
+<button type="button" class="nav" style="height: 28px; display: flex; align-items: center; gap: 8px; padding: 0 8px 0 26px; background: transparent; border: 0; border-radius: 6px; text-align: left;">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15V6"></path><path d="M18.5 18a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z"></path><path d="M12 12H3"></path><path d="M16 6H3"></path><path d="M12 18H3"></path></svg>
+<span style="flex-grow: 1;">Warm-up</span></button>
+<button type="button" class="nav" onClick="{{openSmart}}" aria-haspopup="dialog" title="Smart playlist · edit rules" style="height: 28px; display: flex; align-items: center; gap: 8px; padding: 0 8px 0 26px; background: transparent; border: 0; border-radius: 6px; text-align: left;">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"></path><path d="M7 12h10"></path><path d="M10 18h4"></path></svg>
+<span style="flex-grow: 1;">Fresh peak time</span><span style="font-size: 12px; color: #a3a3a3;">Smart</span></button>
+<button type="button" aria-expanded="true" class="nav" style="height: 28px; display: flex; align-items: center; gap: 4px; padding: 0 8px 0 4px; background: transparent; border: 0; border-radius: 6px; text-align: left;">
+<span style="width: 14px; display: flex; color: #a3a3a3;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></span>
+<span style="display: flex; gap: 8px; align-items: center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"></path></svg>Crates</span></button>
+<button type="button" class="nav" style="height: 28px; display: flex; align-items: center; gap: 8px; padding: 0 8px 0 26px; background: transparent; border: 0; border-radius: 6px; text-align: left;">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15V6"></path><path d="M18.5 18a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z"></path><path d="M12 12H3"></path><path d="M16 6H3"></path><path d="M12 18H3"></path></svg>
+<span style="flex-grow: 1;">Deep house</span></button>
+<button type="button" class="nav" style="height: 28px; display: flex; align-items: center; gap: 8px; padding: 0 8px 0 26px; background: transparent; border: 0; border-radius: 6px; text-align: left;">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15V6"></path><path d="M18.5 18a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z"></path><path d="M12 12H3"></path><path d="M16 6H3"></path><path d="M12 18H3"></path></svg>
+<span style="flex-grow: 1;">Minimal</span></button>
+<button type="button" class="nav" style="height: 28px; display: flex; align-items: center; gap: 8px; padding: 0 8px 0 26px; background: transparent; border: 0; border-radius: 6px; text-align: left;">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15V6"></path><path d="M18.5 18a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z"></path><path d="M12 12H3"></path><path d="M16 6H3"></path><path d="M12 18H3"></path></svg>
+<span style="flex-grow: 1;">Edits &amp; bootlegs</span></button>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 2px;">
+<div style="padding: 0 8px 4px; font-size: 12px; font-weight: 500; color: #a3a3a3;">Devices</div>
+<a href="Export.dc.html" class="nav" style="height: 28px; display: flex; align-items: center; gap: 8px; padding: 0 8px; border-radius: 6px; color: #f5f5f5;">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10" cy="7" r="1"></circle><circle cx="4" cy="20" r="1"></circle><path d="M4.7 19.3 19 5"></path><path d="m21 3-3 1 2 2Z"></path><path d="M9.26 7.68 5 12l2 5"></path><path d="m10 14 5 2 3.5-3.5"></path><path d="m18 12 1-1 1 1-1 1Z"></path></svg>
+<span style="flex-grow: 1;">KINGSTON</span><span style="font-size: 12px; color: #a3a3a3;">12 changes</span></a>
+</div>
+</nav>
+
+<!-- Content -->
+<main style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column;">
+<div style="height: 64px; flex-shrink: 0; display: flex; align-items: center; gap: 12px; padding: 0 16px; border-bottom: 1px solid #262626;">
+<div style="flex-grow: 1; display: flex; flex-direction: column; gap: 2px;">
+<h1 style="margin: 0; font-size: 20px; line-height: 28px; font-weight: 600;">Warehouse — Oct 2026</h1>
+<div style="font-size: 13px; color: #a3a3a3;">{{plMeta}}</div>
+</div>
+<button type="button" class="btn" style="height: 32px; display: flex; align-items: center; gap: 8px; padding: 0 12px; background: #262626; border: 0; border-radius: 6px; font-size: 14px;">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg>
+Add tracks…</button>
+<a href="Export.dc.html" class="btn" style="height: 32px; display: flex; align-items: center; gap: 8px; padding: 0 12px; background: #262626; border-radius: 6px; font-size: 14px;">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10" cy="7" r="1"></circle><circle cx="4" cy="20" r="1"></circle><path d="M4.7 19.3 19 5"></path><path d="m21 3-3 1 2 2Z"></path><path d="M9.26 7.68 5 12l2 5"></path><path d="m10 14 5 2 3.5-3.5"></path><path d="m18 12 1-1 1 1-1 1Z"></path></svg>
+Export to USB…</a>
+<button type="button" class="{{splitCls}}" onClick="{{toggleSplit}}" aria-pressed="{{split}}" title="Show another playlist or the collection beside this one" style="height: 32px; display: flex; align-items: center; gap: 8px; padding: 0 12px; background: #262626; border: 0; border-radius: 6px; font-size: 14px;">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="18" x="3" y="3" rx="2"></rect><path d="M12 3v18"></path></svg>
+Split view</button>
+<button type="button" class="ghost" aria-label="More playlist actions" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; padding: 0; background: transparent; border: 0; border-radius: 6px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg></button>
+</div>
+
+<!-- Selected track -->
+<section aria-label="Selected track" style="position: relative; z-index: 2; height: 240px; flex-shrink: 0; display: flex; flex-direction: column; gap: 12px; padding: 16px; box-sizing: border-box; border-bottom: 1px solid #262626; background: #0a0a0a;">
+<div style="display: flex; align-items: center; gap: 24px;">
+<div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px;">
+<div style="font-size: 16px; font-weight: 600; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">{{sel.title}}</div>
+<div style="font-size: 13px; color: #a3a3a3;">{{sel.artist}} · {{sel.genre}}</div>
+<div style="display: flex; align-items: center; gap: 4px; padding-top: 4px; flex-wrap: nowrap; overflow: hidden;">
+<sc-for list="{{sel.chips}}" as="g" hint-placeholder-count="4">
+<span style="height: 20px; flex-shrink: 0; display: flex; align-items: center; gap: 4px; padding: 0 6px; background: #262626; border-radius: 3px; font-size: 12px; white-space: nowrap;"><span style="width: 6px; height: 6px; border-radius: 9999px; background: {{g.color}};"></span>{{g.name}}</span>
+</sc-for>
+<button type="button" class="ghost" onClick="{{toggleTags}}" aria-expanded="{{tagsOpen}}" aria-haspopup="dialog" style="height: 20px; flex-shrink: 0; display: flex; align-items: center; gap: 4px; padding: 0 6px; background: transparent; border: 1px dashed #404040; border-radius: 3px; font-size: 12px; color: #a3a3a3;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg>Tags</button>
+</div>
+</div>
+<dl style="margin: 0; display: flex; gap: 24px;">
+<div style="display: flex; flex-direction: column; gap: 2px;"><dt style="font-size: 12px; color: #a3a3a3;">BPM</dt><dd style="margin: 0; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 14px; font-variant-numeric: tabular-nums;">{{sel.bpmExact}}</dd></div>
+<div style="display: flex; flex-direction: column; gap: 2px;"><dt style="font-size: 12px; color: #a3a3a3;">Key</dt><dd style="margin: 0; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 14px;">{{sel.keyLong}}</dd></div>
+<div style="display: flex; flex-direction: column; gap: 2px;"><dt style="font-size: 12px; color: #a3a3a3;">Length</dt><dd style="margin: 0; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 14px; font-variant-numeric: tabular-nums;">{{sel.time}}</dd></div>
+<div style="display: flex; flex-direction: column; gap: 2px;"><dt style="font-size: 12px; color: #a3a3a3;">File</dt><dd style="margin: 0; font-size: 14px;">{{sel.file}}</dd></div>
+</dl>
+<div style="display: flex; gap: 8px;">
+<button type="button" class="btn" aria-label="Preview track" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; padding: 0; background: #262626; border: 0; border-radius: 6px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="6 3 20 12 6 21 6 3"></polygon></svg></button>
+<a href="CueEditor.dc.html" style="height: 32px; display: flex; align-items: center; gap: 8px; padding: 0 12px; background: #fafafa; color: #171717; border-radius: 6px; font-size: 14px; font-weight: 500;">Edit cues</a>
+</div>
+</div>
+<div style="position: relative; flex-grow: 1; border: 1px solid #262626; border-radius: 6px; background: #0a0a0a; overflow: hidden;">
+<svg width="1166" height="104" viewBox="0 0 1166 104" aria-label="Track overview waveform" role="img" style="position: absolute; left: 0; top: 18px;">
+<path d="{{wave.low}}" fill="#1d4ed8"></path>
+<path d="{{wave.mid}}" fill="#3b82f6"></path>
+<path d="{{wave.high}}" fill="#93c5fd"></path>
+</svg>
+<sc-for list="{{sel.markers}}" as="m" hint-placeholder-count="4">
+<div style="position: absolute; top: 0; bottom: 0; left: {{m.x}}px; display: flex; flex-direction: column; align-items: flex-start; pointer-events: none;">
+<span style="height: 14px; padding: 0 3px; border-radius: 2px; background: {{m.color}}; color: #0a0a0a; font-size: 10px; line-height: 14px; font-weight: 700;">{{m.letter}}</span>
+<span style="flex-grow: 1; width: 1px; background: {{m.color}}; opacity: 0.7;"></span>
+</div>
+</sc-for>
+<div style="position: absolute; left: 8px; right: 8px; bottom: 4px; display: flex; justify-content: space-between; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 11px; color: #a3a3a3; pointer-events: none;"><span>0:00</span><span>{{sel.time}}</span></div>
+</div>
+<sc-if value="{{tagsOpen}}" hint-placeholder-val="{{false}}">
+<div role="dialog" aria-label="Tags for {{sel.title}}" style="position: absolute; left: 16px; top: 96px; width: 420px; box-sizing: border-box; display: flex; flex-direction: column; background: #0a0a0a; border: 1px solid #262626; border-radius: 6px; box-shadow: 0px 4px 8px -2px rgba(0,0,0,0.18), 0 0 0 1px #00000066;">
+<div style="display: flex; align-items: center; gap: 8px; padding: 8px; border-bottom: 1px solid #262626;">
+<input type="search" aria-label="Find or create tag" placeholder="Find or create tag" style="flex-grow: 1; height: 28px; box-sizing: border-box; padding: 0 8px; background: #0a0a0a; border: 1px solid #2f2f2f; border-radius: 6px; font-size: 13px;">
+</div>
+<div style="max-height: 360px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; padding: 12px;">
+<sc-for list="{{tagCats}}" as="c" hint-placeholder-count="5">
+<div style="display: flex; flex-direction: column; gap: 6px;">
+<div style="display: flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 500; color: #a3a3a3;"><span style="width: 8px; height: 8px; border-radius: 2px; background: {{c.color}};"></span>{{c.name}}</div>
+<div style="display: flex; flex-wrap: wrap; gap: 4px;">
+<sc-for list="{{c.tags}}" as="g" hint-placeholder-count="3">
+<button type="button" aria-pressed="{{g.on}}" onClick="{{g.toggle}}" style="height: 24px; display: flex; align-items: center; gap: 4px; padding: 0 8px; background: {{g.bg}}; color: {{g.fg}}; border: 1px solid {{g.border}}; border-radius: 9999px; font-size: 12px;">{{g.name}}</button>
+</sc-for>
+</div>
+</div>
+</sc-for>
+</div>
+<div style="display: flex; align-items: center; gap: 8px; padding: 8px 8px 8px 12px; border-top: 1px solid #262626; font-size: 12px; color: #a3a3a3;">
+<span style="flex-grow: 1;">Changes apply right away</span>
+<a href="Tags.dc.html" class="ghost" style="height: 28px; display: flex; align-items: center; padding: 0 8px; border-radius: 6px; font-size: 13px;">Manage tags…</a>
+<button type="button" class="btn" onClick="{{toggleTags}}" style="height: 28px; padding: 0 12px; background: #262626; border: 0; border-radius: 6px; font-size: 13px;">Done</button>
+</div>
+</div>
+</sc-if>
+</section>
+<!-- Track table and optional source pane -->
+<div style="flex-grow: 1; min-height: 0; display: flex;">
+<div aria-label="{{plName}}" onDragOver="{{dragOver}}" onDragLeave="{{dragLeave}}" onDrop="{{drop}}" style="position: relative; flex-grow: 1; min-width: 0; min-height: 0; display: flex; flex-direction: column; background: {{dropBg}}; box-shadow: {{dropRing}};">
+<div style="height: 32px; flex-shrink: 0; display: grid; grid-template-columns: {{cols}}; column-gap: 12px; align-items: center; padding: 0 16px; background: #17171766; border-bottom: 1px solid #262626; font-size: 12px; font-weight: 500; color: #a3a3a3;">
+<span style="text-align: right;">#</span><span>Title</span><span>Artist</span><span style="display: {{fullDisp}};">Tags</span><span style="text-align: right;">BPM</span><span>Key</span><span style="text-align: right;">Time</span><span style="display: {{fullDisp}};">Hot cues</span><span style="display: {{fullDisp}};">Added</span><span></span>
+</div>
+<div style="flex-grow: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column;">
+<sc-for list="{{tracks}}" as="t" hint-placeholder-count="15">
+<div style="position: relative; flex-shrink: 0;">
+<button type="button" class="{{t.cls}}" aria-pressed="{{t.selected}}" onClick="{{t.pick}}" onDoubleClick="{{t.edit}}" style="width: 100%; height: 32px; display: grid; grid-template-columns: {{cols}}; column-gap: 12px; align-items: center; padding: 0 16px; border: 0; border-bottom: 1px solid #262626b3; background: transparent; text-align: left; font-size: 14px;">
+<span style="text-align: right; font-size: 12px; color: #a3a3a3; font-variant-numeric: tabular-nums;">{{t.n}}</span>
+<span style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-weight: 500;">{{t.title}}</span>
+<span style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">{{t.artist}}</span>
+<span style="display: {{fullFlex}}; align-items: center; gap: 4px; min-width: 0; overflow: hidden;">
+<sc-for list="{{t.chips}}" as="g" hint-placeholder-count="2">
+<span style="height: 20px; flex-shrink: 0; display: flex; align-items: center; gap: 4px; padding: 0 6px; background: #262626; border-radius: 3px; font-size: 12px; white-space: nowrap;"><span style="width: 6px; height: 6px; border-radius: 9999px; background: {{g.color}};"></span>{{g.name}}</span>
+</sc-for>
+<span style="flex-shrink: 0; font-size: 12px; color: #a3a3a3;">{{t.more}}</span>
+</span>
+<span style="text-align: right; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 13px; font-variant-numeric: tabular-nums; color: {{t.dataColor}};">{{t.bpm}}</span>
+<span style="font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 13px; color: {{t.dataColor}};">{{t.key}}</span>
+<span style="text-align: right; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 13px; font-variant-numeric: tabular-nums;">{{t.time}}</span>
+<span style="display: {{fullFlex}}; gap: 4px; align-items: center;">
+<sc-if value="{{t.analyzed}}" hint-placeholder-val="{{true}}">
+<sc-for list="{{t.cues}}" as="c" hint-placeholder-count="4">
+<span style="width: 8px; height: 8px; border-radius: 2px; background: {{c}};"></span>
+</sc-for>
+</sc-if>
+<sc-if value="{{t.pending}}" hint-placeholder-val="{{false}}">
+<span style="font-size: 12px; color: #a3a3a3;">Not analyzed</span>
+</sc-if>
+</span>
+<span style="display: {{fullDisp}}; font-size: 13px; color: #a3a3a3;">{{t.added}}</span>
+<span></span>
+</button>
+<button type="button" class="ghost" onClick="{{t.edit}}" aria-label="Edit track info for {{t.title}}…" title="Edit track info…" style="position: absolute; top: 4px; right: 16px; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; padding: 0; background: transparent; border: 0; border-radius: 6px; color: {{t.pencilColor}};"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"></path><path d="m15 5 4 4"></path></svg></button>
+</div>
+</sc-for>
+</div>
+<sc-if value="{{dropping}}" hint-placeholder-val="{{false}}">
+<div aria-hidden="true" style="position: absolute; left: 50%; bottom: 16px; transform: translateX(-50%); height: 32px; display: flex; align-items: center; gap: 8px; padding: 0 12px; background: #0a0a0a; border: 1px solid #3b82f6; border-radius: 6px; font-size: 13px; pointer-events: none;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg>Drop to add to {{plName}}</div>
+</sc-if>
+</div>
+<sc-if value="{{split}}" hint-placeholder-val="{{false}}">
+<aside aria-label="Source" style="width: 460px; flex-shrink: 0; display: flex; flex-direction: column; border-left: 1px solid #262626; background: #0a0a0a;">
+<div style="height: 44px; flex-shrink: 0; display: flex; align-items: center; gap: 8px; padding: 0 8px 0 12px; border-bottom: 1px solid #262626;">
+<label for="src-pick" style="font-size: 12px; font-weight: 500; color: #a3a3a3;">Browse</label>
+<select id="src-pick" value="{{source}}" onChange="{{pickSource}}" style="flex-grow: 1; min-width: 0; height: 28px; padding: 0 8px; background: #262626; color: #fafafa; border: 0; border-radius: 6px; font-family: inherit; font-size: 13px;">
+<option value="collection">Collection</option>
+<option value="recent">Recently added</option>
+<option value="rooftop">Sunday rooftop</option>
+<option value="warmup">Warm-up</option>
+<option value="deep">Deep house</option>
+<option value="minimal">Minimal</option>
+<option value="edits">Edits &amp; bootlegs</option>
+</select>
+<button type="button" class="ghost" onClick="{{toggleSplit}}" aria-label="Close source pane" style="width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; padding: 0; background: transparent; border: 0; border-radius: 6px; color: #a3a3a3;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg></button>
+</div>
+<div style="padding: 8px 12px; border-bottom: 1px solid #262626;">
+<label style="position: relative; display: flex; align-items: center;">
+<span style="position: absolute; left: 8px; display: flex; color: #a3a3a3;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg></span>
+<input type="search" aria-label="Search source" placeholder="{{srcPlaceholder}}" value="{{query}}" onChange="{{setQuery}}" style="width: 100%; height: 28px; box-sizing: border-box; padding: 0 8px 0 28px; background: #0a0a0a; border: 1px solid #2f2f2f; border-radius: 6px; font-size: 13px; outline: none;">
+</label>
+</div>
+<div style="height: 28px; flex-shrink: 0; display: grid; grid-template-columns: 14px minmax(0, 1fr) 48px 36px 44px 28px; column-gap: 10px; align-items: center; padding: 0 12px; background: #17171766; border-bottom: 1px solid #262626; font-size: 12px; font-weight: 500; color: #a3a3a3;">
+<span></span><span>Title</span><span style="text-align: right;">BPM</span><span>Key</span><span style="text-align: right;">Time</span><span></span>
+</div>
+<div style="flex-grow: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column;">
+<sc-for list="{{srcRows}}" as="r" hint-placeholder-count="10">
+<div draggable="{{r.canDrag}}" onDragStart="{{r.dragStart}}" onDragEnd="{{dragEnd}}" class="srow" style="height: 40px; flex-shrink: 0; display: grid; grid-template-columns: 14px minmax(0, 1fr) 48px 36px 44px 28px; column-gap: 10px; align-items: center; padding: 0 12px; border-bottom: 1px solid #262626b3; cursor: {{r.cursor}};">
+<span aria-hidden="true" style="display: flex; color: {{r.gripColor}};"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="12" r="1"></circle><circle cx="9" cy="5" r="1"></circle><circle cx="9" cy="19" r="1"></circle><circle cx="15" cy="12" r="1"></circle><circle cx="15" cy="5" r="1"></circle><circle cx="15" cy="19" r="1"></circle></svg></span>
+<span style="min-width: 0; display: flex; flex-direction: column; gap: 1px;">
+<span style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: 13px; font-weight: 500; color: {{r.titleColor}};">{{r.title}}</span>
+<span style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: 12px; color: #a3a3a3;">{{r.artist}}</span>
+</span>
+<span style="text-align: right; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 12px; font-variant-numeric: tabular-nums;">{{r.bpm}}</span>
+<span style="font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 12px;">{{r.key}}</span>
+<span style="text-align: right; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 12px; font-variant-numeric: tabular-nums;">{{r.time}}</span>
+<sc-if value="{{r.canAdd}}" hint-placeholder-val="{{true}}">
+<button type="button" class="ghost" onClick="{{r.add}}" aria-label="Add {{r.title}} to {{plName}}" title="Add to playlist" style="width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; padding: 0; background: transparent; border: 0; border-radius: 6px; color: #fafafa;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg></button>
+</sc-if>
+<sc-if value="{{r.inPlaylist}}" hint-placeholder-val="{{false}}">
+<span title="Already in this playlist" aria-label="Already in this playlist" role="img" style="width: 28px; display: flex; justify-content: center; color: #a3a3a3;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg></span>
+</sc-if>
+</div>
+</sc-for>
+<sc-if value="{{srcEmpty}}" hint-placeholder-val="{{false}}">
+<div style="padding: 24px 12px; font-size: 13px; color: #a3a3a3;">No tracks match “{{query}}”.</div>
+</sc-if>
+</div>
+<div style="height: 32px; flex-shrink: 0; display: flex; align-items: center; padding: 0 12px; border-top: 1px solid #262626; font-size: 12px; color: #a3a3a3;">{{srcFooter}}</div>
+</aside>
+</sc-if>
+</div>
+
+</main>
+</div>
+
+<!-- Status bar -->
+<div style="height: 28px; flex-shrink: 0; display: flex; align-items: center; gap: 16px; padding: 0 16px; background: #171717; border-top: 1px solid #262626; font-size: 12px; color: #a3a3a3;">
+<span style="flex-grow: 1; display: flex; align-items: center; gap: 8px;">{{statusText}}<sc-if value="{{canUndo}}" hint-placeholder-val="{{false}}"><button type="button" class="ghost" onClick="{{undo}}" style="height: 20px; padding: 0 6px; background: transparent; border: 0; border-radius: 3px; font-size: 12px; color: #fafafa; font-weight: 500;">Undo</button></sc-if></span>
+<span>KINGSTON · 36.1 GB free · last exported Sep 19</span>
+</div>
+
+<!-- Import and analysis dialogs -->
+<sc-if value="{{relinkOpen}}" hint-placeholder-val="{{false}}">
+<div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: #00000099;">
+<dc-import name="Relink" on-close="{{closeDialogs}}" hint-size="960px,640px"></dc-import>
+</div>
+</sc-if>
+<sc-if value="{{migrateOpen}}" hint-placeholder-val="{{false}}">
+<div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: #00000099;">
+<dc-import name="Migrate" on-close="{{closeDialogs}}" on-relink="{{openRelink}}" hint-size="1040px,720px"></dc-import>
+</div>
+</sc-if>
+<sc-if value="{{settingsOpen}}" hint-placeholder-val="{{false}}">
+<div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: #00000099;">
+<dc-import name="Settings" on-close="{{closeDialogs}}" hint-size="960px,680px"></dc-import>
+</div>
+</sc-if>
+<sc-if value="{{smartOpen}}" hint-placeholder-val="{{false}}">
+<div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: #00000099;">
+<dc-import name="SmartPlaylist" on-close="{{closeDialogs}}" hint-size="1120px,720px"></dc-import>
+</div>
+</sc-if>
+<sc-if value="{{importOpen}}" hint-placeholder-val="{{false}}">
+<div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: #00000099;">
+<dc-import name="ImportReview" on-close="{{closeDialogs}}" hint-size="960px,680px"></dc-import>
+</div>
+</sc-if>
+<sc-if value="{{analysisOpen}}" hint-placeholder-val="{{false}}">
+<div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: #00000099;">
+<dc-import name="Analysis" on-close="{{closeDialogs}}" hint-size="880px,640px"></dc-import>
+</div>
+</sc-if>
+
+<!-- Edit track info dialog -->
+<sc-if value="{{editing}}" hint-placeholder-val="{{false}}">
+<div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: #00000099;">
+<dc-import name="EditMetadata" track="{{editTrack}}" on-close="{{closeEditor}}" hint-size="720px,600px"></dc-import>
+</div>
+</sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"sourcePane":{"editor":"boolean","default":false},"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { sel: 0, editing: false, importOpen: false, importMenu: false, migrateOpen: false, relinkOpen: false, analysisOpen: false, smartOpen: false, settingsOpen: false, tagsOpen: false, split: !!props.sourcePane, source: 'collection', query: '', added: [], dropping: false, last: null, tags: [
+  ['Deep House', 'No vocals', 'Warm', 'Low', 'Warm-up'],
+  ['Deep House', 'Has vocals', 'Warm', 'Low', 'Warm-up'],
+  ['Melodic Techno', 'Vocal chops', 'Euphoric', 'Build'],
+  ['Tech House', 'Vocal chops', 'Build'],
+  ['Minimal', 'No vocals', 'Hypnotic', 'Build'],
+  ['Minimal', 'No vocals', 'Dark', 'Hypnotic', 'Build'],
+  ['Tech House', 'Has vocals', 'Euphoric', 'Build', 'Peak time'],
+  ['Deep House', 'No vocals', 'Dark', 'Hypnotic'],
+  ['Techno', 'No vocals', 'Dark', 'Peak', 'Peak time'],
+  ['Techno', '#vinyl-rip'],
+  ['Tech House', 'Vocal chops', 'Peak', 'Peak time'],
+  ['Techno', 'No vocals', 'Dark', 'Peak', 'Peak time'],
+  ['Techno', 'No vocals', 'Hypnotic', 'Peak', 'Peak time'],
+  ['Techno', 'Has vocals', '#rooftop'],
+  ['Peak Techno', 'Vocal chops', 'Euphoric', 'Peak', 'Peak time'],
+  ['Techno', 'Has vocals', 'Dark', 'Peak'],
+  ['Melodic Techno', 'No vocals', 'Euphoric', 'Low', 'Closing'],
+  ['Ambient Techno', 'Has vocals', 'Warm', 'Low', 'Closing']
+] };
+  }
+  wave(seed, n, w, h) {
+    var s = seed * 7919 + 17;
+    var rnd = function () { s = (s * 9301 + 49297) % 233280; return s / 233280; };
+    var env = function (t) {
+      if (t < 0.02) return 0.15 + t * 20;
+      if (t < 0.16) return 0.55;
+      if (t < 0.25) return 0.8;
+      if (t < 0.32) return 0.3;
+      if (t < 0.55) return 1;
+      if (t < 0.62) return 0.35;
+      if (t < 0.9) return 0.95;
+      return Math.max(0.12, 0.95 - (t - 0.9) * 8);
+    };
+    var bw = w / n, bar = bw * 0.72, low = '', mid = '', high = '', y = h / 2;
+    for (var i = 0; i < n; i++) {
+      var a = env(i / n) * (0.72 + 0.28 * rnd());
+      var hl = a * y, hm = hl * (0.55 + 0.25 * rnd()), hh = hm * (0.35 + 0.3 * rnd());
+      var x = (i * bw).toFixed(1);
+      low += 'M' + x + ' ' + (y - hl).toFixed(1) + 'h' + bar.toFixed(2) + 'v' + (2 * hl).toFixed(1) + 'h-' + bar.toFixed(2) + 'Z';
+      mid += 'M' + x + ' ' + (y - hm).toFixed(1) + 'h' + bar.toFixed(2) + 'v' + (2 * hm).toFixed(1) + 'h-' + bar.toFixed(2) + 'Z';
+      high += 'M' + x + ' ' + (y - hh).toFixed(1) + 'h' + bar.toFixed(2) + 'v' + (2 * hh).toFixed(1) + 'h-' + bar.toFixed(2) + 'Z';
+    }
+    return { low: low, mid: mid, high: high };
+  }
+  renderVals() {
+    var G = '#4ade80', C = '#22d3ee', R = '#f87171', Y = '#facc15', B = '#60a5fa', M = '#c084fc';
+    var data = [
+      ['Low Tide Signal', 'Marlow Ashe', 'Deep House', '122.00', '8A', 'A minor', '6:42', [G, C, R, Y, B, M], 'Sep 12', 'AIFF · 1,411 kbps'],
+      ['Parallel Rooms', 'Sable & Finch', 'Deep House', '122.00', '9A', 'E minor', '5:56', [G, C, R], 'Sep 10', 'FLAC · 16-bit'],
+      ['Afterglow Protocol', 'Nadia Okoro', 'Melodic Techno', '123.00', '9A', 'E minor', '6:18', [G, R, R, B], 'Sep 10', 'AIFF · 1,411 kbps'],
+      ['Copper Lines', 'Idris Vane', 'Tech House', '124.00', '10A', 'B minor', '7:05', [G, R, Y], 'Sep 12', 'MP3 · 320 kbps'],
+      ['Soft Machinery', 'Halden Rue', 'Minimal', '124.00', '10A', 'B minor', '6:51', [G, C, R, Y], 'Aug 28', 'WAV · 24-bit'],
+      ['Night Bus Theory', 'Kenji Moreau', 'Minimal', '124.50', '11A', 'F♯ minor', '7:21', [G, R], 'Aug 28', 'AIFF · 1,411 kbps'],
+      ['Glass Corridor', 'Oona Brandt', 'Tech House', '125.00', '11A', 'F♯ minor', '6:02', [G, C, R, Y, B], 'Sep 03', 'MP3 · 320 kbps'],
+      ['Undertow (Dub)', 'Marlow Ashe', 'Deep Tech', '125.00', '12A', 'D♭ minor', '8:14', [G, R, M], 'Sep 03', 'AIFF · 1,411 kbps'],
+      ['Static Bloom', 'Teo Lindqvist', 'Techno', '126.00', '12A', 'D♭ minor', '6:33', [G, C, R, Y], 'Sep 15', 'FLAC · 24-bit'],
+      ['Lantern Code', 'Ama Idowu', 'Techno', null, null, null, '5:48', [], 'Sep 21', 'MP3 · 320 kbps'],
+      ['Mercury Hours', 'Idris Vane', 'Tech House', '126.00', '1A', 'A♭ minor', '7:40', [G, R, Y, B], 'Sep 01', 'AIFF · 1,411 kbps'],
+      ['Forty Floors', 'Sable & Finch', 'Techno', '127.00', '1A', 'A♭ minor', '6:27', [G, C, R], 'Aug 19', 'WAV · 24-bit'],
+      ['Pressure Map', 'Nadia Okoro', 'Techno', '127.00', '2A', 'E♭ minor', '6:59', [G, R, R, Y, B], 'Aug 19', 'AIFF · 1,411 kbps'],
+      ['Concrete Choir', 'Halden Rue', 'Techno', null, null, null, '7:12', [], 'Sep 21', 'FLAC · 16-bit'],
+      ['Signal Fire', 'Oona Brandt', 'Peak Techno', '128.00', '2A', 'E♭ minor', '6:44', [G, C, R, Y], 'Sep 08', 'MP3 · 320 kbps'],
+      ['Last Train Home', 'Kenji Moreau', 'Techno', '128.00', '3A', 'B♭ minor', '7:03', [G, R, M], 'Sep 08', 'AIFF · 1,411 kbps'],
+      ['Daybreak Loop', 'Teo Lindqvist', 'Melodic Techno', '126.00', '3A', 'B♭ minor', '6:36', [G, C, R], 'Sep 05', 'WAV · 24-bit'],
+      ['Outro for Strangers', 'Ama Idowu', 'Ambient Techno', '122.00', '4A', 'F minor', '8:02', [G, R], 'Sep 05', 'AIFF · 1,411 kbps']
+    ];
+    var CATS = [
+      { name: 'Genre', color: '#60a5fa', tags: ['Deep House', 'Tech House', 'Minimal', 'Melodic Techno', 'Techno', 'Peak Techno', 'Ambient Techno'] },
+      { name: 'Vocals', color: '#c084fc', tags: ['Has vocals', 'No vocals', 'Vocal chops'] },
+      { name: 'Mood', color: '#facc15', tags: ['Dark', 'Hypnotic', 'Euphoric', 'Warm'] },
+      { name: 'Energy', color: '#f87171', tags: ['Low', 'Build', 'Peak'] },
+      { name: 'Set slot', color: '#4ade80', tags: ['Warm-up', 'Peak time', 'Closing'] },
+      { name: 'Imported tags', color: '#a3a3a3', tags: ['#rooftop', '#vinyl-rip'] }
+    ];
+    var tagColor = {};
+    CATS.forEach(function (c) { c.tags.forEach(function (t) { tagColor[t] = c.color; }); });
+    var chipsOf = function (list) { return list.map(function (t) { return { name: t, color: tagColor[t] || '#a3a3a3' }; }); };
+    var trackTags = this.state.tags;
+    var frac = [0.0, 0.16, 0.32, 0.62, 0.25, 0.55];
+    var letters = ['A', 'B', 'C', 'D', 'E', 'F'];
+    var self = this;
+    var sel = this.state.sel;
+    var EXTRA = [
+      ['Harbour Lights', 'Sable & Finch', 'Deep House', '121.00', '7A', 'D minor', '6:12', ['recent', 'deep']],
+      ['Quiet Engine', 'Halden Rue', 'Minimal', '123.00', '10A', 'B minor', '7:30', ['minimal']],
+      ['Salt Flats', 'Ama Idowu', 'Deep House', '120.00', '8A', 'A minor', '5:44', ['rooftop', 'deep', 'warmup']],
+      ['Carbon Dating', 'Teo Lindqvist', 'Techno', '129.00', '4A', 'F minor', '6:58', ['recent']],
+      ['Nine Rivers', 'Nadia Okoro', 'Melodic Techno', '124.00', '9A', 'E minor', '7:12', ['rooftop', 'recent']],
+      ['Dust Motes', 'Kenji Moreau', 'Minimal', '125.00', '11A', 'F♯ minor', '6:40', ['minimal', 'warmup']],
+      ['Tangerine Room', 'Oona Brandt', 'Tech House', '126.00', '12A', 'D♭ minor', '6:05', ['rooftop', 'edits']],
+      ['Ghost Frequency', 'Idris Vane', 'Techno', '130.00', '5A', 'C minor', '7:02', ['recent']],
+      ['Slow Burn Theory', 'Marlow Ashe', 'Deep House', '118.00', '6A', 'G minor', '6:50', ['warmup', 'deep']],
+      ['Hall of Mirrors (Edit)', 'Halden Rue', 'Techno', '128.00', '2A', 'E♭ minor', '5:37', ['edits']],
+      ['Kiln', 'Sable & Finch', 'Minimal', '124.00', '10A', 'B minor', '8:11', ['minimal']],
+      ['Paper Moons', 'Ama Idowu', 'Melodic Techno', '122.00', '8A', 'A minor', '6:26', ['rooftop', 'warmup']]
+    ];
+    var st = this.state;
+    var PL_NAME = 'Warehouse — Oct 2026';
+    data = data.concat(st.added.map(function (k) {
+      var e = EXTRA[k];
+      return [e[0], e[1], e[2], e[3], e[4], e[5], e[6], [G], 'Today', 'AIFF · 1,411 kbps'];
+    }));
+    var tracks = data.map(function (d, i) {
+      var ok = d[3] !== null;
+      return {
+        n: i + 1, title: d[0], artist: d[1], genre: d[2],
+        bpm: ok ? d[3].replace(/\.00$/, '') : '—', key: ok ? d[4] : '—',
+        dataColor: ok ? '#fafafa' : '#a3a3a3',
+        time: d[6], cues: d[7], added: d[8],
+        analyzed: ok, pending: !ok,
+        selected: i === sel,
+        cls: 'row' + (i % 2 === 1 ? ' even' : '') + (i === sel ? ' sel' : ''),
+        pick: function () { self.setState({ sel: i, tagsOpen: false }); },
+        pencilColor: i === sel ? '#fafafa' : '#a3a3a3',
+        chips: chipsOf((trackTags[i] || []).slice(0, 2)),
+        more: (trackTags[i] || []).length > 2 ? '+' + ((trackTags[i] || []).length - 2) : '',
+        edit: function () { self.setState({ sel: i, editing: true }); }
+      };
+    });
+    var d = data[sel];
+    var ok = d[3] !== null;
+    var markers = d[7].map(function (c, j) { return { x: Math.round(frac[j] * 1150) + 4, color: c, letter: letters[j] }; });
+    // Split view: a second pane browsing the collection or another playlist.
+    var inPl = {};
+    data.forEach(function (d) { inPl[d[0]] = true; });
+    var SOURCES = [
+      { id: 'collection', label: 'Collection' }, { id: 'recent', label: 'Recently added' },
+      { id: 'rooftop', label: 'Sunday rooftop' }, { id: 'warmup', label: 'Warm-up' },
+      { id: 'deep', label: 'Deep house' }, { id: 'minimal', label: 'Minimal' }, { id: 'edits', label: 'Edits & bootlegs' }
+    ];
+    var pool = [];
+    EXTRA.forEach(function (e, k) { if (st.source === 'collection' || e[7].indexOf(st.source) >= 0) pool.push({ e: e, k: k }); });
+    if (st.source === 'collection') {
+      data.slice(0, 18).forEach(function (d) { pool.push({ e: d, k: -1 }); });
+      pool.sort(function (a, b) { return a.e[0] < b.e[0] ? -1 : 1; });
+    }
+    var q = st.query.toLowerCase();
+    if (q) pool = pool.filter(function (p) { return (p.e[0] + ' ' + p.e[1] + ' ' + p.e[4] + ' ' + p.e[3]).toLowerCase().indexOf(q) >= 0; });
+    var addExtra = function (k) {
+      if (k < 0 || self.state.added.indexOf(k) >= 0) return;
+      self.setState({ added: self.state.added.concat([k]), last: k, dropping: false, sel: data.length });
+    };
+    var srcLabel = SOURCES.filter(function (o) { return o.id === st.source; })[0].label;
+    var srcRows = pool.map(function (p) {
+      var has = !!inPl[p.e[0]];
+      return {
+        title: p.e[0], artist: p.e[1], bpm: p.e[3] ? p.e[3].replace(/\.00$/, '') : '—', key: p.e[4] || '—', time: p.e[6],
+        canAdd: !has, inPlaylist: has, canDrag: has ? 'false' : 'true',
+        cursor: has ? 'default' : 'grab', gripColor: has ? '#404040' : '#737373', titleColor: has ? '#a3a3a3' : '#fafafa',
+        add: function () { addExtra(p.k); },
+        dragStart: function (e) { self.dragging = p.k; try { e.dataTransfer.setData('text/plain', p.e[0]); e.dataTransfer.effectAllowed = 'copy'; } catch (err) {} }
+      };
+    });
+    var addable = srcRows.filter(function (r) { return r.canAdd; }).length;
+    var secs = data.reduce(function (sum, d) { var m = d[6].split(':'); return sum + (+m[0]) * 60 + (+m[1]); }, 0);
+    var pending = data.filter(function (d) { return d[3] === null; }).length;
+    return {
+      plName: PL_NAME,
+      plMeta: data.length + ' tracks · ' + Math.floor(secs / 3600) + ' h ' + Math.round((secs % 3600) / 60) + ' min · ' + pending + ' need analysis',
+      split: st.split, splitCls: 'btn toggle' + (st.split ? ' on' : ''),
+      toggleSplit: function () { self.setState({ split: !self.state.split, dropping: false }); },
+      cols: st.split ? '32px minmax(0, 1.2fr) minmax(0, 0.9fr) 56px 44px 52px 24px' : '32px minmax(0, 1.2fr) minmax(0, 0.9fr) 200px 56px 44px 52px 80px 64px 24px',
+      fullDisp: st.split ? 'none' : 'block', fullFlex: st.split ? 'none' : 'flex',
+      source: st.source, sources: SOURCES,
+      pickSource: function (e) { self.setState({ source: e.target.value, query: '' }); },
+      query: st.query, setQuery: function (e) { self.setState({ query: e.target.value }); },
+      srcPlaceholder: 'Search ' + srcLabel.toLowerCase(),
+      srcRows: srcRows, srcEmpty: !!q && srcRows.length === 0,
+      srcFooter: addable ? 'Drag tracks into the playlist, or use + to add · ' + addable + ' not in this playlist' : 'Every track here is already in ' + PL_NAME,
+      dropping: st.dropping,
+      dropBg: st.dropping ? '#3b82f619' : 'transparent',
+      dropRing: st.dropping ? 'inset 0 0 0 2px #3b82f6' : 'none',
+      dragOver: function (e) { if (self.dragging !== undefined && self.dragging >= 0) { e.preventDefault(); if (!self.state.dropping) self.setState({ dropping: true }); } },
+      dragLeave: function (e) { if (!e.currentTarget.contains(e.relatedTarget)) self.setState({ dropping: false }); },
+      drop: function (e) { e.preventDefault(); var k = self.dragging; self.dragging = undefined; addExtra(k); self.setState({ dropping: false }); },
+      dragEnd: function () { self.dragging = undefined; if (self.state.dropping) self.setState({ dropping: false }); },
+      statusText: st.last !== null ? 'Added “' + EXTRA[st.last][0] + '” to ' + PL_NAME : '2,418 tracks in collection · 12 need analysis',
+      canUndo: st.last !== null,
+      undo: function () {
+        var k = self.state.last;
+        self.setState({ added: self.state.added.filter(function (x) { return x !== k; }), last: null, sel: 0 });
+      },
+      tracks: tracks,
+      sel: {
+        title: d[0], artist: d[1], genre: d[2],
+        bpmExact: ok ? d[3] : '—', keyLong: ok ? d[4] + ' · ' + d[5] : 'Not analyzed',
+        time: d[6], file: d[9], markers: markers,
+        chips: chipsOf(trackTags[sel] || [])
+      },
+      tagsOpen: this.state.tagsOpen,
+      toggleTags: function () { self.setState({ tagsOpen: !self.state.tagsOpen }); },
+      tagCats: CATS.map(function (c) {
+        return {
+          name: c.name, color: c.color,
+          tags: c.tags.map(function (t) {
+            var on = (trackTags[sel] || []).indexOf(t) >= 0;
+            return {
+              name: t, on: on,
+              bg: on ? '#fafafa' : 'transparent', fg: on ? '#171717' : '#fafafa', border: on ? '#fafafa' : '#2f2f2f',
+              toggle: function () {
+                var all = self.state.tags.slice();
+                var mine = (all[sel] || []).slice();
+                all[sel] = on ? mine.filter(function (x) { return x !== t; }) : mine.concat([t]);
+                self.setState({ tags: all });
+              }
+            };
+          })
+        };
+      }),
+      wave: this.wave(sel + 1, 290, 1166, 104),
+      editing: this.state.editing,
+      editTrack: { title: d[0], artist: d[1], genre: d[2], bpm: ok ? d[3] : '', key: ok ? d[4] : '', format: d[9].split(' ')[0] },
+      closeEditor: function () { self.setState({ editing: false }); },
+      importOpen: this.state.importOpen, analysisOpen: this.state.analysisOpen,
+      openImport: function () { self.setState({ importOpen: true, importMenu: false, analysisOpen: false, tagsOpen: false }); },
+      importMenu: this.state.importMenu, migrateOpen: this.state.migrateOpen,
+      toggleImportMenu: function () { self.setState({ importMenu: !self.state.importMenu, tagsOpen: false }); },
+      relinkOpen: this.state.relinkOpen,
+      openRelink: function () { self.setState({ relinkOpen: true, migrateOpen: false, importOpen: false, analysisOpen: false, smartOpen: false, settingsOpen: false, importMenu: false }); },
+      openMigrate: function () { self.setState({ migrateOpen: true, importMenu: false }); },
+      openAnalysis: function () { self.setState({ analysisOpen: true, importOpen: false, tagsOpen: false }); },
+      smartOpen: this.state.smartOpen,
+      openSmart: function () { self.setState({ smartOpen: true, importOpen: false, analysisOpen: false, tagsOpen: false }); },
+      settingsOpen: this.state.settingsOpen,
+      openSettings: function () { self.setState({ settingsOpen: true, importOpen: false, analysisOpen: false, smartOpen: false, tagsOpen: false }); },
+      closeDialogs: function () { self.setState({ importOpen: false, migrateOpen: false, relinkOpen: false, analysisOpen: false, smartOpen: false, settingsOpen: false }); }
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,245 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Recrate — Export results</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+.btn:hover{background:#292929}
+.ghost:hover{background:#262626}
+.seg:hover{background:#26262699}
+.trow:hover{background:#26262699}
+button:focus-visible{outline:2px solid #737373;outline-offset:1px}
+</style>
+</helmet>
+<div role="dialog" aria-modal="true" aria-labelledby="xs-title" style="width: 960px; height: 640px; box-sizing: border-box; display: flex; flex-direction: column; background: #0a0a0a; color: #fafafa; border: 1px solid #262626; border-radius: 8px; box-shadow: 0px 12px 24px -4px rgba(0,0,0,0.18); font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI Variable Text', 'Segoe UI', system-ui, sans-serif; -webkit-font-smoothing: antialiased; overflow: hidden;">
+
+<!-- Header -->
+<div style="height: 60px; flex-shrink: 0; display: flex; align-items: center; gap: 8px; padding: 0 12px 0 24px; border-bottom: 1px solid #262626;">
+<div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px;">
+<h2 id="xs-title" role="status" style="margin: 0; font-size: 16px; line-height: 22px; font-weight: 600;">{{title}}</h2>
+<div style="font-size: 13px; color: #a3a3a3;">KINGSTON · Device Library and Plus · Sep 23, 21:14</div>
+</div>
+<button type="button" class="ghost" onClick="{{close}}" aria-label="Close" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; padding: 0; background: transparent; border: 0; border-radius: 6px; color: #fafafa;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg></button>
+</div>
+
+<!-- Body -->
+<div style="flex-grow: 1; min-height: 0; display: flex; flex-direction: column; gap: 16px; padding: 24px;">
+
+<!-- Status -->
+<div style="flex-shrink: 0; display: flex; flex-direction: column; border: 1px solid #262626; border-radius: 6px; font-size: 14px;">
+<div style="height: 40px; display: flex; align-items: center; gap: 24px; padding: 0 12px; border-bottom: 1px solid #262626;">
+<span style="display: flex; align-items: center; gap: 8px;"><span style="display: flex; color: {{stat.verifyColor}};"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"></path><path d="m9 12 2 2 4-4"></path></svg></span><span style="font-variant-numeric: tabular-nums;">{{stat.verified}}</span></span>
+<span style="display: flex; align-items: center; gap: 8px;"><span style="display: flex; color: #a3a3a3;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path><path d="M21 3v5h-5"></path><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"></path><path d="M8 16H3v5"></path></svg></span><span style="font-variant-numeric: tabular-nums;">{{stat.updated}}</span></span>
+<span style="display: flex; align-items: center; gap: 8px;"><span style="display: flex; color: #facc15;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="m4.9 4.9 14.2 14.2"></path></svg></span><span style="font-variant-numeric: tabular-nums;">{{stat.skipped}}</span></span>
+<span style="display: flex; align-items: center; gap: 8px;"><span style="display: flex; color: {{stat.failColor}};"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="m15 9-6 6"></path><path d="m9 9 6 6"></path></svg></span><span style="font-variant-numeric: tabular-nums;">{{stat.failed}}</span></span>
+<div style="flex-grow: 1;"></div>
+<span style="font-size: 13px; color: #a3a3a3;">Minimal removed · 9.4 GB freed</span>
+</div>
+<div role="status" style="height: 40px; display: flex; align-items: center; gap: 8px; padding: 0 12px;">
+<span style="display: flex; color: {{eject.color}};">
+<sc-if value="{{eject.safe}}" hint-placeholder-val="{{true}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="m9 12 2 2 4-4"></path></svg></sc-if>
+<sc-if value="{{eject.busy}}" hint-placeholder-val="{{false}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"></path><path d="M12 9v4"></path><path d="M12 17h.01"></path></svg></sc-if>
+<sc-if value="{{eject.gone}}" hint-placeholder-val="{{false}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg></sc-if>
+</span>
+<span style="flex-grow: 1; font-weight: 500;">{{eject.text}}</span>
+<span style="font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 12px; font-variant-numeric: tabular-nums; color: #a3a3a3;">{{eject.meta}}</span>
+</div>
+</div>
+
+<!-- Filter and actions -->
+<div style="height: 32px; flex-shrink: 0; display: flex; align-items: center; gap: 8px;">
+<div role="group" aria-label="Show outcome" style="height: 32px; box-sizing: border-box; display: flex; gap: 2px; padding: 2px; background: #171717; border: 1px solid #262626; border-radius: 6px;">
+<sc-for list="{{segs}}" as="s" hint-placeholder-count="5">
+<button type="button" class="seg" aria-pressed="{{s.pressed}}" onClick="{{s.pick}}" style="height: 26px; display: flex; align-items: center; gap: 6px; padding: 0 10px; background: {{s.bg}}; color: {{s.fg}}; border: 0; border-radius: 4px; font-family: inherit; font-size: 13px;">{{s.label}}<span style="font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 12px; font-variant-numeric: tabular-nums; color: #a3a3a3;">{{s.count}}</span></button>
+</sc-for>
+</div>
+<span role="status" style="flex-grow: 1; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; text-align: right; font-size: 13px; color: #a3a3a3;">{{actionNote}}</span>
+<button type="button" class="btn" onClick="{{saveLog}}" style="height: 32px; display: flex; align-items: center; gap: 8px; padding: 0 12px; background: #262626; color: #fafafa; border: 0; border-radius: 6px; font-family: inherit; font-size: 14px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path><path d="M10 9H8"></path><path d="M16 13H8"></path><path d="M16 17H8"></path></svg>Save log…</button>
+<button type="button" class="btn" onClick="{{relink}}" disabled="{{relinkDisabled}}" style="height: 32px; display: flex; align-items: center; gap: 8px; padding: 0 12px; background: #262626; color: {{relinkFg}}; border: 0; border-radius: 6px; font-family: inherit; font-size: 14px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path></svg>Relink missing…</button>
+<button type="button" class="btn" onClick="{{retryAll}}" disabled="{{retryDisabled}}" style="height: 32px; display: flex; align-items: center; gap: 8px; padding: 0 12px; background: #262626; color: {{retryFg}}; border: 0; border-radius: 6px; font-family: inherit; font-size: 14px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>{{retryLabel}}</button>
+</div>
+
+<!-- Track list -->
+<div role="table" aria-label="{{listLabel}}" style="flex-grow: 1; min-height: 0; display: flex; flex-direction: column; border: 1px solid #262626; border-radius: 6px; overflow: hidden;">
+<div role="row" style="height: 28px; flex-shrink: 0; display: grid; grid-template-columns: 96px 264px minmax(0, 1fr) 88px; column-gap: 12px; align-items: center; padding: 0 12px; background: #17171766; border-bottom: 1px solid #262626; font-size: 12px; font-weight: 500; color: #a3a3a3;">
+<span role="columnheader">Outcome</span><span role="columnheader">Track</span><span role="columnheader">Details</span><span role="columnheader"><span style="position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0);">Recovery</span></span>
+</div>
+<div role="rowgroup" style="flex-grow: 1; min-height: 0; overflow-y: auto;">
+<sc-for list="{{rows}}" as="r" hint-placeholder-count="4">
+<div role="row" class="trow" style="height: 40px; display: grid; grid-template-columns: 96px 264px minmax(0, 1fr) 88px; column-gap: 12px; align-items: center; padding: 0 12px; border-bottom: 1px solid #262626b3; font-size: 14px;">
+<span role="cell" style="display: flex; align-items: center; gap: 6px; font-size: 13px; color: {{r.color}};">
+<sc-if value="{{r.isFailed}}" hint-placeholder-val="{{true}}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="m15 9-6 6"></path><path d="m9 9 6 6"></path></svg></sc-if>
+<sc-if value="{{r.isSkipped}}" hint-placeholder-val="{{false}}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="m4.9 4.9 14.2 14.2"></path></svg></sc-if>
+<sc-if value="{{r.isCopied}}" hint-placeholder-val="{{false}}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="m9 12 2 2 4-4"></path></svg></sc-if>
+<sc-if value="{{r.isUpdated}}" hint-placeholder-val="{{false}}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path><path d="M21 3v5h-5"></path><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"></path><path d="M8 16H3v5"></path></svg></sc-if>
+<span>{{r.word}}</span>
+</span>
+<span role="cell" style="min-width: 0; display: flex; flex-direction: column;">
+<span style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">{{r.title}} <span style="color: #a3a3a3;">— {{r.artist}}</span></span>
+<span style="font-size: 12px; color: #a3a3a3; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">{{r.playlist}}</span>
+</span>
+<span role="cell" style="min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: 13px; color: {{r.reasonColor}};" title="{{r.reason}}">{{r.reason}}</span>
+<span role="cell" style="display: flex; justify-content: flex-end;">
+<sc-if value="{{r.canAct}}" hint-placeholder-val="{{true}}"><button type="button" class="btn" onClick="{{r.act}}" disabled="{{r.actDisabled}}" aria-label="{{r.actAria}}" style="height: 28px; padding: 0 10px; background: #262626; color: #fafafa; border: 0; border-radius: 6px; font-family: inherit; font-size: 13px;">{{r.actLabel}}</button></sc-if>
+</span>
+</div>
+</sc-for>
+<sc-if value="{{isEmpty}}" hint-placeholder-val="{{false}}">
+<div style="height: 120px; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 13px; color: #a3a3a3;"><span style="display: flex; color: #4ade80;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="m9 12 2 2 4-4"></path></svg></span>{{emptyText}}</div>
+</sc-if>
+</div>
+</div>
+</div>
+
+<!-- Footer -->
+<div style="height: 64px; flex-shrink: 0; display: flex; align-items: center; gap: 8px; padding: 0 24px; border-top: 1px solid #262626; font-size: 14px;">
+<button type="button" class="btn" onClick="{{close}}" style="height: 32px; padding: 0 12px; background: #262626; color: #fafafa; border: 0; border-radius: 6px; font-family: inherit; font-size: 14px;">Close</button>
+<div style="flex-grow: 1;"></div>
+<button type="button" onClick="{{doEject}}" disabled="{{eject.disabled}}" style="height: 32px; padding: 0 16px; background: {{eject.bg}}; color: {{eject.fg}}; border: 0; border-radius: 6px; font-family: inherit; font-size: 14px; font-weight: 500;">Eject</button>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"onClose":{"editor":null},"$preview":{"width":960,"height":640}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    var W = 'Warehouse — Oct 2026', U = 'Warm-up';
+    var copied = [
+      ['Parallel Rooms', 'Sable & Finch', W, 152], ['Glass Corridor', 'Oona Brandt', W, 180],
+      ['Salt Flats', 'Ama Idowu', U, 142], ['Harbour Lights', 'Sable & Finch', U, 156], ['Kiln', 'Sable & Finch', U, 138],
+      ['Slow Orbit', 'Juno Vale', U, 161], ['Paper Lanterns', 'Ama Idowu', U, 149], ['Tidewater', 'Marlow Ashe', U, 158],
+      ['Soft Machinery', 'Halden Rue', U, 144], ['Copper Sky', 'Juno Vale', U, 152], ['Driftwood Hymn', 'Oona Brandt', U, 147],
+      ['Low Sun', 'Keel & Marsh', U, 139], ['Quiet Engines', 'Halden Rue', U, 155], ['Pale Blue Hour', 'Marlow Ashe', U, 160],
+      ['Velvet Static', 'Juno Vale', U, 147]
+    ];
+    var rows = [
+      { id: 'f1', o: 'failed', t: 'Night Ferry', ar: 'Oona Brandt', p: W, mb: 168, reason: 'Couldn’t write the file — the drive was disconnected', fixed: 'Verified after retry · 168 MB' },
+      { id: 'f2', o: 'failed', t: 'First Light Transit', ar: 'Keel & Marsh', p: U, mb: 152, reason: 'File name is too long for FAT32 — rename it or retry with a shorter name', fixed: 'Copied with a shorter file name · 152 MB' },
+      { id: 's1', o: 'skipped', t: 'Brass Weather', ar: 'Keel & Marsh', p: W, reason: 'File not found in ~/Music/Recrate/' },
+      { id: 's2', o: 'skipped', t: 'Sodium Lights', ar: 'Juno Vale', p: W, reason: 'File not found in ~/Music/Recrate/' }
+    ];
+    copied.forEach(function (c, i) {
+      rows.push({ id: 'c' + i, o: 'copied', t: c[0], ar: c[1], p: c[2], mb: c[3], reason: 'Verified · ' + c[3] + ' MB' });
+    });
+    [['Low Tide Signal', 'Marlow Ashe', '4 cue edits'], ['Lantern Code', 'Ama Idowu', 'Beat grid moved'],
+     ['Concrete Choir', 'Halden Rue', '2 cue edits · Device Library got the first 10 of 14 memory cues (none chosen)'], ['Signal Fires', 'Keel & Marsh', '2 cue edits'],
+     ['Northbound', 'Juno Vale', 'Loop added'], ['Hollow Grid', 'Halden Rue', '1 cue edit · beat grid moved'],
+     ['Amber Room', 'Oona Brandt', 'Device Library got your 10 of 11 memory cues'], ['Undertow', 'Marlow Ashe', '3 cue edits'],
+     ['Chalk Lines', 'Ama Idowu', 'Hot cue colors']].forEach(function (u, i) {
+      rows.push({ id: 'u' + i, o: 'updated', t: u[0], ar: u[1], p: W, reason: u[2] });
+    });
+    this.state = { rows: rows, filter: 'failed', writing: false, ejected: false, relinked: [], note: '' };
+    this.timer = null;
+  }
+  componentWillUnmount() { if (this.timer) clearTimeout(this.timer); }
+  retry(ids) {
+    var self = this;
+    this.setState({ writing: true, note: ids.length === 1 ? 'Retrying 1 track…' : 'Retrying ' + ids.length + ' tracks…' });
+    if (this.timer) clearTimeout(this.timer);
+    this.timer = setTimeout(function () {
+      self.timer = null;
+      var next = self.state.rows.map(function (r) {
+        return ids.indexOf(r.id) >= 0 ? Object.assign({}, r, { o: 'copied', reason: r.fixed }) : r;
+      });
+      self.setState({ rows: next, writing: false, note: ids.length === 1 ? '1 track copied' : ids.length + ' tracks copied' });
+    }, 1400);
+  }
+  renderVals() {
+    var self = this, st = this.state;
+    var count = function (o) { return st.rows.filter(function (r) { return r.o === o; }).length; };
+    var nFailed = count('failed'), nSkipped = count('skipped'), nCopied = count('copied'), nUpdated = count('updated');
+    var failedIds = st.rows.filter(function (r) { return r.o === 'failed'; }).map(function (r) { return r.id; });
+    var locked = st.writing || st.ejected;
+    var skippedIds = st.rows.filter(function (r) { return r.o === 'skipped'; }).map(function (r) { return r.id; });
+    var allLinked = skippedIds.every(function (x) { return st.relinked.indexOf(x) >= 0; });
+    var segDefs = [['failed', 'Failed', nFailed], ['skipped', 'Skipped', nSkipped], ['copied', 'Copied', nCopied], ['updated', 'Updated', nUpdated], ['all', 'All', st.rows.length]];
+    var segs = segDefs.map(function (d) {
+      var on = st.filter === d[0];
+      return { label: d[1], count: d[2], pressed: on ? 'true' : 'false', bg: on ? '#262626' : 'transparent', fg: on ? '#fafafa' : '#a3a3a3',
+        pick: function () { self.setState({ filter: d[0] }); } };
+    });
+    var words = { failed: 'Failed', skipped: 'Skipped', copied: 'Copied', updated: 'Updated' };
+    var colors = { failed: '#f87171', skipped: '#facc15', copied: '#4ade80', updated: '#fafafa' };
+    var order = { failed: 0, skipped: 1, copied: 2, updated: 3 };
+    var rows = st.rows.filter(function (r) { return st.filter === 'all' || r.o === st.filter; })
+      .slice().sort(function (a, b) { return order[a.o] - order[b.o]; })
+      .map(function (r) {
+        var id = r.id, failed = r.o === 'failed', skipped = r.o === 'skipped';
+        var reason = r.reason;
+        var linked = st.relinked.indexOf(id) >= 0;
+        if (skipped && linked) reason = 'Relinked — copies on the next export';
+        return {
+          isFailed: failed, isSkipped: skipped, isCopied: r.o === 'copied', isUpdated: r.o === 'updated',
+          word: words[r.o], color: colors[r.o],
+          title: r.t, artist: r.ar, playlist: r.p,
+          reason: reason, reasonColor: failed || (skipped && !linked) ? '#fafafa' : '#a3a3a3',
+          canAct: failed || (skipped && !linked),
+          actLabel: failed ? 'Retry' : 'Locate…',
+          actAria: (failed ? 'Retry ' : 'Locate ') + r.t,
+          actDisabled: failed ? locked : false,
+          act: function () {
+            if (failed) self.retry([id]);
+            else self.setState({ relinked: self.state.relinked.concat([id]), note: r.t + ' relinked' });
+          }
+        };
+      });
+    var emptyText = {
+      failed: 'Nothing failed. All ' + (nCopied) + ' copies are verified.',
+      skipped: 'No tracks were skipped.',
+      copied: 'No tracks were copied.',
+      updated: 'No tracks were updated.',
+      all: 'Nothing was exported.'
+    }[st.filter];
+    var eject;
+    if (st.ejected) eject = { text: 'KINGSTON ejected — you can unplug it', color: '#a3a3a3', safe: false, busy: false, gone: true, meta: '' };
+    else if (st.writing) eject = { text: 'Writing to KINGSTON — don’t eject yet', color: '#facc15', safe: false, busy: true, gone: false, meta: '' };
+    else eject = { text: 'Safe to eject — all writes are finished', color: '#4ade80', safe: true, busy: false, gone: false, meta: '42.9 GB free' };
+    eject.disabled = locked;
+    eject.bg = locked ? '#262626' : '#fafafa';
+    eject.fg = locked ? '#a3a3a3' : '#171717';
+    var totalCopies = nCopied + nFailed;
+    return {
+      title: nFailed ? 'Export finished with ' + nFailed + (nFailed === 1 ? ' problem' : ' problems') : 'Export complete',
+      stat: {
+        verified: nCopied + ' of ' + totalCopies + ' copies verified',
+        verifyColor: nFailed ? '#facc15' : '#4ade80',
+        updated: nUpdated + ' tracks updated',
+        skipped: nSkipped + (allLinked ? ' skipped (relinked)' : ' skipped (missing)'),
+        failed: nFailed + ' failed',
+        failColor: nFailed ? '#f87171' : '#a3a3a3'
+      },
+      eject: eject,
+      segs: segs,
+      listLabel: st.filter === 'all' ? 'All tracks' : words[st.filter] + ' tracks',
+      rows: rows,
+      isEmpty: rows.length === 0,
+      emptyText: emptyText,
+      actionNote: st.note,
+      retryLabel: 'Retry failed',
+      retryDisabled: locked || nFailed === 0,
+      retryFg: locked || nFailed === 0 ? '#a3a3a3' : '#fafafa',
+      retryAll: function () { self.retry(failedIds); },
+      relinkDisabled: allLinked || nSkipped === 0,
+      relinkFg: allLinked || nSkipped === 0 ? '#a3a3a3' : '#fafafa',
+      relink: function () { self.setState({ relinked: skippedIds.slice(), note: nSkipped + ' tracks relinked' }); },
+      saveLog: function () { self.setState({ note: 'Log saved to Recrate/Logs' }); },
+      doEject: function () {
+        if (self.timer) return;
+        self.setState({ ejected: true, note: '' });
+      },
+      close: function () {
+        if (self.props.onClose) self.props.onClose();
+        else self.setState({ note: '' });
+      }
+    };
+  }
+}
+</script>
+</body>
+</html>

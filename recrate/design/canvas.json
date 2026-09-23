@@ -1,0 +1,206 @@
+{
+  "v": 3,
+  "attachments": {},
+  "boards": {
+    "Analysis.dc.html": {
+      "h": 640,
+      "is_interactive": true,
+      "title": "Analysis queue and settings (dialog)",
+      "w": 880,
+      "x": 1040,
+      "y": 2340
+    },
+    "CueEditor.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "title": "Cue editor",
+      "w": 1440,
+      "x": 1520,
+      "y": 0
+    },
+    "DeviceSetup.dc.html": {
+      "h": 640,
+      "is_interactive": true,
+      "title": "Device setup (dialog)",
+      "w": 880,
+      "x": 3040,
+      "y": 2340
+    },
+    "EditMetadata.dc.html": {
+      "h": 600,
+      "is_interactive": true,
+      "title": "Edit track info (dialog)",
+      "w": 720,
+      "x": 0,
+      "y": 1020
+    },
+    "Export.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "title": "Export to USB",
+      "w": 1440,
+      "x": 3040,
+      "y": 0
+    },
+    "ExportResults.dc.html": {
+      "h": 640,
+      "is_interactive": true,
+      "title": "Export results (dialog)",
+      "w": 960,
+      "x": 1040,
+      "y": 3140
+    },
+    "ExportReview.dc.html": {
+      "h": 680,
+      "is_interactive": true,
+      "title": "Export review (dialog)",
+      "w": 960,
+      "x": 0,
+      "y": 3140
+    },
+    "ImportReview.dc.html": {
+      "h": 680,
+      "is_interactive": true,
+      "title": "Import music (dialog)",
+      "w": 960,
+      "x": 0,
+      "y": 2340
+    },
+    "LibrarySplit.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "title": "Library — split view",
+      "w": 1440,
+      "x": 3040,
+      "y": 1020
+    },
+    "Main.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "title": "Library",
+      "w": 1440,
+      "x": 0,
+      "y": 0
+    },
+    "Relink.dc.html": {
+      "h": 640,
+      "is_interactive": true,
+      "title": "Missing files (dialog)",
+      "w": 960,
+      "x": 2000,
+      "y": 2340
+    },
+    "Tags.dc.html": {
+      "h": 900,
+      "is_interactive": true,
+      "title": "Tags",
+      "w": 1440,
+      "x": 1520,
+      "y": 1020
+    },
+    "DeviceHistory.dc.html": {
+      "x": 4560,
+      "y": 0,
+      "w": 1440,
+      "h": 900,
+      "title": "Device history and repair",
+      "is_interactive": true
+    },
+    "SmartPlaylist.dc.html": {
+      "x": 2080,
+      "y": 3140,
+      "w": 1120,
+      "h": 720,
+      "title": "Smart playlist rules (dialog)",
+      "is_interactive": true
+    },
+    "Settings.dc.html": {
+      "x": 3280,
+      "y": 3140,
+      "w": 960,
+      "h": 680,
+      "title": "Settings and backup (dialog)",
+      "is_interactive": true
+    },
+    "Migrate.dc.html": {
+      "x": 4320,
+      "y": 3140,
+      "w": 1040,
+      "h": 720,
+      "title": "Import from rekordbox (dialog)",
+      "is_interactive": true
+    },
+    "HistoryInspect.dc.html": {
+      "x": 4560,
+      "y": 1020,
+      "w": 1440,
+      "h": 900,
+      "title": "History — check found changes",
+      "is_interactive": true
+    },
+    "HistoryRecovery.dc.html": {
+      "x": 6080,
+      "y": 1020,
+      "w": 1440,
+      "h": 900,
+      "title": "History — recovery needed",
+      "is_interactive": true
+    }
+  },
+  "createdOnFiles": {
+    "at": "2026-09-22T20:48:01Z",
+    "v": 1
+  },
+  "designSystems": [
+    {
+      "artifact": "https://claude.ai/artifact/RGzA7hEECCDWMqLfcATpvK",
+      "copiedAt": "2026-09-22T20:48:01Z",
+      "namespace": "gpui-kit",
+      "title": "GPUI Kit",
+      "version": "1790106781-f67e"
+    }
+  ],
+  "launch": {
+    "view": "canvas"
+  },
+  "notes": {
+    "flow": {
+      "kind": "title1",
+      "maxW": 6000,
+      "text": "Recrate — organize, cue, export",
+      "w": 240,
+      "x": 0,
+      "y": -300
+    },
+    "flows": {
+      "kind": "title1",
+      "maxW": 3920,
+      "text": "Import, analysis, devices and export",
+      "w": 240,
+      "x": 0,
+      "y": 2060
+    }
+  },
+  "order": [
+    "Main.dc.html",
+    "CueEditor.dc.html",
+    "Export.dc.html",
+    "EditMetadata.dc.html",
+    "Tags.dc.html",
+    "LibrarySplit.dc.html",
+    "ImportReview.dc.html",
+    "Analysis.dc.html",
+    "Relink.dc.html",
+    "DeviceSetup.dc.html",
+    "ExportReview.dc.html",
+    "ExportResults.dc.html",
+    "DeviceHistory.dc.html",
+    "SmartPlaylist.dc.html",
+    "Settings.dc.html",
+    "Migrate.dc.html",
+    "HistoryInspect.dc.html",
+    "HistoryRecovery.dc.html"
+  ],
+  "pages": [],
+  "title": "Recrate — DJ Library Manager"
+}

@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Recrate — Import from rekordbox</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+.btn:hover{background:#292929}
+.ghost:hover{background:#262626}
+.card:hover{background:#26262699}
+.mrow:hover{background:#26262699}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid #737373;outline-offset:1px}
+</style>
+</helmet>
+<div role="dialog" aria-modal="true" aria-labelledby="mg-title" style="width: 1040px; height: 720px; box-sizing: border-box; display: flex; flex-direction: column; background: #0a0a0a; color: #fafafa; border: 1px solid #262626; border-radius: 8px; box-shadow: 0px 12px 24px -4px rgba(0,0,0,0.18); font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI Variable Text', 'Segoe UI', system-ui, sans-serif; -webkit-font-smoothing: antialiased; overflow: hidden;">
+
+<!-- Header -->
+<div style="height: 60px; flex-shrink: 0; display: flex; align-items: center; gap: 16px; padding: 0 12px 0 24px; border-bottom: 1px solid #262626;">
+<div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px;">
+<h2 id="mg-title" style="margin: 0; font-size: 16px; line-height: 22px; font-weight: 600;">Import from rekordbox</h2>
+<div style="font-size: 13px; color: #a3a3a3;">Recrate reads a copy. rekordbox and its files aren’t changed.</div>
+</div>
+<ol aria-label="Steps" style="margin: 0; padding: 0; list-style: none; display: flex; align-items: center; gap: 8px; font-size: 13px;">
+<sc-for list="{{steps}}" as="s" hint-placeholder-count="4">
+<li aria-current="{{s.current}}" style="display: flex; align-items: center; gap: 6px; color: {{s.color}};">
+<span aria-hidden="true" style="width: 20px; height: 20px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; border-radius: 9999px; border: 1px solid {{s.ring}}; background: {{s.fill}}; color: {{s.numColor}}; font-size: 11px; font-weight: 600;">{{s.n}}</span>{{s.label}}<span aria-hidden="true" style="width: 16px; height: 1px; margin-left: 4px; background: #404040; display: {{s.sep}};"></span>
+</li>
+</sc-for>
+</ol>
+<button type="button" class="ghost" onClick="{{close}}" aria-label="Close" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; padding: 0; background: transparent; border: 0; border-radius: 6px; color: #fafafa;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg></button>
+</div>
+
+<div style="flex-grow: 1; min-height: 0; overflow-y: auto; padding: 24px;">
+
+<!-- Step 1: source -->
+<sc-if value="{{is.source}}" hint-placeholder-val="{{false}}">
+<div style="display: flex; flex-direction: column; gap: 16px; max-width: 720px;">
+<h3 style="margin: 0; font-size: 14px; font-weight: 600;">Where is your rekordbox library?</h3>
+<sc-for list="{{sources}}" as="c" hint-placeholder-count="3">
+<button type="button" class="card" aria-pressed="{{c.on}}" onClick="{{c.pick}}" style="display: grid; grid-template-columns: 16px minmax(0, 1fr) auto; column-gap: 12px; row-gap: 4px; align-items: center; padding: 12px 14px; background: {{c.bg}}; box-shadow: {{c.ring}}; color: #fafafa; border: 0; border-radius: 6px; font-family: inherit; text-align: left;">
+<span aria-hidden="true" style="width: 16px; height: 16px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; border-radius: 9999px; border: 1px solid {{c.dotBorder}};"><span style="width: 8px; height: 8px; border-radius: 9999px; background: {{c.dot}};"></span></span>
+<span style="font-size: 14px; font-weight: 500;">{{c.title}}</span>
+<span style="font-size: 12px; color: #a3a3a3;">{{c.badge}}</span>
+<span></span>
+<span style="grid-column: span 2; font-size: 13px; color: #a3a3a3;">{{c.desc}}</span>
+</button>
+</sc-for>
+<div style="display: flex; align-items: flex-start; gap: 8px; font-size: 13px; color: #a3a3a3;">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0; margin-top: 3px;"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg>
+<span>Quit rekordbox before continuing so its library isn’t changing while Recrate reads it. Nothing is imported until you confirm on the next step.</span>
+</div>
+</div>
+</sc-if>
+
+<!-- Step 2: review -->
+<sc-if value="{{is.review}}" hint-placeholder-val="{{true}}">
+<div style="display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 24px;">
+<div style="min-width: 0; display: flex; flex-direction: column; gap: 8px;">
+<div style="display: flex; align-items: baseline; gap: 8px;">
+<h3 style="margin: 0; flex-grow: 1; font-size: 14px; font-weight: 600;">What comes across</h3>
+<span style="font-size: 12px; color: #a3a3a3;">rekordbox 7 · read just now</span>
+</div>
+<div role="table" aria-label="How rekordbox data maps to Recrate" style="display: flex; flex-direction: column; border: 1px solid #262626; border-radius: 6px; overflow: hidden;">
+<div role="row" style="height: 28px; display: grid; grid-template-columns: 16px 150px 90px minmax(0, 1fr); column-gap: 12px; align-items: center; padding: 0 12px; background: #17171766; border-bottom: 1px solid #262626; font-size: 12px; font-weight: 500; color: #a3a3a3;">
+<span role="columnheader"></span><span role="columnheader">In rekordbox</span><span role="columnheader" style="text-align: right;">Count</span><span role="columnheader">In Recrate</span>
+</div>
+<sc-for list="{{map}}" as="m" hint-placeholder-count="10">
+<div role="row" class="mrow" style="min-height: 36px; box-sizing: border-box; display: grid; grid-template-columns: 16px 150px 90px minmax(0, 1fr); column-gap: 12px; align-items: start; padding: 9px 12px; border-bottom: 1px solid #262626b3; font-size: 13px;">
+<span role="cell" aria-label="{{m.statusLabel}}" style="display: flex; padding-top: 1px; color: {{m.color}};">
+<sc-if value="{{m.ok}}" hint-placeholder-val="{{true}}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg></sc-if>
+<sc-if value="{{m.warn}}" hint-placeholder-val="{{false}}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"></path><path d="M12 9v4"></path><path d="M12 17h.01"></path></svg></sc-if>
+<sc-if value="{{m.skip}}" hint-placeholder-val="{{false}}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"></path></svg></sc-if>
+</span>
+<span role="cell">{{m.from}}</span>
+<span role="cell" style="text-align: right; font-variant-numeric: tabular-nums; color: #a3a3a3;">{{m.count}}</span>
+<span role="cell" style="display: flex; flex-direction: column; gap: 2px;"><span>{{m.to}}</span><span style="font-size: 12px; color: #a3a3a3;">{{m.note}}</span></span>
+</div>
+</sc-for>
+</div>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 20px;">
+<fieldset style="margin: 0; padding: 0; border: 0; display: flex; flex-direction: column; gap: 8px;">
+<legend style="padding: 0 0 8px; font-size: 14px; font-weight: 600;">24 tracks are already in Recrate</legend>
+<span style="font-size: 13px; color: #a3a3a3; margin-top: -4px;">Their cues and beat grids differ between the two apps.</span>
+<sc-for list="{{conflicts}}" as="o" hint-placeholder-count="3">
+<label style="display: grid; grid-template-columns: 16px minmax(0, 1fr); column-gap: 8px; row-gap: 2px; font-size: 13px;">
+<input type="radio" name="mg-conflict" checked="{{o.on}}" onChange="{{o.pick}}" style="width: 16px; height: 16px; margin: 1px 0 0; accent-color: #fafafa;">
+<span>{{o.label}}</span>
+<span></span><span style="font-size: 12px; color: #a3a3a3;">{{o.desc}}</span>
+</label>
+</sc-for>
+</fieldset>
+<div style="display: flex; flex-direction: column; gap: 8px; font-size: 13px;">
+<span style="font-size: 14px; font-weight: 600;">Options</span>
+<label style="display: flex; align-items: flex-start; gap: 8px;"><input type="checkbox" checked="{{lockGrids}}" onChange="{{toggleLock}}" style="width: 16px; height: 16px; margin: 1px 0 0; accent-color: #fafafa;"><span>Lock imported beat grids <span style="display: block; font-size: 12px; color: #a3a3a3;">Analysis won’t replace them</span></span></label>
+<label style="display: flex; align-items: flex-start; gap: 8px;"><input type="checkbox" checked="{{yes}}" style="width: 16px; height: 16px; margin: 1px 0 0; accent-color: #fafafa;"><span>Leave audio files where they are <span style="display: block; font-size: 12px; color: #a3a3a3;">Recrate points to the same files rekordbox uses</span></span></label>
+</div>
+<div style="display: flex; align-items: flex-start; gap: 8px; padding: 10px 12px; border: 1px solid #262626; border-radius: 6px; font-size: 12px; color: #a3a3a3; line-height: 17px;">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0; margin-top: 1px;"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>
+<span>Recrate backs up its own library first. To undo the import, restore that backup in Settings.</span>
+</div>
+</div>
+</div>
+</sc-if>
+
+<!-- Step 3: importing -->
+<sc-if value="{{is.importing}}" hint-placeholder-val="{{false}}">
+<div style="display: flex; flex-direction: column; gap: 16px; max-width: 640px;">
+<div style="display: flex; flex-direction: column; gap: 6px;">
+<div style="display: flex; font-size: 14px;"><span style="flex-grow: 1;">{{phaseLabel}}</span><span style="color: #a3a3a3; font-variant-numeric: tabular-nums;">{{pct}}%</span></div>
+<div role="progressbar" aria-label="Import progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{pct}}" style="height: 6px; border-radius: 9999px; background: #262626; overflow: hidden;"><div style="height: 100%; width: {{pct}}%; background: #fafafa;"></div></div>
+</div>
+<ol style="margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 8px; font-size: 13px;">
+<sc-for list="{{phases}}" as="p" hint-placeholder-count="5">
+<li style="display: flex; align-items: center; gap: 8px; color: {{p.color}};"><span aria-hidden="true" style="width: 8px; height: 8px; border-radius: 9999px; background: {{p.dot}};"></span>{{p.label}}<span style="color: #a3a3a3;">{{p.state}}</span></li>
+</sc-for>
+</ol>
+<span style="font-size: 12px; color: #a3a3a3;">You can keep using Recrate. The new tracks appear when the import finishes.</span>
+</div>
+</sc-if>
+
+<!-- Step 4: done -->
+<sc-if value="{{is.done}}" hint-placeholder-val="{{false}}">
+<div style="display: flex; flex-direction: column; gap: 16px; max-width: 720px;">
+<div style="display: flex; align-items: flex-start; gap: 10px;">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="margin-top: 2px;"><path d="M20 6 9 17l-5-5"></path></svg>
+<div style="display: flex; flex-direction: column; gap: 4px;">
+<span style="font-size: 16px; font-weight: 600;">Your rekordbox library is in Recrate</span>
+<span style="font-size: 13px; color: #a3a3a3;">{{doneText}}</span>
+</div>
+</div>
+<dl style="margin: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px;">
+<sc-for list="{{stats}}" as="k" hint-placeholder-count="4">
+<div style="display: flex; flex-direction: column; gap: 4px; padding: 12px; border: 1px solid #262626; border-radius: 6px;"><dt style="font-size: 12px; color: #a3a3a3;">{{k.label}}</dt><dd style="margin: 0; font-size: 18px; font-weight: 600; font-variant-numeric: tabular-nums;">{{k.value}}</dd></div>
+</sc-for>
+</dl>
+<div style="display: flex; flex-direction: column; border: 1px solid #262626; border-radius: 6px;">
+<div style="display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-bottom: 1px solid #262626b3; font-size: 13px;">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#facc15" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"></path><path d="M12 9v4"></path><path d="M12 17h.01"></path></svg>
+<span style="flex-grow: 1;">13 tracks point to files that couldn’t be found</span>
+<button type="button" class="btn" onClick="{{relink}}" aria-haspopup="dialog" style="height: 28px; padding: 0 10px; background: #262626; color: #fafafa; border: 0; border-radius: 6px; font-family: inherit; font-size: 13px;">Relink…</button>
+</div>
+<div style="display: flex; align-items: center; gap: 10px; padding: 10px 12px; font-size: 13px;">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#facc15" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"></path><path d="M12 9v4"></path><path d="M12 17h.01"></path></svg>
+<span style="flex-grow: 1;">“Unplayed bangers” was imported as a normal playlist. One of its conditions has no match in Recrate</span>
+</div>
+</div>
+<span style="font-size: 12px; color: #a3a3a3;">Recrate’s library was backed up at 22:40 before the import. Restore it from Settings › Backup and restore to undo.</span>
+</div>
+</sc-if>
+</div>
+
+<!-- Footer -->
+<div style="height: 64px; flex-shrink: 0; display: flex; align-items: center; gap: 8px; padding: 0 24px; border-top: 1px solid #262626; font-size: 14px;">
+<sc-if value="{{showCancel}}" hint-placeholder-val="{{true}}">
+<button type="button" class="btn" onClick="{{close}}" style="height: 32px; padding: 0 12px; background: #262626; color: #fafafa; border: 0; border-radius: 6px; font-family: inherit; font-size: 14px;">Cancel</button>
+</sc-if>
+<div role="status" style="flex-grow: 1; min-width: 0; text-align: right; font-size: 13px; color: #a3a3a3;">{{footerNote}}</div>
+<sc-if value="{{showBack}}" hint-placeholder-val="{{true}}">
+<button type="button" class="btn" onClick="{{back}}" style="height: 32px; padding: 0 12px; background: #262626; color: #fafafa; border: 0; border-radius: 6px; font-family: inherit; font-size: 14px;">Back</button>
+</sc-if>
+<sc-if value="{{showPrimary}}" hint-placeholder-val="{{true}}">
+<button type="button" onClick="{{next}}" style="height: 32px; padding: 0 16px; background: #fafafa; color: #171717; border: 0; border-radius: 6px; font-family: inherit; font-size: 14px; font-weight: 500;">{{primaryLabel}}</button>
+</sc-if>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"onClose":{"editor":null},"onRelink":{"editor":null},"$preview":{"width":1040,"height":720}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { step: 'review', source: 'local', conflict: 'recrate', lockGrids: true, pct: 0 };
+    this.timer = null;
+  }
+  componentWillUnmount() { if (this.timer) clearInterval(this.timer); }
+  renderVals() {
+    var self = this, st = this.state;
+    var ORDER = ['source', 'review', 'importing', 'done'];
+    var LABEL = { source: 'Source', review: 'Review', importing: 'Import', done: 'Done' };
+    var at = ORDER.indexOf(st.step);
+    var is = {};
+    ORDER.forEach(function (k) { is[k] = st.step === k; });
+    var SRC = [
+      ['local', 'rekordbox library on this computer', 'Found · rekordbox 7', '2,431 tracks · 58 playlists in 9 folders · 4 intelligent playlists · 4 My Tag categories'],
+      ['xml', 'rekordbox XML file…', 'From File › Export Collection in xml format', 'Use this if rekordbox is on another computer. Some data, such as My Tag, may not be in the file.'],
+      ['usb', 'USB drive · KINGSTON', 'Device Library', 'Only the 137 tracks and 3 playlists exported to the drive. Useful when you don’t have your computer’s library.']
+    ];
+    var MAP = [
+      ['ok', 'Tracks', '2,431', '2,431 tracks', '13 point to files that can’t be found. You can relink them afterwards.'],
+      ['ok', 'Playlists and folders', '58 · 9', 'Playlists and folders, same structure', ''],
+      ['warn', 'Intelligent playlists', '4', '3 smart playlists', '“Unplayed bangers” uses a condition Recrate doesn’t have, so it comes across as a normal playlist with its current tracks'],
+      ['ok', 'Hot cues', '11,204', 'Hot cues, same letters and colors', ''],
+      ['ok', 'Memory cues and loops', '6,388', 'Memory cues and loops', '212 tracks have more than 10. All are kept. You choose 10 for Device Library later'],
+      ['ok', 'Beat grids', '2,390', 'Beat grids', st.lockGrids ? 'Locked, so analysis won’t replace them' : 'Analysis may replace them'],
+      ['ok', 'Keys', '2,390', 'Keys in Camelot', 'Your notation setting'],
+      ['ok', 'My Tag', '4 · 31', 'Tag categories and tags', 'Colors and order are kept'],
+      ['ok', 'Ratings, colors, comments, play counts', '', 'Same fields', ''],
+      ['skip', 'Phrase analysis, history, sampler', '', 'Not imported', 'Recrate doesn’t use these. They stay in rekordbox']
+    ];
+    var CON = [
+      ['recrate', 'Keep Recrate’s cues and grids', 'rekordbox’s versions of these 24 tracks are ignored'],
+      ['rekordbox', 'Use rekordbox’s', 'Recrate’s cues and grids for these tracks are replaced'],
+      ['both', 'Keep both', 'rekordbox’s hot cues are added as memory cues where they differ']
+    ];
+    var PH = ['Reading the rekordbox library', 'Adding 2,407 new tracks', 'Merging 24 existing tracks', 'Creating 58 playlists and 3 smart playlists', 'Adding cues, beat grids and tags'];
+    var phaseAt = Math.min(PH.length - 1, Math.floor(st.pct / 20));
+    var go = function (k) { self.setState({ step: k }); };
+    var start = function () {
+      self.setState({ step: 'importing', pct: 0 });
+      if (self.timer) clearInterval(self.timer);
+      self.timer = setInterval(function () {
+        var p = self.state.pct + 5;
+        if (p >= 100) { clearInterval(self.timer); self.timer = null; self.setState({ pct: 100, step: 'done' }); }
+        else self.setState({ pct: p });
+      }, 110);
+    };
+    var conflictWord = { recrate: 'kept Recrate’s versions of 24 tracks', rekordbox: 'used rekordbox’s versions of 24 tracks', both: 'kept both cue sets for 24 tracks' }[st.conflict];
+    return {
+      yes: true,
+      steps: ORDER.map(function (k, i) {
+        var cur = i === at, past = i < at;
+        return {
+          n: past ? '✓' : String(i + 1), label: LABEL[k], current: cur ? 'step' : 'false',
+          color: cur ? '#fafafa' : '#a3a3a3',
+          ring: cur || past ? '#fafafa' : '#404040', fill: past ? '#fafafa' : 'transparent', numColor: past ? '#171717' : (cur ? '#fafafa' : '#a3a3a3'),
+          sep: i < ORDER.length - 1 ? 'block' : 'none'
+        };
+      }),
+      is: is,
+      sources: SRC.map(function (x) {
+        var on = st.source === x[0];
+        return { title: x[1], badge: x[2], desc: x[3], on: on, bg: on ? '#1e40af33' : 'transparent', ring: on ? 'inset 0 0 0 1px #1d4ed8' : 'inset 0 0 0 1px #262626', dotBorder: on ? '#fafafa' : '#525252', dot: on ? '#fafafa' : 'transparent', pick: function () { self.setState({ source: x[0] }); } };
+      }),
+      map: MAP.map(function (m) {
+        return { ok: m[0] === 'ok', warn: m[0] === 'warn', skip: m[0] === 'skip', statusLabel: m[0] === 'ok' ? 'Imported' : (m[0] === 'warn' ? 'Imported with changes' : 'Not imported'), color: m[0] === 'ok' ? '#4ade80' : (m[0] === 'warn' ? '#facc15' : '#a3a3a3'), from: m[1], count: m[2], to: m[3], note: m[4] };
+      }),
+      conflicts: CON.map(function (c) { return { label: c[1], desc: c[2], on: st.conflict === c[0], pick: function () { self.setState({ conflict: c[0] }); } }; }),
+      lockGrids: st.lockGrids, toggleLock: function () { self.setState({ lockGrids: !self.state.lockGrids }); },
+      pct: st.pct,
+      phaseLabel: PH[phaseAt],
+      phases: PH.map(function (p, i) {
+        var state = i < phaseAt ? ' · done' : (i === phaseAt ? '' : '');
+        return { label: p, state: state, color: i <= phaseAt ? '#fafafa' : '#a3a3a3', dot: i < phaseAt ? '#4ade80' : (i === phaseAt ? '#fafafa' : '#404040') };
+      }),
+      doneText: '2,407 new tracks added and ' + conflictWord + '. Nothing in rekordbox was changed.',
+      stats: [{ label: 'Tracks', value: '2,431' }, { label: 'Playlists', value: '58' }, { label: 'Smart playlists', value: '3' }, { label: 'Cues', value: '17,592' }],
+      showCancel: st.step === 'source' || st.step === 'review',
+      showBack: st.step === 'review',
+      showPrimary: st.step !== 'importing',
+      primaryLabel: st.step === 'source' ? 'Continue' : (st.step === 'review' ? 'Import library' : 'Done'),
+      footerNote: st.step === 'review' ? '2,407 new · 24 merged · 13 missing files' : (st.note || ''),
+      back: function () { go('source'); },
+      relink: function () { if (self.props.onRelink) self.props.onRelink(); else self.setState({ note: 'Opens Missing files, also in the Library sidebar' }); },
+      next: function () {
+        if (st.step === 'source') go('review');
+        else if (st.step === 'review') start();
+        else if (self.props.onClose) self.props.onClose('done');
+        else self.setState({ step: 'source', pct: 0 });
+      },
+      close: function () {
+        if (self.timer) { clearInterval(self.timer); self.timer = null; }
+        if (self.props.onClose) self.props.onClose(null); else self.setState({ step: 'review', pct: 0 });
+      }
+    };
+  }
+}
+</script>
+</body>
+</html>

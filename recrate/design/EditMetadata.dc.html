@@ -1,0 +1,146 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Recrate — Edit track info</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+</style>
+</helmet>
+<div role="dialog" aria-modal="true" aria-labelledby="em-title" style="width: 720px; height: 600px; box-sizing: border-box; display: flex; flex-direction: column; background: #0a0a0a; color: #fafafa; border: 1px solid #262626; border-radius: 8px; box-shadow: 0px 12px 24px -4px rgba(0,0,0,0.18); font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI Variable Text', 'Segoe UI', system-ui, sans-serif; -webkit-font-smoothing: antialiased; overflow: hidden;">
+
+<!-- Header -->
+<div style="height: 60px; flex-shrink: 0; display: flex; align-items: center; gap: 8px; padding: 0 12px 0 24px; border-bottom: 1px solid #262626;">
+<div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px;">
+<h2 id="em-title" style="margin: 0; font-size: 16px; line-height: 22px; font-weight: 600;">Edit track info</h2>
+<div style="font-size: 13px; color: #a3a3a3; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">{{heading}}</div>
+</div>
+<button type="button" class="ghost" onClick="{{requestClose}}" aria-label="Close" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; padding: 0; background: transparent; border: 0; border-radius: 6px; color: #fafafa;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg></button>
+</div>
+
+<!-- Body -->
+<div style="flex-grow: 1; min-height: 0; display: flex; gap: 24px; padding: 24px;">
+<div style="width: 144px; flex-shrink: 0; display: flex; flex-direction: column; gap: 8px;">
+<div aria-label="No artwork" role="img" style="width: 144px; height: 144px; display: flex; align-items: center; justify-content: center; background: #262626; border-radius: 6px; color: #a3a3a3;"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M6 12c0-1.7.7-3.2 1.8-4.2"></path><circle cx="12" cy="12" r="2"></circle><path d="M18 12c0 1.7-.7 3.2-1.8 4.2"></path></svg></div>
+<button type="button" class="btn" style="height: 28px; background: #262626; color: #fafafa; border: 0; border-radius: 6px; font-family: inherit; font-size: 13px;">Change artwork…</button>
+</div>
+
+<div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 12px;">
+<label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; font-weight: 500;"><span>Title <span style="font-weight: 400; color: #a3a3a3;">{{f.title.mark}}</span></span>
+<input type="text" value="{{f.title.value}}" onChange="{{f.title.set}}" style="height: 32px; box-sizing: border-box; padding: 0 10px; background: #0a0a0a; color: #fafafa; border: 1px solid #2f2f2f; border-radius: 6px; font-family: inherit; font-size: 14px;">
+</label>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px;">
+<label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; font-weight: 500;"><span>Artist <span style="font-weight: 400; color: #a3a3a3;">{{f.artist.mark}}</span></span>
+<input type="text" value="{{f.artist.value}}" onChange="{{f.artist.set}}" style="height: 32px; box-sizing: border-box; padding: 0 10px; background: #0a0a0a; color: #fafafa; border: 1px solid #2f2f2f; border-radius: 6px; font-family: inherit; font-size: 14px;">
+</label>
+<label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; font-weight: 500;"><span>Album <span style="font-weight: 400; color: #a3a3a3;">{{f.album.mark}}</span></span>
+<input type="text" value="{{f.album.value}}" onChange="{{f.album.set}}" style="height: 32px; box-sizing: border-box; padding: 0 10px; background: #0a0a0a; color: #fafafa; border: 1px solid #2f2f2f; border-radius: 6px; font-family: inherit; font-size: 14px;">
+</label>
+<label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; font-weight: 500;"><span>Label <span style="font-weight: 400; color: #a3a3a3;">{{f.label.mark}}</span></span>
+<input type="text" value="{{f.label.value}}" onChange="{{f.label.set}}" style="height: 32px; box-sizing: border-box; padding: 0 10px; background: #0a0a0a; color: #fafafa; border: 1px solid #2f2f2f; border-radius: 6px; font-family: inherit; font-size: 14px;">
+</label>
+<label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; font-weight: 500;"><span>Genre <span style="font-weight: 400; color: #a3a3a3;">{{f.genre.mark}}</span></span>
+<input type="text" value="{{f.genre.value}}" onChange="{{f.genre.set}}" style="height: 32px; box-sizing: border-box; padding: 0 10px; background: #0a0a0a; color: #fafafa; border: 1px solid #2f2f2f; border-radius: 6px; font-family: inherit; font-size: 14px;">
+</label>
+</div>
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px;">
+<label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; font-weight: 500;"><span>BPM <span style="font-weight: 400; color: #a3a3a3;">{{f.bpm.mark}}</span></span>
+<input type="text" inputmode="decimal" value="{{f.bpm.value}}" onChange="{{f.bpm.set}}" style="height: 32px; box-sizing: border-box; padding: 0 10px; background: #0a0a0a; color: #fafafa; border: 1px solid #2f2f2f; border-radius: 6px; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 14px; text-align: right;">
+</label>
+<label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; font-weight: 500;"><span>Key <span style="font-weight: 400; color: #a3a3a3;">{{f.key.mark}}</span></span>
+<input type="text" value="{{f.key.value}}" onChange="{{f.key.set}}" style="height: 32px; box-sizing: border-box; padding: 0 10px; background: #0a0a0a; color: #fafafa; border: 1px solid #2f2f2f; border-radius: 6px; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 14px;">
+</label>
+<label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; font-weight: 500;"><span>Year <span style="font-weight: 400; color: #a3a3a3;">{{f.year.mark}}</span></span>
+<input type="text" inputmode="numeric" value="{{f.year.value}}" onChange="{{f.year.set}}" style="height: 32px; box-sizing: border-box; padding: 0 10px; background: #0a0a0a; color: #fafafa; border: 1px solid #2f2f2f; border-radius: 6px; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 14px; text-align: right;">
+</label>
+</div>
+<label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; font-weight: 500;"><span>Comment <span style="font-weight: 400; color: #a3a3a3;">{{f.comment.mark}}</span></span>
+<textarea value="{{f.comment.value}}" onChange="{{f.comment.set}}" rows="3" style="height: 72px; box-sizing: border-box; padding: 8px 10px; resize: none; background: #0a0a0a; color: #fafafa; border: 1px solid #2f2f2f; border-radius: 6px; font-family: inherit; font-size: 14px;"></textarea>
+</label>
+<div style="display: flex; align-items: center; gap: 8px; font-size: 12px; color: #a3a3a3;">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path></svg>
+<span style="flex-grow: 1; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">{{fileLine}}</span>
+<span style="flex-shrink: 0;">{{tagStatus}}</span>
+</div>
+</div>
+</div>
+
+<!-- Footer -->
+<div style="height: 64px; flex-shrink: 0; display: flex; align-items: center; gap: 8px; padding: 0 24px; border-top: 1px solid #262626; font-size: 14px;">
+<sc-if value="{{editingFooter}}" hint-placeholder-val="{{true}}">
+<button type="button" class="btn" onClick="{{requestClose}}" style="height: 32px; padding: 0 12px; background: #262626; color: #fafafa; border: 0; border-radius: 6px; font-family: inherit; font-size: 14px;">Cancel</button>
+<div style="flex-grow: 1;"></div>
+<button type="button" class="btn" onClick="{{writeTags}}" style="height: 32px; display: flex; align-items: center; gap: 8px; padding: 0 12px; background: #262626; color: #fafafa; border: 0; border-radius: 6px; font-family: inherit; font-size: 14px;">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path><path d="M10 9H8"></path><path d="M16 13H8"></path><path d="M16 17H8"></path></svg>
+Save and write tags</button>
+<button type="button" onClick="{{save}}" style="height: 32px; padding: 0 16px; background: #fafafa; color: #171717; border: 0; border-radius: 6px; font-family: inherit; font-size: 14px; font-weight: 500;">Save</button>
+</sc-if>
+<sc-if value="{{confirming}}" hint-placeholder-val="{{false}}">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#facc15" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"></path><path d="M12 9v4"></path><path d="M12 17h.01"></path></svg>
+<span role="alert" style="flex-grow: 1;">{{discardQuestion}}</span>
+<button type="button" class="btn" onClick="{{keepEditing}}" style="height: 32px; padding: 0 12px; background: #262626; color: #fafafa; border: 0; border-radius: 6px; font-family: inherit; font-size: 14px;">Keep editing</button>
+<button type="button" onClick="{{discard}}" style="height: 32px; padding: 0 12px; background: #f871711f; color: #f87171; border: 0; border-radius: 6px; font-family: inherit; font-size: 14px; font-weight: 500;">Discard</button>
+</sc-if>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"track":{"editor":null},"onClose":{"editor":null},"$preview":{"width":720,"height":600}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    var t = props.track || { title: 'Low Tide Signal', artist: 'Marlow Ashe', genre: 'Deep House', bpm: '122.00', key: '8A', format: 'AIFF' };
+    var orig = { title: t.title, artist: t.artist, album: '', label: '', genre: t.genre, bpm: t.bpm, key: t.key, year: '2026', comment: '' };
+    this.state = { orig: orig, values: Object.assign({}, orig), confirming: false, format: t.format || 'AIFF', note: '' };
+  }
+  close(result, base) {
+    if (this.props.onClose) this.props.onClose(result);
+    else this.setState({ values: Object.assign({}, base || this.state.orig), confirming: false, note: result === 'cancel' ? '' : result });
+  }
+  renderVals() {
+    var self = this, st = this.state;
+    var names = ['title', 'artist', 'album', 'label', 'genre', 'bpm', 'key', 'year', 'comment'];
+    var changed = names.filter(function (n) { return st.values[n] !== st.orig[n]; });
+    var f = {};
+    names.forEach(function (n) {
+      f[n] = {
+        value: st.values[n],
+        mark: st.values[n] !== st.orig[n] ? '· Edited' : '',
+        set: function (e) {
+          var v = Object.assign({}, self.state.values);
+          v[n] = e.target.value;
+          self.setState({ values: v, confirming: false, note: '' });
+        }
+      };
+    });
+    var ext = { AIFF: 'aiff', FLAC: 'flac', WAV: 'wav', MP3: 'mp3' }[st.format] || 'aiff';
+    var tagName = st.format === 'FLAC' ? 'Vorbis comments' : 'ID3v2.4 tags';
+    var n = changed.length;
+    var commit = function (result) {
+      var saved = Object.assign({}, self.state.values);
+      self.setState({ orig: saved });
+      self.close(result, saved);
+    };
+    return {
+      f: f,
+      heading: st.orig.artist + ' — ' + st.orig.title,
+      fileLine: '~/Music/Recrate/' + st.orig.artist + '/' + st.orig.title + '.' + ext,
+      tagStatus: st.note ? st.note : (n ? n + (n === 1 ? ' unsaved change' : ' unsaved changes') : tagName + ' match Recrate'),
+      editingFooter: !st.confirming,
+      confirming: st.confirming,
+      discardQuestion: 'Discard ' + n + (n === 1 ? ' unsaved change?' : ' unsaved changes?'),
+      requestClose: function () { if (n) self.setState({ confirming: true }); else self.close('cancel'); },
+      keepEditing: function () { self.setState({ confirming: false }); },
+      discard: function () { self.close('cancel'); },
+      save: function () { commit('Saved in Recrate · file tags not updated'); },
+      writeTags: function () { commit('Saved and written to ' + tagName); }
+    };
+  }
+}
+</script>
+</body>
+</html>

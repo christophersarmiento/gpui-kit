@@ -1,0 +1,244 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Recrate — Set up KINGSTON</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+.btn:hover{background:#292929}
+.ghost:hover{background:#262626}
+.card:hover{background:#26262699}
+button:focus-visible,input:focus-visible{outline:2px solid #737373;outline-offset:1px}
+</style>
+</helmet>
+<div role="dialog" aria-modal="true" aria-labelledby="ds-title" style="width: 880px; height: 640px; box-sizing: border-box; display: flex; flex-direction: column; background: #0a0a0a; color: #fafafa; border: 1px solid #262626; border-radius: 8px; box-shadow: 0px 12px 24px -4px rgba(0,0,0,0.18); font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI Variable Text', 'Segoe UI', system-ui, sans-serif; -webkit-font-smoothing: antialiased; overflow: hidden;">
+
+<!-- Header -->
+<div style="height: 60px; flex-shrink: 0; display: flex; align-items: center; gap: 8px; padding: 0 12px 0 24px; border-bottom: 1px solid #262626;">
+<div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px;">
+<h2 id="ds-title" style="margin: 0; font-size: 16px; line-height: 22px; font-weight: 600;">Set up KINGSTON</h2>
+<div style="font-size: 13px; color: #a3a3a3; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">Choose the players you’ll use so Recrate writes a library they can read</div>
+</div>
+<button type="button" class="ghost" onClick="{{close}}" aria-label="Close" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; padding: 0; background: transparent; border: 0; border-radius: 6px; color: #fafafa;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg></button>
+</div>
+
+<!-- Body -->
+<div style="flex-grow: 1; min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr) 400px; gap: 24px; padding: 24px;">
+
+<!-- Left column -->
+<div style="min-width: 0; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; padding-right: 4px;">
+
+<!-- Device card -->
+<section aria-label="Detected device" style="display: flex; flex-direction: column; border: 1px solid #262626; border-radius: 6px;">
+<div style="display: flex; align-items: flex-start; gap: 12px; padding: 12px;">
+<div aria-hidden="true" style="width: 36px; height: 36px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: #262626; border-radius: 6px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="7" r="1"></circle><circle cx="4" cy="20" r="1"></circle><path d="M4.7 19.3 19 5"></path><path d="m21 3-3 1 2 2Z"></path><path d="M9.26 7.68 5 12l2 5"></path><path d="m10 14 5 2 3.5-3.5"></path><path d="m18 12 1-1 1 1-1 1Z"></path></svg></div>
+<div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px;">
+<span style="font-size: 14px; font-weight: 600;">KINGSTON</span>
+<span style="font-size: 13px; color: #a3a3a3; font-variant-numeric: tabular-nums;">USB drive · 64 GB (58.9 GB usable) · FAT32</span>
+<span style="font-size: 12px; color: #a3a3a3;">Mounted at <span style="font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace;">/Volumes/KINGSTON</span></span>
+</div>
+</div>
+<div style="display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-top: 1px solid #262626; font-size: 13px;">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0; color: #a3a3a3;"><path d="m16 6 4 14"></path><path d="M12 6v14"></path><path d="M8 8v12"></path><path d="M4 4v16"></path></svg>
+<span style="color: #a3a3a3;">Already on it</span>
+<span style="flex-grow: 1; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-variant-numeric: tabular-nums;">Device Library from rekordbox 6 · 3 playlists · 137 tracks</span>
+</div>
+<div style="display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-top: 1px solid #262626; font-size: 13px;">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0;"><path d="M20 6 9 17l-5-5"></path></svg>
+<span>Library format recognized</span>
+<span style="color: #a3a3a3;">Recrate can read and safely add to it</span>
+</div>
+<div style="display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-top: 1px solid #262626; font-size: 13px;">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0;"><path d="M20 6 9 17l-5-5"></path></svg>
+<span>FAT32</span>
+<span style="flex-grow: 1; color: #a3a3a3;">Supported by the players Recrate is tested with</span>
+<button type="button" class="ghost" onClick="{{togglePlayers}}" aria-expanded="{{showPlayers}}" style="height: 24px; padding: 0 8px; background: transparent; color: #fafafa; border: 0; border-radius: 6px; font-family: inherit; font-size: 12px;">{{playersLabel}}</button>
+</div>
+<sc-if value="{{showPlayers}}" hint-placeholder-val="{{false}}">
+<div style="padding: 8px 12px 12px; border-top: 1px solid #262626; display: flex; flex-direction: column; gap: 6px;">
+<div role="table" aria-label="Tested players" style="display: flex; flex-direction: column; border: 1px solid #262626; border-radius: 6px; font-size: 12px;">
+<div role="row" style="height: 26px; display: grid; grid-template-columns: minmax(0, 1fr) 90px 60px 60px; column-gap: 8px; align-items: center; padding: 0 10px; background: #17171766; border-bottom: 1px solid #262626; color: #a3a3a3; font-weight: 500;"><span role="columnheader">Player</span><span role="columnheader">Firmware</span><span role="columnheader">Library</span><span role="columnheader">Plus</span></div>
+<div role="row" style="height: 26px; display: grid; grid-template-columns: minmax(0, 1fr) 90px 60px 60px; column-gap: 8px; align-items: center; padding: 0 10px; border-bottom: 1px solid #262626b3;"><span role="cell">[Player model]</span><span role="cell">[x.yz]</span><span role="cell">[Yes/No]</span><span role="cell">[Yes/No]</span></div>
+<div role="row" style="height: 26px; display: grid; grid-template-columns: minmax(0, 1fr) 90px 60px 60px; column-gap: 8px; align-items: center; padding: 0 10px;"><span role="cell">[Player model]</span><span role="cell">[x.yz]</span><span role="cell">[Yes/No]</span><span role="cell">[Yes/No]</span></div>
+</div>
+<span style="font-size: 12px; color: #a3a3a3;">Tested with Recrate [version] on FAT32 drives. Players not listed may still work.</span>
+</div>
+</sc-if>
+</section>
+
+<!-- Players -->
+<fieldset style="margin: 0; padding: 0; border: 0; min-width: 0; display: flex; flex-direction: column; gap: 8px;">
+<legend style="padding: 0 0 8px; font-size: 14px; font-weight: 600;">Which players will you use?</legend>
+<sc-for list="{{players}}" as="p" hint-placeholder-count="3">
+<button type="button" class="card" aria-pressed="{{p.pressed}}" onClick="{{p.pick}}" style="display: grid; grid-template-columns: 16px minmax(0, 1fr) auto; column-gap: 12px; row-gap: 2px; align-items: center; padding: 10px 12px; background: {{p.bg}}; box-shadow: {{p.ring}}; color: #fafafa; border: 0; border-radius: 6px; font-family: inherit; text-align: left;">
+<span aria-hidden="true" style="width: 16px; height: 16px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; border-radius: 9999px; border: 1px solid {{p.dotBorder}};"><span style="width: 8px; height: 8px; border-radius: 9999px; background: {{p.dot}};"></span></span>
+<span style="font-size: 14px; font-weight: 500;">{{p.title}}</span>
+<span style="font-size: 12px; color: #a3a3a3;">{{p.writes}}</span>
+<span></span>
+<span style="grid-column: span 2; font-size: 13px; color: #a3a3a3; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">{{p.examples}}</span>
+</button>
+</sc-for>
+<div style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: #a3a3a3;">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg>
+<span>Examples, not a complete list. Check your player’s manual for supported formats.</span>
+</div>
+</fieldset>
+</div>
+
+<!-- Right column -->
+<div style="min-width: 0; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 16px; padding-right: 4px;">
+
+<!-- Compatibility -->
+<section aria-labelledby="cp-title" style="display: flex; flex-direction: column; gap: 8px;">
+<div style="display: flex; align-items: baseline; gap: 8px;">
+<h3 id="cp-title" style="margin: 0; flex-grow: 1; font-size: 14px; font-weight: 600;">What players will see</h3>
+</div>
+<div role="table" aria-labelledby="cp-title" style="display: flex; flex-direction: column; border: 1px solid #262626; border-radius: 6px; overflow: hidden; font-size: 13px;">
+<div role="row" style="height: 28px; display: grid; grid-template-columns: {{gridCols}}; column-gap: 12px; align-items: center; padding: 0 12px; background: #17171766; border-bottom: 1px solid #262626; font-size: 12px; font-weight: 500; color: #a3a3a3;">
+<span role="columnheader">Capability</span>
+<sc-for list="{{cols}}" as="c" hint-placeholder-count="2">
+<span role="columnheader">{{c.name}}</span>
+</sc-for>
+</div>
+<sc-for list="{{rows}}" as="r" hint-placeholder-count="5">
+<div role="row" style="min-height: 32px; box-sizing: border-box; display: grid; grid-template-columns: {{gridCols}}; column-gap: 12px; align-items: start; padding: 7px 12px; border-bottom: 1px solid #262626b3;">
+<span role="rowheader" style="color: #a3a3a3;">{{r.label}}</span>
+<sc-for list="{{r.cells}}" as="cell" hint-placeholder-count="2">
+<span role="cell" style="display: flex; align-items: flex-start; gap: 6px;">
+<sc-if value="{{cell.warn}}" hint-placeholder-val="{{false}}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#facc15" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0; margin-top: 2px;"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"></path><path d="M12 9v4"></path><path d="M12 17h.01"></path></svg></sc-if>
+<span>{{cell.text}}</span>
+</span>
+</sc-for>
+</div>
+</sc-for>
+</div>
+<div style="font-size: 12px; color: #a3a3a3;">{{formatNote}}</div>
+</section>
+
+<!-- Existing library -->
+<fieldset style="margin: 0; padding: 0; border: 0; min-width: 0; display: flex; flex-direction: column; gap: 8px;">
+<legend style="padding: 0 0 8px; font-size: 14px; font-weight: 600;">Existing rekordbox library</legend>
+<label style="display: grid; grid-template-columns: 16px minmax(0, 1fr); column-gap: 8px; align-items: start; font-size: 14px;">
+<input type="radio" name="existing" checked="{{keepOn}}" onChange="{{pickKeep}}" style="width: 16px; height: 16px; margin: 2px 0 0; accent-color: #fafafa;">
+<span>Keep rekordbox’s playlists and add Recrate’s alongside</span>
+</label>
+<label style="display: grid; grid-template-columns: 16px minmax(0, 1fr); column-gap: 8px; align-items: start; font-size: 14px;">
+<input type="radio" name="existing" checked="{{replaceOn}}" onChange="{{pickReplace}}" style="width: 16px; height: 16px; margin: 2px 0 0; accent-color: #fafafa;">
+<span>Replace it</span>
+</label>
+<sc-if value="{{keepOn}}" hint-placeholder-val="{{true}}">
+<ul aria-label="What keeping means" style="margin: 0 0 0 24px; padding: 10px 12px 10px 28px; display: flex; flex-direction: column; gap: 6px; border: 1px solid #262626; border-radius: 6px; font-size: 13px; color: #a3a3a3;">
+<li><span style="color: #fafafa;">The drive has one shared library, so adding playlists means rewriting it.</span> rekordbox’s 3 playlists, 137 tracks and their cues are carried over unchanged, and Recrate never removes them.</li>
+<li><span style="color: #fafafa;">Before every export, each library and analysis file Recrate will change is backed up.</span> Afterwards the new library is read back and compared. If anything of rekordbox’s is missing or different, the export is marked failed and the backup is put back.</li>
+<li><span style="color: #fafafa;">If the drive is unplugged while its library is being written, it needs recovery.</span> Recrate can only restore the backup once the drive is connected again, and shows the drive as needing recovery until then.</li>
+<li><span style="color: #fafafa;">Recrate only writes library versions it recognizes.</span> If a future rekordbox changes the format, Recrate won’t write to the drive until it supports that version.</li>
+<li>Recrate’s playlists are marked as Recrate’s, so Export only lists and removes those. The marker is a convenience, not what keeps rekordbox’s data safe.</li>
+<li>If rekordbox exports to this drive later, it may rewrite the library. Export from Recrate again afterwards.</li>
+</ul>
+</sc-if>
+<sc-if value="{{replaceOn}}" hint-placeholder-val="{{false}}">
+<div role="alert" style="display: flex; align-items: flex-start; gap: 8px; margin-left: 24px; font-size: 13px; color: #f87171;">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0; margin-top: 2px;"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"></path><path d="M12 9v4"></path><path d="M12 17h.01"></path></svg>
+<span>The next export deletes the rekordbox playlists and their 137 tracks from KINGSTON, after backing up the drive’s library. rekordbox keeps its own copy on your computer.</span>
+</div>
+</sc-if>
+</fieldset>
+</div>
+</div>
+
+<!-- Footer -->
+<div style="height: 64px; flex-shrink: 0; display: flex; align-items: center; gap: 8px; padding: 0 24px; border-top: 1px solid #262626; font-size: 14px;">
+<button type="button" class="btn" onClick="{{close}}" style="height: 32px; padding: 0 12px; background: #262626; color: #fafafa; border: 0; border-radius: 6px; font-family: inherit; font-size: 14px;">Cancel</button>
+<div role="status" style="flex-grow: 1; min-width: 0; padding: 0 8px; font-size: 13px; color: #a3a3a3; text-align: right; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">{{footerNote}}</div>
+<button type="button" onClick="{{save}}" style="height: 32px; padding: 0 16px; background: #fafafa; color: #171717; border: 0; border-radius: 6px; font-family: inherit; font-size: 14px; font-weight: 500;">Save device setup</button>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"onClose":{"editor":null},"$preview":{"width":880,"height":640}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { players: 'both', existing: 'keep', saved: null, showPlayers: false };
+  }
+  renderVals() {
+    var self = this, st = this.state;
+    var P = {
+      older: { title: 'Older players', examples: 'For example CDJ-2000NXS2, XDJ-1000MK2', writes: 'Writes Device Library', formats: ['legacy'] },
+      newer: { title: 'Newer players', examples: 'For example CDJ-3000X', writes: 'Writes Device Library Plus', formats: ['plus'] },
+      both: { title: 'Both / not sure', examples: 'Uses more space on the drive and exports take longer', writes: 'Writes both libraries', formats: ['legacy', 'plus'] }
+    };
+    var F = {
+      legacy: {
+        name: 'Device Library',
+        format: { text: 'Device Library' },
+        hot: { text: '8 per track' },
+        memory: { text: 'Up to 10 per track · you choose which', warn: true },
+        tags: { text: 'First 4 categories' },
+        colors: { text: 'Exported' }
+      },
+      plus: {
+        name: 'Device Library Plus',
+        format: { text: 'Device Library Plus' },
+        hot: { text: '8 per track' },
+        memory: { text: 'All written · players may show fewer' },
+        tags: { text: 'First 4 categories' },
+        colors: { text: 'Exported' }
+      }
+    };
+    var chosen = P[st.players].formats;
+    var labels = [['format', 'Library format'], ['hot', 'Hot cues'], ['memory', 'Memory cues'], ['tags', 'Tags as My Tag'], ['colors', 'Track colors']];
+    var rows = labels.map(function (l) {
+      return {
+        label: l[1],
+        cells: chosen.map(function (f) { var c = F[f][l[0]]; return { text: c.text, warn: !!c.warn }; })
+      };
+    });
+    var players = ['older', 'newer', 'both'].map(function (k) {
+      var on = st.players === k, p = P[k];
+      return {
+        title: p.title, examples: p.examples, writes: p.writes,
+        pressed: on ? 'true' : 'false',
+        bg: on ? '#1e40af33' : 'transparent',
+        ring: on ? 'inset 0 0 0 1px #1d4ed8' : 'inset 0 0 0 1px #262626',
+        dotBorder: on ? '#fafafa' : '#525252',
+        dot: on ? '#fafafa' : 'transparent',
+        pick: function () { self.setState({ players: k, saved: null }); }
+      };
+    });
+    var formatNote = chosen.length === 2
+      ? 'Newer players read Device Library Plus. Older players read Device Library.'
+      : (chosen[0] === 'legacy' ? 'Some newer players can also read this library. Check your player’s manual.' : 'Older players won’t see this library.');
+    return {
+      players: players,
+      showPlayers: st.showPlayers, playersLabel: st.showPlayers ? 'Hide players' : 'Supported players',
+      togglePlayers: function () { self.setState({ showPlayers: !self.state.showPlayers }); },
+      cols: chosen.map(function (f) { return { name: F[f].name }; }),
+      gridCols: chosen.length === 2 ? '96px repeat(2, minmax(0, 1fr))' : '96px minmax(0, 1fr)',
+      rows: rows,
+      formatNote: formatNote,
+      keepOn: st.existing === 'keep',
+      replaceOn: st.existing === 'replace',
+      pickKeep: function () { self.setState({ existing: 'keep', saved: null }); },
+      pickReplace: function () { self.setState({ existing: 'replace', saved: null }); },
+      footerNote: st.saved ? st.saved : '',
+      save: function () {
+        var note = 'Saved · next export writes ' + (chosen.length === 2 ? 'both libraries' : F[chosen[0]].name) +
+          (st.existing === 'replace' ? ' and replaces the rekordbox library' : '');
+        if (self.props.onClose) self.props.onClose({ players: st.players, existing: st.existing });
+        else self.setState({ saved: note });
+      },
+      close: function () {
+        if (self.props.onClose) self.props.onClose(null);
+        else self.setState({ players: 'both', existing: 'keep', saved: null });
+      }
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,505 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Recrate — Cue editor</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0;background:#0a0a0a;color:#fafafa;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI Variable Text","Segoe UI",system-ui,"Noto Sans SC",sans-serif;-webkit-font-smoothing:antialiased}
+button,input{font:inherit;color:inherit}
+a{color:#fafafa;text-decoration:none}a:hover{color:#ffffff}
+.ghost:hover{background:#262626}
+.btn:hover{background:#292929}
+.pad:not(.sel):hover{background:#171717}
+.pad.sel{background:#1e40af33;border-color:#1d4ed8}
+.seg.on{background:#0a0a0a;color:#fafafa;box-shadow:0 1px 2px 0 rgba(0,0,0,0.18)}
+.seg:not(.on):hover{color:#fafafa}
+.mrow:not(.sel):hover{background:#26262699}
+.mrow button{color:inherit;font-family:inherit}
+.mrow.sel{background:#1e40af33;box-shadow:inset 0 0 0 1px #1d4ed8}
+button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid #737373;outline-offset:1px}
+input::placeholder{color:#a3a3a3}
+</style>
+</helmet>
+<div style="width: 1440px; height: 900px; display: flex; flex-direction: column; background: #0a0a0a; color: #fafafa; overflow: hidden;">
+
+<!-- Title bar -->
+<div style="height: 36px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: #171717; border-bottom: 1px solid #262626; font-size: 13px; color: #a3a3a3;">
+<span><span style="color: #fafafa; font-weight: 500;">Low Tide Signal</span> · Recrate</span>
+</div>
+
+<!-- Toolbar -->
+<div style="height: 48px; flex-shrink: 0; display: flex; align-items: center; gap: 8px; padding: 0 24px 0 16px; border-bottom: 1px solid #262626;">
+<a href="Main.dc.html" class="ghost" style="height: 32px; display: flex; align-items: center; gap: 4px; padding: 0 10px 0 6px; border-radius: 6px; font-size: 14px;">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"></path></svg>
+Warehouse — Oct 2026</a>
+<div style="flex-grow: 1;"></div>
+<span style="font-size: 13px; color: #a3a3a3;">{{dirtyLabel}}</span>
+<button type="button" class="btn" style="height: 32px; padding: 0 12px; background: #262626; border: 0; border-radius: 6px; font-size: 14px;">Revert</button>
+<button type="button" style="height: 32px; padding: 0 14px; background: #fafafa; color: #171717; border: 0; border-radius: 6px; font-size: 14px; font-weight: 500;">Save cues</button>
+</div>
+
+<div style="flex-grow: 1; min-height: 0; display: flex; flex-direction: column; gap: 16px; padding: 16px 24px 24px;">
+
+<!-- Track header -->
+<div style="display: flex; align-items: center; gap: 12px;">
+<div aria-hidden="true" style="width: 44px; height: 44px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: #262626; border-radius: 6px; color: #a3a3a3;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M6 12c0-1.7.7-3.2 1.8-4.2"></path><circle cx="12" cy="12" r="2"></circle><path d="M18 12c0 1.7-.7 3.2-1.8 4.2"></path></svg></div>
+<div style="flex-grow: 1; display: flex; flex-direction: column; gap: 2px;">
+<h1 style="margin: 0; font-size: 18px; line-height: 24px; font-weight: 600;">Low Tide Signal</h1>
+<div style="font-size: 13px; color: #a3a3a3;">Marlow Ashe · Deep House · AIFF · 1,411 kbps</div>
+</div>
+<dl style="margin: 0; display: flex; gap: 24px;">
+<div style="display: flex; flex-direction: column; gap: 2px;"><dt style="font-size: 12px; color: #a3a3a3;">BPM</dt><dd style="margin: 0; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 14px;">122.00</dd></div>
+<div style="display: flex; flex-direction: column; gap: 2px;"><dt style="font-size: 12px; color: #a3a3a3;">Key</dt><dd style="margin: 0; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 14px;">8A · A minor</dd></div>
+<div style="display: flex; flex-direction: column; gap: 2px;"><dt style="font-size: 12px; color: #a3a3a3;">Length</dt><dd style="margin: 0; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 14px;">6:42</dd></div>
+<div style="display: flex; flex-direction: column; gap: 2px;"><dt style="font-size: 12px; color: #a3a3a3;">First downbeat</dt><dd style="margin: 0; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 14px;">0:00.086</dd></div>
+</dl>
+</div>
+
+<!-- Overview -->
+<div style="position: relative; height: 52px; flex-shrink: 0; border: 1px solid #262626; border-radius: 6px; overflow: hidden;">
+<svg width="1390" height="50" viewBox="0 0 1390 50" role="img" aria-label="Whole track waveform" style="position: absolute; left: 0; top: 0;">
+<path d="{{overview.low}}" fill="#1d4ed8"></path>
+<path d="{{overview.mid}}" fill="#3b82f6"></path>
+<path d="{{overview.high}}" fill="#93c5fd"></path>
+</svg>
+<sc-for list="{{hotTicks}}" as="m" hint-placeholder-count="6">
+<span style="position: absolute; top: 0; height: 30px; left: {{m.x}}px; width: 2px; background: {{m.color}};"></span>
+</sc-for>
+<sc-for list="{{memTicks}}" as="m" hint-placeholder-count="5">
+<svg width="10" height="8" viewBox="0 0 12 10" aria-hidden="true" style="position: absolute; bottom: 1px; left: {{m.x}}px; margin-left: -4px;"><path d="M6 0 12 10H0Z" fill="{{m.color}}"></path></svg>
+</sc-for>
+<div aria-hidden="true" style="position: absolute; top: 0; bottom: 0; left: 217px; width: 109px; background: #fafafa14; border-left: 1px solid #fafafa; border-right: 1px solid #fafafa;"></div>
+</div>
+
+<!-- Zoomed waveform -->
+<div style="position: relative; height: 236px; flex-shrink: 0; border: 1px solid #262626; border-radius: 6px; overflow: hidden; background: #0a0a0a;">
+<div style="position: absolute; left: 0; right: 0; top: 0; height: 22px; border-bottom: 1px solid #262626; background: #171717;"></div>
+<sc-for list="{{barLabels}}" as="b" hint-placeholder-count="16">
+<span style="position: absolute; top: 4px; left: {{b.x}}px; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 11px; color: #a3a3a3;">{{b.n}}</span>
+</sc-for>
+<sc-for list="{{loops}}" as="l" hint-placeholder-count="1">
+<div aria-hidden="true" style="position: absolute; top: 22px; bottom: 18px; left: {{l.x}}px; width: {{l.w}}px; background: {{l.color}}; border-right: 1px solid {{l.edge}};"></div>
+</sc-for>
+<svg width="1390" height="194" viewBox="0 0 1390 194" role="img" aria-label="Bars 33 to 48, zoomed waveform with beat grid" style="position: absolute; left: 0; top: 22px;">
+<path d="{{grid.beat}}" stroke="#fafafa" stroke-opacity="0.08" stroke-width="1"></path>
+<path d="{{zoom.low}}" fill="#1d4ed8"></path>
+<path d="{{zoom.mid}}" fill="#3b82f6"></path>
+<path d="{{zoom.high}}" fill="#93c5fd"></path>
+<path d="{{grid.bar}}" stroke="#fafafa" stroke-opacity="0.32" stroke-width="1"></path>
+</svg>
+<sc-for list="{{zoomFlags}}" as="f" hint-placeholder-count="2">
+<div style="position: absolute; top: 22px; bottom: 18px; left: {{f.x}}px; display: flex; flex-direction: column; pointer-events: none;">
+<span style="display: flex; align-items: center; gap: 4px; height: 18px; padding: 0 6px 0 4px; border-radius: 0 3px 3px 0; background: {{f.color}}; color: #0a0a0a; font-size: 11px; font-weight: 600; white-space: nowrap;">{{f.letter}} · {{f.name}}</span>
+<span style="flex-grow: 1; width: 2px; background: {{f.color}};"></span>
+</div>
+</sc-for>
+<div aria-hidden="true" style="position: absolute; top: 22px; bottom: 0; left: 522px; width: 2px; margin-left: -1px; background: #fafafa;"></div>
+<div style="position: absolute; left: 0; right: 0; bottom: 0; height: 18px; border-top: 1px solid #262626;"></div>
+<sc-for list="{{memMarks}}" as="m" hint-placeholder-count="2">
+<div aria-hidden="true" style="position: absolute; bottom: 0; left: {{m.x}}px; height: 18px; display: flex; align-items: center; gap: 4px; margin-left: -6px; font-size: 11px; color: #fafafa; white-space: nowrap;"><svg width="12" height="10" viewBox="0 0 12 10"><path d="M6 0 12 10H0Z" fill="{{m.color}}"></path></svg>{{m.name}}</div>
+</sc-for>
+</div>
+
+<!-- Transport and grid -->
+<div style="height: 32px; flex-shrink: 0; display: flex; align-items: center; gap: 8px;">
+<button type="button" onClick="{{togglePlay}}" aria-pressed="{{playing}}" aria-label="{{playLabel}}" style="width: 40px; height: 32px; display: flex; align-items: center; justify-content: center; padding: 0; background: #fafafa; color: #171717; border: 0; border-radius: 6px;">
+<sc-if value="{{playing}}" hint-placeholder-val="{{false}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><rect x="14" y="4" width="4" height="16" rx="1"></rect><rect x="6" y="4" width="4" height="16" rx="1"></rect></svg></sc-if>
+<sc-if value="{{paused}}" hint-placeholder-val="{{true}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><polygon points="6 3 20 12 6 21 6 3"></polygon></svg></sc-if>
+</button>
+<button type="button" class="btn" style="height: 32px; padding: 0 12px; background: #262626; border: 0; border-radius: 6px; font-size: 14px; font-weight: 500;">Cue</button>
+<button type="button" class="ghost" aria-label="Back 4 beats" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; padding: 0; background: transparent; border: 0; border-radius: 6px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m11 17-5-5 5-5"></path><path d="m18 17-5-5 5-5"></path></svg></button>
+<button type="button" class="ghost" aria-label="Forward 4 beats" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; padding: 0; background: transparent; border: 0; border-radius: 6px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 17 5-5-5-5"></path><path d="m13 17 5-5-5-5"></path></svg></button>
+<div style="display: flex; align-items: baseline; gap: 8px; padding: 0 8px;">
+<span style="font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 16px; font-variant-numeric: tabular-nums;">1:14.840</span>
+<span style="font-size: 13px; color: #a3a3a3;">Bar 39.1</span>
+</div>
+<div style="flex-grow: 1;"></div>
+
+<span style="font-size: 13px; color: #a3a3a3;">Zoom</span>
+<div role="group" aria-label="Zoom" style="display: flex; padding: 2px; gap: 2px; background: #171717; border-radius: 6px;">
+<sc-for list="{{zooms}}" as="z" hint-placeholder-count="4">
+<button type="button" class="{{z.cls}}" aria-pressed="{{z.on}}" onClick="{{z.pick}}" style="height: 28px; padding: 0 10px; background: transparent; border: 0; border-radius: 4px; font-size: 13px; color: #a3a3a3;">{{z.label}}</button>
+</sc-for>
+</div>
+
+<div style="width: 1px; height: 20px; margin: 0 8px; background: #262626;"></div>
+
+<button type="button" role="switch" aria-checked="{{quantize}}" onClick="{{toggleQuantize}}" style="height: 32px; display: flex; align-items: center; gap: 8px; padding: 0 4px; background: transparent; border: 0; font-size: 14px;">
+<span style="width: 32px; height: 18px; box-sizing: border-box; padding: 2px; display: flex; justify-content: {{qJustify}}; background: {{qTrack}}; border-radius: 9999px;"><span style="width: 14px; height: 14px; border-radius: 9999px; background: {{qThumb}}; box-shadow: 0 1px 2px 0 rgba(0,0,0,0.18);"></span></span>
+Quantize</button>
+
+<div style="width: 1px; height: 20px; margin: 0 8px; background: #262626;"></div>
+
+<label style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: #a3a3a3;">Grid BPM
+<input type="text" value="122.00" inputmode="decimal" style="width: 72px; height: 32px; box-sizing: border-box; padding: 0 8px; background: #0a0a0a; border: 1px solid #2f2f2f; border-radius: 6px; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 14px; color: #fafafa; text-align: right;">
+</label>
+<button type="button" class="btn" style="height: 32px; padding: 0 12px; background: #262626; border: 0; border-radius: 6px; font-size: 14px;">Tap</button>
+<button type="button" class="btn" style="height: 32px; padding: 0 12px; background: #262626; border: 0; border-radius: 6px; font-size: 14px;">Set downbeat here</button>
+</div>
+
+<!-- Cues -->
+<div style="flex-grow: 1; min-height: 0; display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr) 340px; gap: 24px;">
+
+<section aria-labelledby="hc-title" style="display: flex; flex-direction: column; gap: 8px; min-height: 0;">
+<div style="height: 24px; display: flex; align-items: center; gap: 8px;">
+<span aria-hidden="true" style="width: 16px; height: 16px; display: flex; align-items: center; justify-content: center; border-radius: 3px; background: #fafafa; color: #0a0a0a; font-size: 10px; font-weight: 700;">A</span>
+<h2 id="hc-title" style="margin: 0; font-size: 14px; font-weight: 600;">Hot cues</h2>
+<span style="flex-grow: 1; font-size: 12px; color: #a3a3a3;">Pads that jump and play · keys 1–8</span>
+<span style="font-size: 12px; color: #a3a3a3; font-variant-numeric: tabular-nums;">{{hotCount}} of 8 pads</span>
+</div>
+<div style="flex-grow: 1; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); grid-template-rows: repeat(2, minmax(0, 1fr)); gap: 8px;">
+<sc-for list="{{pads}}" as="p" hint-placeholder-count="8">
+<button type="button" class="{{p.cls}}" aria-pressed="{{p.selected}}" onClick="{{p.pick}}" style="display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; gap: 4px; padding: 10px; box-sizing: border-box; background: transparent; border: 1px solid {{p.border}}; border-style: {{p.borderStyle}}; border-radius: 6px; text-align: left;">
+<span style="display: flex; align-items: center; gap: 8px; width: 100%;">
+<span style="width: 20px; height: 20px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; border-radius: 3px; background: {{p.color}}; color: {{p.letterColor}}; font-size: 12px; font-weight: 700;">{{p.letter}}</span>
+<span style="flex-grow: 1; min-width: 0; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: 13px; font-weight: 500; color: {{p.nameColor}};">{{p.name}}</span>
+<sc-if value="{{p.isLoop}}" hint-placeholder-val="{{false}}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a3a3a3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-label="Loop"><path d="m17 2 4 4-4 4"></path><path d="M3 11v-1a4 4 0 0 1 4-4h14"></path><path d="m7 22-4-4 4-4"></path><path d="M21 13v1a4 4 0 0 1-4 4H3"></path></svg></sc-if>
+</span>
+<span style="font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 12px; color: #a3a3a3;">{{p.meta}}</span>
+</button>
+</sc-for>
+</div>
+</section>
+
+<section aria-labelledby="mc-title" style="display: flex; flex-direction: column; gap: 8px; min-height: 0;">
+<div style="height: 24px; display: flex; align-items: center; gap: 8px;">
+<svg width="14" height="12" viewBox="0 0 12 10" aria-hidden="true"><path d="M6 0 12 10H0Z" fill="#fafafa"></path></svg>
+<h2 id="mc-title" style="margin: 0; font-size: 14px; font-weight: 600;">Memory cues</h2>
+<span style="flex-grow: 1; min-width: 0; display: flex; align-items: center; gap: 4px; font-size: 12px; color: {{memCapColor}}; font-variant-numeric: tabular-nums; white-space: nowrap; overflow: hidden;"><sc-if value="{{memOver}}" hint-placeholder-val="{{false}}"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="#facc15" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"></path><path d="M12 9v4"></path><path d="M12 17h.01"></path></svg></sc-if><span title="{{memTitle}}" style="overflow: hidden; text-overflow: ellipsis;">{{memCaption}}</span></span>
+<button type="button" class="ghost" onClick="{{addMemory}}" title="Add memory cue at playhead (M)" style="height: 24px; display: flex; align-items: center; gap: 4px; padding: 0 8px; background: transparent; border: 0; border-radius: 6px; font-size: 13px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg>Add at playhead</button>
+</div>
+<div style="flex-grow: 1; min-height: 0; border: 1px solid #262626; border-radius: 6px; overflow: hidden; display: flex; flex-direction: column;">
+<div style="height: 28px; flex-shrink: 0; display: grid; grid-template-columns: 20px 16px 76px 44px minmax(0, 1fr) 64px; column-gap: 10px; align-items: center; padding: 0 12px; background: #17171766; border-bottom: 1px solid #262626; font-size: 12px; font-weight: 500; color: #a3a3a3;">
+<span title="Included in Device Library (up to 10)">DL</span><span></span><span>Position</span><span>Bar</span><span>Name</span><span style="text-align: right;">Export</span>
+</div>
+<div style="flex-grow: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column;">
+<sc-for list="{{memory}}" as="m" hint-placeholder-count="5">
+<div class="{{m.cls}}" style="height: 32px; flex-shrink: 0; display: grid; grid-template-columns: 20px minmax(0, 1fr); column-gap: 10px; align-items: center; padding: 0 0 0 12px; border-bottom: 1px solid #262626b3;">
+<input type="checkbox" checked="{{m.dl}}" disabled="{{m.dlLocked}}" onChange="{{m.toggleDl}}" aria-label="Include {{m.name}} in Device Library" title="{{m.dlTitle}}" style="width: 16px; height: 16px; margin: 0; accent-color: #fafafa;">
+<button type="button" aria-pressed="{{m.selected}}" onClick="{{m.pick}}" style="height: 32px; display: grid; grid-template-columns: 16px 76px 44px minmax(0, 1fr) 64px; column-gap: 10px; align-items: center; padding: 0 12px 0 0; background: transparent; border: 0; text-align: left; font-size: 13px;">
+<svg width="12" height="10" viewBox="0 0 12 10" aria-hidden="true"><path d="M6 0 12 10H0Z" fill="{{m.color}}"></path></svg>
+<span style="font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 12px; font-variant-numeric: tabular-nums;">{{m.time}}</span>
+<span style="font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 12px; color: #a3a3a3;">{{m.bar}}</span>
+<span style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">{{m.name}}</span>
+<span style="text-align: right; font-size: 12px; color: #a3a3a3; white-space: nowrap;">{{m.len}}</span>
+</button>
+</div>
+</sc-for>
+</div>
+</div>
+</section>
+
+<section aria-labelledby="ins-title" style="display: flex; flex-direction: column; gap: 12px; padding: 16px; box-sizing: border-box; border: 1px solid #262626; border-radius: 8px; background: #0a0a0a; min-height: 0;">
+<div style="display: flex; align-items: center; gap: 8px;">
+<sc-if value="{{ins.isHot}}" hint-placeholder-val="{{true}}">
+<span style="width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; border-radius: 3px; background: {{ins.color}}; color: {{ins.letterColor}}; font-size: 12px; font-weight: 700;">{{ins.letter}}</span>
+</sc-if>
+<sc-if value="{{ins.isMemory}}" hint-placeholder-val="{{false}}">
+<span style="width: 20px; height: 20px; display: flex; align-items: center; justify-content: center;"><svg width="14" height="12" viewBox="0 0 12 10" aria-hidden="true"><path d="M6 0 12 10H0Z" fill="{{ins.color}}"></path></svg></span>
+</sc-if>
+<h2 id="ins-title" style="margin: 0; flex-grow: 1; font-size: 14px; font-weight: 600;">{{ins.title}}</h2>
+<span style="font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 12px; color: #a3a3a3;">{{ins.meta}}</span>
+</div>
+<sc-if value="{{ins.set}}" hint-placeholder-val="{{true}}">
+<div style="display: flex; flex-direction: column; gap: 12px;">
+<label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; font-weight: 500;">Name
+<input type="text" value="{{ins.name}}" onChange="{{ins.rename}}" style="height: 32px; box-sizing: border-box; padding: 0 10px; background: #0a0a0a; border: 1px solid #2f2f2f; border-radius: 6px; font-size: 14px; font-weight: 400;">
+</label>
+<div role="radiogroup" aria-label="Color" style="display: flex; flex-direction: column; gap: 4px;">
+<span style="font-size: 13px; font-weight: 500;">Color</span>
+<div style="display: flex; gap: 8px;">
+<sc-for list="{{swatches}}" as="s" hint-placeholder-count="6">
+<button type="button" role="radio" aria-checked="{{s.on}}" aria-label="{{s.name}}" onClick="{{s.pick}}" style="width: 28px; height: 28px; padding: 3px; box-sizing: border-box; background: transparent; border: 2px solid {{s.ring}}; border-radius: 9999px;"><span style="display: block; width: 100%; height: 100%; border-radius: 9999px; background: {{s.color}};"></span></button>
+</sc-for>
+</div>
+</div>
+<div style="display: flex; align-items: flex-end; gap: 12px;">
+<div style="display: flex; flex-direction: column; gap: 4px;">
+<span style="font-size: 13px; font-weight: 500;">Type</span>
+<div role="group" aria-label="Type" style="display: flex; padding: 2px; gap: 2px; background: #171717; border-radius: 6px;">
+<button type="button" class="{{ins.cueCls}}" aria-pressed="{{ins.isCue}}" onClick="{{ins.makeCue}}" style="height: 28px; padding: 0 12px; background: transparent; border: 0; border-radius: 4px; font-size: 13px; color: #a3a3a3;">Cue</button>
+<button type="button" class="{{ins.loopCls}}" aria-pressed="{{ins.isLoop}}" onClick="{{ins.makeLoop}}" style="height: 28px; padding: 0 12px; background: transparent; border: 0; border-radius: 4px; font-size: 13px; color: #a3a3a3;">Loop</button>
+</div>
+</div>
+<div style="font-size: 13px; color: #a3a3a3; padding-bottom: 7px;">{{ins.loopText}}</div>
+</div>
+<div style="display: flex; gap: 8px; padding-top: 4px;">
+<sc-if value="{{ins.isHot}}" hint-placeholder-val="{{true}}">
+<button type="button" class="btn" onClick="{{ins.copyToMemory}}" title="Keep this point as a memory cue as well" style="height: 32px; padding: 0 12px; background: #262626; border: 0; border-radius: 6px; font-size: 14px;">Copy to memory cues</button>
+</sc-if>
+<sc-if value="{{ins.canAssign}}" hint-placeholder-val="{{false}}">
+<button type="button" class="btn" onClick="{{ins.assign}}" style="height: 32px; padding: 0 12px; background: #262626; border: 0; border-radius: 6px; font-size: 14px;">{{ins.assignLabel}}</button>
+</sc-if>
+<sc-if value="{{ins.padsFull}}" hint-placeholder-val="{{false}}">
+<span style="align-self: center; font-size: 13px; color: #a3a3a3;">All 8 pads in use</span>
+</sc-if>
+<div style="flex-grow: 1;"></div>
+<button type="button" class="ghost" onClick="{{ins.remove}}" style="height: 32px; display: flex; align-items: center; gap: 6px; padding: 0 10px; background: transparent; border: 0; border-radius: 6px; font-size: 14px; color: #f87171;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg>Delete</button>
+</div>
+</div>
+</sc-if>
+<sc-if value="{{ins.empty}}" hint-placeholder-val="{{false}}">
+<div style="flex-grow: 1; display: flex; flex-direction: column; align-items: flex-start; justify-content: center; gap: 12px;">
+<p style="margin: 0; font-size: 14px; color: #a3a3a3;">Pad {{ins.letter}} is empty. Set it at the playhead (bar 39.1), press {{ins.key}} while the track plays, or assign a memory cue to it.</p>
+<button type="button" class="btn" onClick="{{ins.setHere}}" style="height: 32px; padding: 0 12px; background: #262626; border: 0; border-radius: 6px; font-size: 14px;">Set at playhead</button>
+</div>
+</sc-if>
+</section>
+</div>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = {
+      sel: { kind: 'hot', i: 2 }, playing: false, zoom: '16 bars', quantize: true, dirty: false,
+      cues: [
+        { bar: 1, name: 'Mix in', color: '#4ade80', loop: false },
+        { bar: 17, name: 'Groove', color: '#22d3ee', loop: false },
+        { bar: 37, name: 'Drop', color: '#f87171', loop: false },
+        { bar: 65, name: 'Vocal', color: '#facc15', loop: false },
+        { bar: 41, name: '4-bar loop', color: '#60a5fa', loop: true },
+        { bar: 97, name: 'Breakdown', color: '#c084fc', loop: false },
+        null, null
+      ],
+      memory: [
+        { bar: 1, name: 'Load-in', color: '#f87171', loop: false, dl: true },
+        { bar: 9, name: 'Hat intro', color: '#f87171', loop: false, dl: false },
+        { bar: 17, name: 'Bass in', color: '#f87171', loop: false, dl: true },
+        { bar: 25, name: 'First break', color: '#f87171', loop: false, dl: true },
+        { bar: 35, name: 'Riser', color: '#f87171', loop: false, dl: true },
+        { bar: 45, name: 'Vocal chop', color: '#facc15', loop: false, dl: true },
+        { bar: 65, name: 'Second verse', color: '#facc15', loop: false, dl: true },
+        { bar: 97, name: 'Breakdown', color: '#c084fc', loop: false, dl: true },
+        { bar: 113, name: 'Fake drop', color: '#f87171', loop: false, dl: false },
+        { bar: 129, name: 'Mix out', color: '#60a5fa', loop: true, dl: true },
+        { bar: 161, name: 'Outro groove', color: '#60a5fa', loop: false, dl: true },
+        { bar: 193, name: 'Final phrase', color: '#f87171', loop: false, dl: true }
+      ]
+    };
+  }
+  fmt(bar) {
+    var t = 0.086 + (bar - 1) * 4 * (60 / 122);
+    var m = Math.floor(t / 60), s = t - m * 60;
+    return m + ':' + (s < 10 ? '0' : '') + s.toFixed(3);
+  }
+  overviewWave() {
+    var s = 17;
+    var rnd = function () { s = (s * 9301 + 49297) % 233280; return s / 233280; };
+    var env = function (t) {
+      if (t < 0.02) return 0.15 + t * 20;
+      if (t < 0.16) return 0.55;
+      if (t < 0.25) return 0.8;
+      if (t < 0.32) return 0.3;
+      if (t < 0.55) return 1;
+      if (t < 0.62) return 0.35;
+      if (t < 0.9) return 0.95;
+      return Math.max(0.12, 0.95 - (t - 0.9) * 8);
+    };
+    return this.bars(348, 1390, 50, function (i, n) {
+      var a = env(i / n) * (0.72 + 0.28 * rnd());
+      return [a, a * (0.55 + 0.25 * rnd()), a * (0.2 + 0.2 * rnd())];
+    });
+  }
+  zoomWave() {
+    var s = 91;
+    var rnd = function () { s = (s * 9301 + 49297) % 233280; return s / 233280; };
+    return this.bars(464, 1390, 194, function (i, n) {
+      var beat = i / n * 64, bar = 33 + Math.floor(beat / 4), ph = beat % 1;
+      var sec = bar < 37 ? 0.5 + (bar - 33) * 0.08 : 1;
+      var kick = bar < 37 ? 0.2 : Math.exp(-ph * 5);
+      var low = sec * (0.18 + 0.78 * kick) * (0.9 + 0.1 * rnd());
+      var mid = sec * (0.3 + 0.15 * rnd() + 0.25 * Math.exp(-ph * 3));
+      var high = sec * (0.1 + 0.3 * Math.exp(-Math.abs(ph - 0.5) * 14) + 0.08 * rnd());
+      return [Math.max(low, mid), mid, high];
+    });
+  }
+  bars(n, w, h, amp) {
+    var bw = w / n, bar = bw * 0.72, y = h / 2, out = ['', '', ''];
+    for (var i = 0; i < n; i++) {
+      var a = amp(i, n), x = (i * bw).toFixed(1);
+      for (var k = 0; k < 3; k++) {
+        var hh = Math.min(1, a[k]) * (y - 2);
+        out[k] += 'M' + x + ' ' + (y - hh).toFixed(1) + 'h' + bar.toFixed(2) + 'v' + (2 * hh).toFixed(1) + 'h-' + bar.toFixed(2) + 'Z';
+      }
+    }
+    return { low: out[0], mid: out[1], high: out[2] };
+  }
+  renderVals() {
+    var self = this, st = this.state, letters = 'ABCDEFGH';
+    var cues = st.cues, memory = st.memory, sel = st.sel;
+    var beatW = 1390 / 64;
+    var loopBars = function (q, isHot) { return isHot ? 4 : 16; };
+    var sortMem = function (list) { return list.slice().sort(function (a, b) { return a.bar - b.bar; }); };
+    var update = function (patch) {
+      if (sel.kind === 'hot') {
+        var next = cues.slice();
+        next[sel.i] = Object.assign({}, next[sel.i], patch);
+        self.setState({ cues: next, dirty: true });
+      } else {
+        var mem = memory.slice();
+        mem[sel.i] = Object.assign({}, mem[sel.i], patch);
+        self.setState({ memory: mem, dirty: true });
+      }
+    };
+    var firstEmpty = cues.indexOf(null);
+
+    var pads = cues.map(function (c, i) {
+      var on = sel.kind === 'hot' && i === sel.i;
+      return {
+        letter: letters[i], selected: on,
+        cls: 'pad' + (on ? ' sel' : ''),
+        border: '#262626', borderStyle: c ? 'solid' : 'dashed',
+        color: c ? c.color : '#262626', letterColor: c ? '#0a0a0a' : '#a3a3a3',
+        name: c ? c.name : 'Empty', nameColor: c ? '#fafafa' : '#a3a3a3',
+        meta: c ? self.fmt(c.bar) + ' · bar ' + c.bar : 'Key ' + (i + 1),
+        isLoop: !!(c && c.loop),
+        pick: function () { self.setState({ sel: { kind: 'hot', i: i } }); }
+      };
+    });
+
+    var dlCount = memory.filter(function (m) { return m.dl; }).length;
+    var memRows = memory.map(function (m, i) {
+      var on = sel.kind === 'memory' && i === sel.i;
+      return {
+        color: m.color, time: self.fmt(m.bar), bar: m.bar + '.1', name: m.name,
+        len: m.dl ? (m.loop ? 'Both · loop' : 'Both') : 'Plus only', selected: on,
+        dl: !!m.dl, dlLocked: !m.dl && dlCount >= 10,
+        dlTitle: !m.dl && dlCount >= 10 ? 'Device Library already has 10. Untick another first.' : 'Include in Device Library',
+        toggleDl: function () {
+          var mem = self.state.memory.slice();
+          mem[i] = Object.assign({}, mem[i], { dl: !m.dl });
+          self.setState({ memory: mem, dirty: true });
+        },
+        cls: 'mrow' + (on ? ' sel' : ''),
+        pick: function () { self.setState({ sel: { kind: 'memory', i: i } }); }
+      };
+    });
+
+    // Markers on the zoomed window (bars 33–48) and the whole-track overview.
+    var inWin = function (bar) { return bar >= 33 && bar <= 48; };
+    var winX = function (bar) { return Math.round((bar - 33) * 4 * beatW); };
+    var flags = [], memMarks = [], loops = [], hotTicks = [], memTicks = [];
+    cues.forEach(function (q, j) {
+      if (!q) return;
+      if (inWin(q.bar)) flags.push({ x: winX(q.bar), color: q.color, letter: letters[j], name: q.name });
+      if (q.loop && q.bar <= 48 && q.bar + 4 > 33) {
+        var a = Math.max(33, q.bar), b = Math.min(49, q.bar + 4);
+        loops.push({ x: winX(a), w: Math.round((b - a) * 4 * beatW), color: q.color + '1f', edge: q.color });
+      }
+      hotTicks.push({ x: Math.round((q.bar - 1) / 204 * 1390), color: q.color });
+    });
+    memory.forEach(function (m) {
+      if (inWin(m.bar)) memMarks.push({ x: winX(m.bar), color: m.color, name: m.name });
+      memTicks.push({ x: Math.round((m.bar - 1) / 204 * 1390), color: m.color });
+    });
+
+    var gb = '', gbar = '';
+    for (var i = 0; i <= 64; i++) {
+      var x = (i * beatW).toFixed(2);
+      if (i % 4 === 0) gbar += 'M' + x + ' 0V194'; else gb += 'M' + x + ' 0V194';
+    }
+    var labels = [];
+    for (var b = 0; b < 16; b++) labels.push({ x: Math.round(b * 4 * beatW) + 5, n: 33 + b });
+
+    // Inspector for whichever cue is selected.
+    var isHot = sel.kind === 'hot';
+    var c = isHot ? cues[sel.i] : memory[sel.i];
+    var sw = [['Red', '#f87171'], ['Yellow', '#facc15'], ['Green', '#4ade80'], ['Cyan', '#22d3ee'], ['Blue', '#60a5fa'], ['Magenta', '#c084fc']];
+    var ins = {
+      isHot: isHot, isMemory: !isHot,
+      set: !!c, empty: !c,
+      letter: isHot ? letters[sel.i] : '', key: isHot ? String(sel.i + 1) : '',
+      title: isHot ? 'Hot cue ' + letters[sel.i] : 'Memory cue',
+      color: c ? c.color : '#262626', letterColor: c ? '#0a0a0a' : '#a3a3a3',
+      meta: c ? this.fmt(c.bar) + ' · bar ' + c.bar + '.1' : '',
+      name: c ? c.name : '',
+      rename: function (e) { update({ name: e.target.value }); },
+      isCue: !!(c && !c.loop), isLoop: !!(c && c.loop),
+      cueCls: 'seg' + (c && !c.loop ? ' on' : ''), loopCls: 'seg' + (c && c.loop ? ' on' : ''),
+      loopText: c && c.loop ? loopBars(c, isHot) + ' bars · ends at bar ' + (c.bar + loopBars(c, isHot)) + '.1' : '',
+      makeCue: function () { update({ loop: false }); },
+      makeLoop: function () { update({ loop: true }); },
+      canAssign: !isHot && !!c && firstEmpty >= 0,
+      padsFull: !isHot && !!c && firstEmpty < 0,
+      assignLabel: firstEmpty >= 0 ? 'Copy to pad ' + letters[firstEmpty] : '',
+      assign: function () {
+        var next = cues.slice();
+        next[firstEmpty] = Object.assign({}, c);
+        self.setState({ cues: next, sel: { kind: 'hot', i: firstEmpty }, dirty: true });
+      },
+      copyToMemory: function () {
+        var added = Object.assign({}, c, { dl: dlCount < 10 });
+        var mem = sortMem(memory.concat([added]));
+        self.setState({ memory: mem, sel: { kind: 'memory', i: mem.indexOf(added) }, dirty: true });
+      },
+      remove: function () {
+        if (isHot) {
+          var next = cues.slice();
+          next[sel.i] = null;
+          self.setState({ cues: next, dirty: true });
+        } else {
+          var mem = memory.filter(function (_, k) { return k !== sel.i; });
+          self.setState({ memory: mem, sel: mem.length ? { kind: 'memory', i: Math.min(sel.i, mem.length - 1) } : { kind: 'hot', i: 0 }, dirty: true });
+        }
+      },
+      setHere: function () {
+        var next = cues.slice();
+        next[sel.i] = { bar: 39, name: 'New cue', color: '#4ade80', loop: false };
+        self.setState({ cues: next, dirty: true });
+      }
+    };
+
+    return {
+      dirtyLabel: st.dirty ? 'Unsaved changes' : '',
+      playing: st.playing, paused: !st.playing,
+      playLabel: st.playing ? 'Pause' : 'Play',
+      togglePlay: function () { self.setState({ playing: !st.playing }); },
+      quantize: st.quantize,
+      toggleQuantize: function () { self.setState({ quantize: !st.quantize }); },
+      qJustify: st.quantize ? 'flex-end' : 'flex-start',
+      qTrack: st.quantize ? '#fafafa' : '#404040',
+      qThumb: st.quantize ? '#0a0a0a' : '#fafafa',
+      zooms: ['4 bars', '8 bars', '16 bars', '32 bars'].map(function (z) {
+        return { label: z, on: z === st.zoom, cls: 'seg' + (z === st.zoom ? ' on' : ''), pick: function () { self.setState({ zoom: z }); } };
+      }),
+      overview: this.overviewWave(),
+      hotTicks: hotTicks,
+      memTicks: memTicks,
+      zoom: this.zoomWave(),
+      grid: { beat: gb, bar: gbar },
+      barLabels: labels,
+      zoomFlags: flags,
+      memMarks: memMarks,
+      loops: loops,
+      pads: pads,
+      hotCount: cues.filter(function (q) { return q; }).length,
+      memCount: memory.length,
+      memOver: memory.length > 10 && dlCount < 10,
+      memCapColor: memory.length > 10 ? '#fafafa' : '#a3a3a3',
+      memCaption: memory.length > 10 ? memory.length + ' markers · ' + dlCount + ' of 10 chosen for Device Library' : memory.length + ' markers · all fit Device Library (10 max)',
+      memTitle: 'KINGSTON gets both libraries. Device Library holds up to 10 memory cues per track, so tick the ones to keep there. Device Library Plus gets every marker.',
+      memory: memRows,
+      addMemory: function () {
+        var added = { bar: 39, name: 'Memory cue ' + (memory.length + 1), color: '#f87171', loop: false, dl: dlCount < 10 };
+        var mem = sortMem(memory.concat([added]));
+        self.setState({ memory: mem, sel: { kind: 'memory', i: mem.indexOf(added) }, dirty: true });
+      },
+      swatches: sw.map(function (s) {
+        var on = !!(c && c.color === s[1]);
+        return { name: s[0], color: s[1], on: on, ring: on ? '#fafafa' : 'transparent', pick: function () { update({ color: s[1] }); } };
+      }),
+      ins: ins
+    };
+  }
+}
+</script>
+</body>
+</html>

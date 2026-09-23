@@ -1,0 +1,517 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Recrate — KINGSTON history</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0;background:#0a0a0a;color:#fafafa;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI Variable Text","Segoe UI",system-ui,"Noto Sans SC",sans-serif;-webkit-font-smoothing:antialiased}
+button,input{font:inherit;color:inherit}
+a{color:#fafafa;text-decoration:none}a:hover{color:#ffffff}
+.ghost:hover{background:#262626}
+.btn:hover{background:#292929}
+.nav:hover{background:#262626}
+.prow:hover{background:#26262699}
+.hrow:not(.sel):hover{background:#26262699}
+.hrow.sel{background:#1e40af33;box-shadow:inset 0 0 0 1px #1d4ed8}
+.hrow{color:#fafafa;font-family:inherit}
+button:focus-visible,a:focus-visible,input:focus-visible{outline:2px solid #737373;outline-offset:1px}
+input::placeholder{color:#a3a3a3}
+</style>
+</helmet>
+<div style="position: relative; width: 1440px; height: 900px; display: flex; flex-direction: column; background: #0a0a0a; color: #fafafa; overflow: hidden;">
+
+<!-- Title bar -->
+<div style="height: 36px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: #171717; border-bottom: 1px solid #262626; font-size: 13px; color: #a3a3a3;">
+<span><span style="color: #fafafa; font-weight: 500;">KINGSTON</span> · Recrate</span>
+</div>
+
+<!-- Toolbar -->
+<div style="height: 48px; flex-shrink: 0; display: flex; align-items: center; gap: 8px; padding: 0 16px; border-bottom: 1px solid #262626;">
+<label style="position: relative; display: flex; align-items: center; width: 320px;">
+<span style="position: absolute; left: 10px; display: flex; color: #a3a3a3;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="11" cy="11" r="8"></circle><path d="m21 21-4.3-4.3"></path></svg></span>
+<input type="search" aria-label="Search collection" placeholder="Search title, artist, key or BPM" style="width: 100%; height: 32px; box-sizing: border-box; padding: 0 10px 0 32px; background: #0a0a0a; border: 1px solid #2f2f2f; border-radius: 6px; font-size: 14px; outline: none;">
+</label>
+<button type="button" class="btn" style="height: 32px; display: flex; align-items: center; gap: 8px; padding: 0 12px; background: #262626; border: 0; border-radius: 6px; font-size: 14px;">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><line x1="21" x2="14" y1="4" y2="4"></line><line x1="10" x2="3" y1="4" y2="4"></line><line x1="21" x2="12" y1="12" y2="12"></line><line x1="8" x2="3" y1="12" y2="12"></line><line x1="21" x2="16" y1="20" y2="20"></line><line x1="12" x2="3" y1="20" y2="20"></line><line x1="14" x2="14" y1="2" y2="6"></line><line x1="8" x2="8" y1="10" y2="14"></line><line x1="16" x2="16" y1="18" y2="22"></line></svg>
+Filter</button>
+<div style="flex-grow: 1;"></div>
+<button type="button" class="btn" style="height: 32px; display: flex; align-items: center; gap: 8px; padding: 0 12px; background: #262626; border: 0; border-radius: 6px; font-size: 14px;">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 13a2 2 0 0 0 2-2V7a2 2 0 0 1 4 0v13a2 2 0 0 0 4 0V4a2 2 0 0 1 4 0v13a2 2 0 0 0 4 0v-4a2 2 0 0 1 2-2"></path></svg>
+Analyze</button>
+<button type="button" class="btn" style="height: 32px; display: flex; align-items: center; gap: 8px; padding: 0 12px; background: #262626; border: 0; border-radius: 6px; font-size: 14px;">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"></path><path d="m8 11 4 4 4-4"></path><path d="M8 5H4a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-4"></path></svg>
+Import…</button>
+</div>
+
+<div style="flex-grow: 1; display: flex; min-height: 0;">
+
+<!-- Sidebar -->
+<nav aria-label="Library" style="width: 240px; flex-shrink: 0; display: flex; flex-direction: column; gap: 24px; padding: 12px 8px; box-sizing: border-box; background: #0a0a0a; border-right: 1px solid #262626; color: #f5f5f5; font-size: 14px;">
+<div style="display: flex; flex-direction: column; gap: 2px;">
+<div style="padding: 0 8px 4px; font-size: 12px; font-weight: 500; color: #a3a3a3;">Library</div>
+<button type="button" class="nav" style="height: 28px; display: flex; align-items: center; gap: 8px; padding: 0 8px; background: transparent; border: 0; border-radius: 6px; text-align: left;">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m16 6 4 14"></path><path d="M12 6v14"></path><path d="M8 8v12"></path><path d="M4 4v16"></path></svg>
+<span style="flex-grow: 1;">Collection</span><span style="font-size: 12px; color: #a3a3a3; font-variant-numeric: tabular-nums;">2,418</span></button>
+<button type="button" class="nav" style="height: 28px; display: flex; align-items: center; gap: 8px; padding: 0 8px; background: transparent; border: 0; border-radius: 6px; text-align: left;">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+<span style="flex-grow: 1;">Recently added</span><span style="font-size: 12px; color: #a3a3a3; font-variant-numeric: tabular-nums;">46</span></button>
+<button type="button" class="nav" style="height: 28px; display: flex; align-items: center; gap: 8px; padding: 0 8px; background: transparent; border: 0; border-radius: 6px; text-align: left;">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 13a2 2 0 0 0 2-2V7a2 2 0 0 1 4 0v13a2 2 0 0 0 4 0V4a2 2 0 0 1 4 0v13a2 2 0 0 0 4 0v-4a2 2 0 0 1 2-2"></path></svg>
+<span style="flex-grow: 1;">Needs analysis</span><span style="font-size: 12px; color: #a3a3a3; font-variant-numeric: tabular-nums;">12</span></button>
+<a href="Tags.dc.html" class="nav" style="height: 28px; display: flex; align-items: center; gap: 8px; padding: 0 8px; border-radius: 6px; color: #f5f5f5;">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12.586 2.586A2 2 0 0 0 11.172 2H4a2 2 0 0 0-2 2v7.172a2 2 0 0 0 .586 1.414l8.704 8.704a2.426 2.426 0 0 0 3.42 0l6.58-6.58a2.426 2.426 0 0 0 0-3.42z"></path><circle cx="7.5" cy="7.5" r=".5" fill="currentColor"></circle></svg>
+<span style="flex-grow: 1;">Tags</span><span style="font-size: 12px; color: #a3a3a3; font-variant-numeric: tabular-nums;">22</span></a>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 2px;">
+<div style="display: flex; align-items: center; padding: 0 0 4px 8px;">
+<span style="flex-grow: 1; font-size: 12px; font-weight: 500; color: #a3a3a3;">Playlists</span>
+<button type="button" class="ghost" aria-label="New playlist" style="width: 20px; height: 20px; display: flex; align-items: center; justify-content: center; padding: 0; background: transparent; border: 0; border-radius: 3px; color: #a3a3a3;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg></button>
+</div>
+<button type="button" aria-expanded="true" class="nav" style="height: 28px; display: flex; align-items: center; gap: 4px; padding: 0 8px 0 4px; background: transparent; border: 0; border-radius: 6px; text-align: left;">
+<span style="width: 14px; display: flex; color: #a3a3a3;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></span>
+<span style="display: flex; gap: 8px; align-items: center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"></path></svg>Sets</span></button>
+<a href="Main.dc.html" class="nav" style="height: 28px; display: flex; align-items: center; gap: 8px; padding: 0 8px 0 26px; border-radius: 6px; color: #f5f5f5;">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15V6"></path><path d="M18.5 18a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z"></path><path d="M12 12H3"></path><path d="M16 6H3"></path><path d="M12 18H3"></path></svg>
+<span style="flex-grow: 1;">Warehouse — Oct 2026</span></a>
+<button type="button" class="nav" style="height: 28px; display: flex; align-items: center; gap: 8px; padding: 0 8px 0 26px; background: transparent; border: 0; border-radius: 6px; text-align: left;">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15V6"></path><path d="M18.5 18a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z"></path><path d="M12 12H3"></path><path d="M16 6H3"></path><path d="M12 18H3"></path></svg>
+<span style="flex-grow: 1;">Sunday rooftop</span></button>
+<button type="button" class="nav" style="height: 28px; display: flex; align-items: center; gap: 8px; padding: 0 8px 0 26px; background: transparent; border: 0; border-radius: 6px; text-align: left;">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15V6"></path><path d="M18.5 18a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z"></path><path d="M12 12H3"></path><path d="M16 6H3"></path><path d="M12 18H3"></path></svg>
+<span style="flex-grow: 1;">Warm-up</span></button>
+<button type="button" aria-expanded="true" class="nav" style="height: 28px; display: flex; align-items: center; gap: 4px; padding: 0 8px 0 4px; background: transparent; border: 0; border-radius: 6px; text-align: left;">
+<span style="width: 14px; display: flex; color: #a3a3a3;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></span>
+<span style="display: flex; gap: 8px; align-items: center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"></path></svg>Crates</span></button>
+<button type="button" class="nav" style="height: 28px; display: flex; align-items: center; gap: 8px; padding: 0 8px 0 26px; background: transparent; border: 0; border-radius: 6px; text-align: left;">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15V6"></path><path d="M18.5 18a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z"></path><path d="M12 12H3"></path><path d="M16 6H3"></path><path d="M12 18H3"></path></svg>
+<span style="flex-grow: 1;">Deep house</span></button>
+<button type="button" class="nav" style="height: 28px; display: flex; align-items: center; gap: 8px; padding: 0 8px 0 26px; background: transparent; border: 0; border-radius: 6px; text-align: left;">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15V6"></path><path d="M18.5 18a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z"></path><path d="M12 12H3"></path><path d="M16 6H3"></path><path d="M12 18H3"></path></svg>
+<span style="flex-grow: 1;">Minimal</span></button>
+<button type="button" class="nav" style="height: 28px; display: flex; align-items: center; gap: 8px; padding: 0 8px 0 26px; background: transparent; border: 0; border-radius: 6px; text-align: left;">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15V6"></path><path d="M18.5 18a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z"></path><path d="M12 12H3"></path><path d="M16 6H3"></path><path d="M12 18H3"></path></svg>
+<span style="flex-grow: 1;">Edits &amp; bootlegs</span></button>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 2px;">
+<div style="padding: 0 8px 4px; font-size: 12px; font-weight: 500; color: #a3a3a3;">Devices</div>
+<a href="Export.dc.html" aria-current="page" style="height: 28px; display: flex; align-items: center; gap: 8px; padding: 0 8px; border-radius: 6px; color: #f5f5f5; background: #262626; font-weight: 500;">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="10" cy="7" r="1"></circle><circle cx="4" cy="20" r="1"></circle><path d="M4.7 19.3 19 5"></path><path d="m21 3-3 1 2 2Z"></path><path d="M9.26 7.68 5 12l2 5"></path><path d="m10 14 5 2 3.5-3.5"></path><path d="m18 12 1-1 1 1-1 1Z"></path></svg>
+<span style="flex-grow: 1;">KINGSTON</span><span style="font-size: 12px; color: #a3a3a3;">12 changes</span></a>
+</div>
+</nav>
+
+<!-- Content -->
+<main style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column;">
+<div style="height: 64px; flex-shrink: 0; display: flex; align-items: center; gap: 12px; padding: 0 16px;">
+<div aria-hidden="true" style="width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; background: #262626; border-radius: 6px;"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="10" cy="7" r="1"></circle><circle cx="4" cy="20" r="1"></circle><path d="M4.7 19.3 19 5"></path><path d="m21 3-3 1 2 2Z"></path><path d="M9.26 7.68 5 12l2 5"></path><path d="m10 14 5 2 3.5-3.5"></path><path d="m18 12 1-1 1 1-1 1Z"></path></svg></div>
+<div style="flex-grow: 1; display: flex; flex-direction: column; gap: 2px;">
+<h1 style="margin: 0; font-size: 20px; line-height: 28px; font-weight: 600;">KINGSTON</h1>
+<div style="font-size: 13px; color: #a3a3a3;">USB drive · 64 GB · FAT32 · last export stopped Sep 23, 22:10</div>
+</div>
+<button type="button" class="btn" style="height: 32px; padding: 0 12px; background: #262626; border: 0; border-radius: 6px; font-size: 14px;">Eject</button>
+</div>
+<nav aria-label="KINGSTON" style="height: 40px; flex-shrink: 0; display: flex; align-items: stretch; gap: 20px; padding: 0 16px; border-bottom: 1px solid #262626; font-size: 14px;">
+<a href="Export.dc.html" style="display: flex; align-items: center; color: #a3a3a3;">Export</a>
+<a href="DeviceHistory.dc.html" aria-current="page" aria-label="History, 1 export needs attention" style="display: flex; align-items: center; gap: 6px; color: #fafafa; font-weight: 500; box-shadow: inset 0 -2px 0 #fafafa;">History<span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 9999px; background: #facc15;"></span></a>
+</nav>
+
+<div style="flex-grow: 1; min-height: 0; display: grid; grid-template-columns: 400px minmax(0, 1fr);">
+
+<!-- Export list -->
+<section aria-labelledby="h-list" style="min-height: 0; display: flex; flex-direction: column; border-right: 1px solid #262626;">
+<div style="height: 44px; flex-shrink: 0; display: flex; align-items: center; gap: 8px; padding: 0 16px; border-bottom: 1px solid #262626;">
+<h2 id="h-list" style="margin: 0; flex-grow: 1; font-size: 14px; font-weight: 600;">Exports to this drive</h2>
+<span style="font-size: 12px; color: #a3a3a3;">Kept for 90 days</span>
+</div>
+<div style="flex-grow: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column;">
+<sc-for list="{{runs}}" as="r" hint-placeholder-count="5">
+<button type="button" class="{{r.cls}}" aria-pressed="{{r.selected}}" onClick="{{r.pick}}" style="flex-shrink: 0; display: grid; grid-template-columns: 16px minmax(0, 1fr) auto; column-gap: 10px; row-gap: 2px; padding: 10px 16px; background: transparent; border: 0; border-bottom: 1px solid #262626b3; text-align: left;">
+<span aria-hidden="true" style="display: flex; padding-top: 2px; color: {{r.iconColor}};">
+<sc-if value="{{r.isStop}}" hint-placeholder-val="{{false}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><rect x="9" y="9" width="6" height="6" rx="1"></rect></svg></sc-if>
+<sc-if value="{{r.isWarn}}" hint-placeholder-val="{{false}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"></path><path d="M12 9v4"></path><path d="M12 17h.01"></path></svg></sc-if>
+<sc-if value="{{r.isOk}}" hint-placeholder-val="{{true}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg></sc-if>
+</span>
+<span style="font-size: 14px; font-weight: 500;">{{r.status}}</span>
+<span style="font-size: 12px; color: #a3a3a3; font-variant-numeric: tabular-nums; white-space: nowrap;">{{r.when}}</span>
+<span></span>
+<span style="grid-column: span 2; font-size: 13px; color: #a3a3a3; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">{{r.summary}}</span>
+<sc-if value="{{r.hasBackup}}" hint-placeholder-val="{{false}}">
+<span></span>
+<span style="grid-column: span 2; display: flex; align-items: center; gap: 6px; font-size: 12px; color: #a3a3a3;"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>Drive library backed up before this export</span>
+</sc-if>
+</button>
+</sc-for>
+</div>
+</section>
+
+<!-- Detail -->
+<section aria-labelledby="h-detail" style="min-width: 0; min-height: 0; display: flex; flex-direction: column;">
+<div style="flex-shrink: 0; display: flex; align-items: flex-start; gap: 12px; padding: 16px 24px; border-bottom: 1px solid #262626;">
+<div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px;">
+<h2 id="h-detail" style="margin: 0; font-size: 16px; font-weight: 600;">{{d.title}}</h2>
+<div style="font-size: 13px; color: #a3a3a3;">{{d.meta}}</div>
+</div>
+<sc-if value="{{d.canOpen}}" hint-placeholder-val="{{true}}">
+<button type="button" class="btn" onClick="{{openReport}}" aria-haspopup="dialog" style="height: 32px; padding: 0 12px; background: #262626; border: 0; border-radius: 6px; font-size: 14px;">Open report…</button>
+</sc-if>
+</div>
+
+<div style="flex-grow: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 24px; padding: 16px 24px 24px;">
+
+<!-- Interrupted export -->
+<sc-if value="{{d.isPartial}}" hint-placeholder-val="{{true}}">
+<div style="display: flex; flex-direction: column; gap: 16px;">
+<div role="status" style="display: flex; align-items: flex-start; gap: 10px; padding: 12px; border: 1px solid #262626; border-radius: 6px;">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#f87171" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0; margin-top: 2px;"><circle cx="12" cy="12" r="10"></circle><rect x="9" y="9" width="6" height="6" rx="1"></rect></svg>
+<div style="display: flex; flex-direction: column; gap: 4px; font-size: 14px;">
+<span style="font-weight: 500;">{{bannerTitle}}</span>
+<span style="font-size: 13px; color: #a3a3a3;">{{stateText}}</span>
+</div>
+</div>
+
+<sc-if value="{{showCopyActions}}" hint-placeholder-val="{{true}}">
+<div style="display: flex; flex-direction: column; gap: 8px;">
+<h3 style="margin: 0; font-size: 14px; font-weight: 600;">Finish or undo this export</h3>
+<div style="display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px;">
+<div style="display: flex; flex-direction: column; gap: 8px; padding: 12px; border: 1px solid {{checkBorder}}; border-radius: 6px;">
+<span style="font-size: 14px; font-weight: 500;">1 · Check drive</span>
+<span style="flex-grow: 1; font-size: 13px; color: #a3a3a3;">Read the files and library on KINGSTON and compare them with Recrate’s record. Nothing is changed.</span>
+<button type="button" onClick="{{check}}" disabled="{{checkLocked}}" style="height: 32px; background: {{checkBg}}; color: {{checkFg}}; border: 0; border-radius: 6px; font-size: 14px; font-weight: 500;">{{checkLabel}}</button>
+</div>
+<div style="display: flex; flex-direction: column; gap: 8px; padding: 12px; border: 1px solid #262626; border-radius: 6px; opacity: {{afterOpacity}};">
+<span style="font-size: 14px; font-weight: 500;">2 · Resume</span>
+<span style="flex-grow: 1; font-size: 13px; color: #a3a3a3;">{{resumeText}}</span>
+<button type="button" onClick="{{resume}}" disabled="{{lockAfter}}" style="height: 32px; background: {{resumeBg}}; color: {{resumeFg}}; border: 0; border-radius: 6px; font-size: 14px; font-weight: 500;">Resume export</button>
+</div>
+<div style="display: flex; flex-direction: column; gap: 8px; padding: 12px; border: 1px solid #262626; border-radius: 6px; opacity: {{afterOpacity}};">
+<span style="font-size: 14px; font-weight: 500;">or Discard</span>
+<span style="flex-grow: 1; font-size: 13px; color: #a3a3a3;">{{discardText}}</span>
+<button type="button" class="ghost" onClick="{{askDiscard}}" disabled="{{lockAfter}}" style="height: 32px; background: transparent; border: 1px solid #2f2f2f; border-radius: 6px; font-size: 14px; color: #f87171;">Discard copies…</button>
+</div>
+</div>
+<span style="font-size: 12px; color: #a3a3a3;">{{gateNote}}</span>
+</div>
+</sc-if>
+
+<sc-if value="{{inspect}}" hint-placeholder-val="{{false}}">
+<div role="alert" style="display: flex; flex-direction: column; gap: 10px; padding: 12px; border: 1px solid #facc15; border-radius: 6px;">
+<span style="font-size: 14px; font-weight: 600;">Recrate stopped here</span>
+<span style="font-size: 13px; color: #a3a3a3; line-height: 18px;">KINGSTON isn’t in a state this export expects, so Resume and Discard are off. Nothing on the drive has been changed. Look at what’s different below before doing anything else with the drive.</span>
+<div style="display: flex; gap: 8px;">
+<button type="button" class="btn" style="height: 32px; padding: 0 12px; background: #262626; border: 0; border-radius: 6px; font-size: 14px;">Save report…</button>
+<button type="button" class="btn" style="height: 32px; padding: 0 12px; background: #262626; border: 0; border-radius: 6px; font-size: 14px;">Show drive in Finder</button>
+<button type="button" class="btn" onClick="{{check}}" disabled="{{busy}}" style="height: 32px; padding: 0 12px; background: #262626; border: 0; border-radius: 6px; font-size: 14px;">Check again</button>
+</div>
+<span style="font-size: 12px; color: #a3a3a3;">A new export can start later from the Export tab. It runs its own check and backup against what’s on the drive then.</span>
+</div>
+</sc-if>
+
+<sc-if value="{{isRecovery}}" hint-placeholder-val="{{false}}">
+<div style="display: flex; flex-direction: column; gap: 8px;">
+<h3 style="margin: 0; font-size: 14px; font-weight: 600;">Recover the drive’s library</h3>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px;">
+<div style="display: flex; flex-direction: column; gap: 8px; padding: 12px; border: 1px solid #262626; border-radius: 6px;">
+<span style="font-size: 14px; font-weight: 500;">1 · Reconnect KINGSTON</span>
+<span style="flex-grow: 1; font-size: 13px; color: #a3a3a3;">Recrate can’t read or repair the drive until it’s plugged in.</span>
+<span role="status" style="display: flex; align-items: center; gap: 6px; font-size: 13px; color: {{connColor}};"><span aria-hidden="true" style="width: 8px; height: 8px; border-radius: 9999px; background: {{connColor}};"></span>{{connText}}</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 8px; padding: 12px; border: 1px solid #262626; border-radius: 6px; opacity: {{restoreOpacity}};">
+<span style="font-size: 14px; font-weight: 500;">2 · Check and restore</span>
+<span style="flex-grow: 1; font-size: 13px; color: #a3a3a3;">Compare the drive’s library and analysis files with the backup from 22:09, put back any that don’t match, then read them back to confirm. Audio files aren’t touched.</span>
+<button type="button" onClick="{{recover}}" disabled="{{restoreLocked}}" style="height: 32px; background: {{restoreBg}}; color: {{restoreFg}}; border: 0; border-radius: 6px; font-size: 14px; font-weight: 500;">Check and restore</button>
+</div>
+</div>
+<span style="font-size: 12px; color: #a3a3a3;">{{recoveryNote}}</span>
+</div>
+</sc-if>
+
+<sc-if value="{{recovered}}" hint-placeholder-val="{{false}}">
+<div role="status" style="display: flex; align-items: flex-start; gap: 10px; padding: 12px; border: 1px solid #262626; border-radius: 6px;">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0; margin-top: 2px;"><path d="M20 6 9 17l-5-5"></path></svg>
+<div style="display: flex; flex-direction: column; gap: 4px; font-size: 14px;">
+<span style="font-weight: 500;">Library restored and confirmed</span>
+<span style="font-size: 13px; color: #a3a3a3;">3 library files were put back from the backup and read back to confirm they match. KINGSTON now has the playlists from Sep 23, 21:14. The 4 audio files this export copied are kept, and your next export reuses them.</span>
+<a href="Export.dc.html" style="align-self: flex-start; margin-top: 4px; font-size: 13px; font-weight: 500; color: #fafafa;">Go to Export</a>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{working}}" hint-placeholder-val="{{false}}">
+<div style="display: flex; flex-direction: column; gap: 6px;">
+<div style="display: flex; font-size: 13px;"><span style="flex-grow: 1;">{{workLabel}}</span><span style="color: #a3a3a3; font-variant-numeric: tabular-nums;">{{workPct}}%</span></div>
+<div role="progressbar" aria-label="{{workLabel}}" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{workPct}}" style="height: 6px; border-radius: 9999px; background: #262626; overflow: hidden;"><div style="height: 100%; width: {{workPct}}%; background: #fafafa;"></div></div>
+</div>
+</sc-if>
+
+<sc-if value="{{checked}}" hint-placeholder-val="{{false}}">
+<div style="display: flex; flex-direction: column; gap: 8px;">
+<h3 style="margin: 0; font-size: 14px; font-weight: 600;">Drive check · just now</h3>
+<div style="display: flex; flex-direction: column; border: 1px solid #262626; border-radius: 6px; font-size: 13px;">
+<sc-for list="{{findings}}" as="f" hint-placeholder-count="4">
+<div style="display: grid; grid-template-columns: 16px minmax(0, 1fr); column-gap: 10px; padding: 8px 12px; border-bottom: 1px solid #262626b3;">
+<span aria-hidden="true" style="display: flex; padding-top: 1px; color: {{f.color}};"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle></svg></span>
+<span><span style="font-weight: 500;">{{f.label}}</span> <span style="color: #a3a3a3;">{{f.text}}</span></span>
+</div>
+</sc-for>
+</div>
+</div>
+</sc-if>
+
+<sc-if value="{{showTracks}}" hint-placeholder-val="{{true}}">
+<div style="display: flex; flex-direction: column; gap: 8px;">
+<h3 style="margin: 0; font-size: 14px; font-weight: 600;">Tracks in this export <span style="font-weight: 400; color: #a3a3a3;">· {{tracksAsOf}}</span></h3>
+<div style="display: flex; flex-direction: column; border: 1px solid #262626; border-radius: 6px; overflow: hidden;">
+<div style="height: 28px; display: grid; grid-template-columns: 110px minmax(0, 1fr) 160px 64px; column-gap: 12px; align-items: center; padding: 0 12px; background: #17171766; border-bottom: 1px solid #262626; font-size: 12px; font-weight: 500; color: #a3a3a3;">
+<span>State</span><span>Track</span><span>Playlist</span><span style="text-align: right;">Size</span>
+</div>
+<sc-for list="{{tracks}}" as="t" hint-placeholder-count="8">
+<div style="height: 32px; display: grid; grid-template-columns: 110px minmax(0, 1fr) 160px 64px; column-gap: 12px; align-items: center; padding: 0 12px; border-bottom: 1px solid #262626b3; font-size: 13px;">
+<span style="display: flex; align-items: center; gap: 6px; color: {{t.color}};"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 9999px; background: {{t.color}};"></span>{{t.state}}</span>
+<span style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">{{t.title}} <span style="color: #a3a3a3;">— {{t.artist}}</span></span>
+<span style="color: #a3a3a3; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">{{t.playlist}}</span>
+<span style="text-align: right; color: #a3a3a3; font-variant-numeric: tabular-nums;">{{t.size}}</span>
+</div>
+</sc-for>
+</div>
+</div>
+</sc-if>
+</div>
+</sc-if>
+
+<!-- Finished exports -->
+<sc-if value="{{d.isFinished}}" hint-placeholder-val="{{false}}">
+<div style="display: flex; flex-direction: column; gap: 16px;">
+<dl style="margin: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 12px;">
+<sc-for list="{{d.stats}}" as="k" hint-placeholder-count="4">
+<div style="display: flex; flex-direction: column; gap: 4px; padding: 12px; border: 1px solid #262626; border-radius: 6px;">
+<dt style="font-size: 12px; color: #a3a3a3;">{{k.label}}</dt>
+<dd style="margin: 0; font-size: 18px; font-weight: 600; font-variant-numeric: tabular-nums;">{{k.value}}</dd>
+</div>
+</sc-for>
+</dl>
+<sc-if value="{{d.hasProblems}}" hint-placeholder-val="{{false}}">
+<div style="display: flex; align-items: center; gap: 10px; padding: 12px; border: 1px solid #262626; border-radius: 6px; font-size: 14px;">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#facc15" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"></path><path d="M12 9v4"></path><path d="M12 17h.01"></path></svg>
+<span style="flex-grow: 1;">{{d.problemText}}</span>
+<button type="button" class="btn" onClick="{{openReport}}" aria-haspopup="dialog" style="height: 32px; padding: 0 12px; background: #262626; border: 0; border-radius: 6px; font-size: 14px;">Retry from report…</button>
+</div>
+</sc-if>
+<p style="margin: 0; font-size: 13px; color: #a3a3a3;">{{d.note}}</p>
+</div>
+</sc-if>
+
+<!-- Backup -->
+<sc-if value="{{d.hasBackup}}" hint-placeholder-val="{{false}}">
+<div style="display: flex; flex-direction: column; gap: 8px;">
+<h3 style="margin: 0; font-size: 14px; font-weight: 600;">Drive library before this export</h3>
+<div style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 1px solid #262626; border-radius: 6px;">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0; color: #a3a3a3;"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>
+<div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px;">
+<span style="font-size: 14px;">{{d.backupTitle}}</span>
+<span style="font-size: 12px; color: #a3a3a3; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">{{d.backupPath}}</span>
+</div>
+<button type="button" class="btn" onClick="{{askRestore}}" aria-haspopup="dialog" style="height: 32px; padding: 0 12px; background: #262626; border: 0; border-radius: 6px; font-size: 14px;">Restore…</button>
+</div>
+<p style="margin: 0; font-size: 13px; color: #a3a3a3;">{{d.backupNote}}</p>
+</div>
+</sc-if>
+
+</div>
+</section>
+</div>
+</main>
+</div>
+
+<!-- Status bar -->
+<div style="height: 28px; flex-shrink: 0; display: flex; align-items: center; gap: 16px; padding: 0 16px; background: #171717; border-top: 1px solid #262626; font-size: 12px; color: #a3a3a3;">
+<span style="flex-grow: 1;">2,418 tracks in collection · 12 need analysis</span>
+<span>{{statusRight}}</span>
+</div>
+
+<!-- Report dialog -->
+<sc-if value="{{reportOpen}}" hint-placeholder-val="{{false}}">
+<div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: #00000099;">
+<dc-import name="ExportResults" on-close="{{closeReport}}" hint-size="960px,640px"></dc-import>
+</div>
+</sc-if>
+
+<!-- Confirmations -->
+<sc-if value="{{confirmOpen}}" hint-placeholder-val="{{false}}">
+<div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: #00000099;">
+<div role="alertdialog" aria-modal="true" aria-labelledby="cf-title" aria-describedby="cf-body" style="width: 440px; box-sizing: border-box; display: flex; flex-direction: column; gap: 16px; padding: 24px; background: #0a0a0a; border: 1px solid #262626; border-radius: 8px; box-shadow: 0px 12px 24px -4px rgba(0,0,0,0.18);">
+<h2 id="cf-title" style="margin: 0; font-size: 16px; font-weight: 600;">{{cf.title}}</h2>
+<p id="cf-body" style="margin: 0; font-size: 14px; color: #a3a3a3; line-height: 20px;">{{cf.body}}</p>
+<div style="display: flex; justify-content: flex-end; gap: 8px;">
+<button type="button" class="btn" onClick="{{closeConfirm}}" style="height: 32px; padding: 0 12px; background: #262626; border: 0; border-radius: 6px; font-size: 14px;">Cancel</button>
+<button type="button" onClick="{{cf.go}}" style="height: 32px; padding: 0 12px; background: #f871711f; color: #f87171; border: 0; border-radius: 6px; font-size: 14px; font-weight: 500;">{{cf.verb}}</button>
+</div>
+</div>
+</div>
+</sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"scenario":{"editor":"enum","options":["copy","unexpected","libwrite"],"default":"copy"},"driveConnected":{"editor":"boolean","default":true},"startChecked":{"editor":null},"$preview":{"width":1440,"height":900}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = { sel: 0, partial: 'stopped', work: null, pct: 0, checked: false, report: false, confirm: null, restored: false, recovered: false };
+    if (props.startChecked) this.state.checked = true;
+    this.timer = null;
+  }
+  componentWillUnmount() { if (this.timer) clearInterval(this.timer); }
+  run(kind, ms, done) {
+    var self = this;
+    if (this.timer) clearInterval(this.timer);
+    this.setState({ work: kind, pct: 0 });
+    this.timer = setInterval(function () {
+      var p = self.state.pct + 10;
+      if (p >= 100) { clearInterval(self.timer); self.timer = null; self.setState(Object.assign({ work: null, pct: 100 }, done)); }
+      else self.setState({ pct: p });
+    }, ms);
+  }
+  renderVals() {
+    var self = this, st = this.state;
+    var partial = st.partial;
+    var scen = this.props.scenario || 'copy';
+    var connected = this.props.driveConnected === undefined ? true : !!this.props.driveConnected;
+    var runs = [
+      partial === 'stopped'
+        ? (scen === 'libwrite'
+          ? { status: st.recovered ? 'Recovered · library restored' : 'Recovery needed', when: 'Sep 23, 22:10', summary: st.recovered ? 'Drive matches the export from Sep 23, 21:14' : 'Disconnected while writing the library', kind: st.recovered ? 'ok' : 'stop', backup: true }
+          : { status: !st.checked ? 'Stopped · not checked yet' : (scen === 'unexpected' ? 'Stopped · needs inspection' : 'Stopped · checked'), when: 'Sep 23, 22:10', summary: !st.checked ? 'KINGSTON disconnected · last known: 11 of 17 copied' : (scen === 'unexpected' ? 'Drive changed since the disconnect' : '11 files from this export · 1 incomplete · 6 not copied'), kind: 'stop', backup: true })
+        : partial === 'resumed'
+          ? { status: 'Complete · resumed', when: 'Sep 23, 22:10', summary: '17 copied · 9 updated · 1 playlist removed', kind: 'ok', backup: true }
+          : { status: 'Discarded', when: 'Sep 23, 22:10', summary: '11 unlisted files deleted · drive matches Sep 23, 21:14', kind: 'ok', backup: true },
+      { status: 'Finished with 2 problems', when: 'Sep 23, 21:14', summary: '15 copied · 9 updated · 2 failed · 2 skipped', kind: 'warn', backup: true },
+      { status: 'Complete', when: 'Sep 19, 23:41', summary: '24 copied · 6 updated', kind: 'ok', backup: true },
+      { status: 'Complete · 1 skipped', when: 'Sep 12, 18:05', summary: '8 copied · 1 skipped (missing file)', kind: 'ok', backup: true },
+      { status: 'Complete · first export', when: 'Sep 12, 17:48', summary: '96 copied · 3 playlists added next to rekordbox’s', kind: 'ok', backup: true }
+    ];
+    var runVals = runs.map(function (r, i) {
+      var on = i === st.sel;
+      return {
+        status: r.status, when: r.when, summary: r.summary, selected: on,
+        cls: 'hrow' + (on ? ' sel' : ''),
+        isStop: r.kind === 'stop', isWarn: r.kind === 'warn', isOk: r.kind === 'ok',
+        iconColor: r.kind === 'stop' ? '#f87171' : (r.kind === 'warn' ? '#facc15' : '#4ade80'),
+        hasBackup: !!r.backup,
+        pick: function () { self.setState({ sel: i, checked: false }); }
+      };
+    });
+    var r = runs[st.sel];
+    var FIN = {
+      0: { stats: [['Copied', '17'], ['Updated', '9'], ['Removed', '1 playlist'], ['Problems', '0']], note: 'Resumed after KINGSTON was reconnected. The 11 files copied earlier were checked, not copied again.' },
+      1: { stats: [['Copied', '15'], ['Updated', '9'], ['Failed', '2'], ['Skipped', '2']], problems: '2 tracks failed and 2 were skipped because their files are missing.', note: 'Device Library and Device Library Plus were written. Safe to eject at 21:16.' },
+      2: { stats: [['Copied', '24'], ['Updated', '6'], ['Failed', '0'], ['Skipped', '0']], note: 'Device Library and Device Library Plus were written. Verified 24 of 24 copies.' },
+      3: { stats: [['Copied', '8'], ['Updated', '0'], ['Failed', '0'], ['Skipped', '1']], problems: 'Kiln was skipped because its file was missing. It was relinked on Sep 13 and copied in the next export.', note: 'Device Library was written.' },
+      4: { stats: [['Copied', '96'], ['Updated', '0'], ['Failed', '0'], ['Skipped', '0']], note: 'First export from Recrate. rekordbox’s 3 playlists were kept, and the drive’s library was backed up first.' }
+    };
+    if (partial === 'discarded') FIN[0] = { stats: [['Copied', '0'], ['Deleted', '11 files'], ['Failed', '0'], ['Skipped', '6']], note: 'The 11 unlisted files were deleted. Players see the playlists from Sep 23, 21:14.' };
+    var isPartial = st.sel === 0 && partial === 'stopped';
+    var fin = FIN[st.sel];
+    var T = [
+      ['Copied', 'Low Tide Signal', 'Marlow Ashe', 'Warehouse — Oct 2026', '118 MB'],
+      ['Copied', 'Parallel Rooms', 'Sable & Finch', 'Warehouse — Oct 2026', '71 MB'],
+      ['Copied', 'Salt Flats', 'Ama Idowu', 'Warm-up', '64 MB'],
+      ['Copied', 'Paper Moons', 'Ama Idowu', 'Warm-up', '69 MB'],
+      ['Copying', 'Slow Burn Theory', 'Marlow Ashe', 'Warm-up', '121 MB'],
+      ['Not copied', 'Dust Motes', 'Kenji Moreau', 'Warm-up', '156 MB'],
+      ['Not copied', 'Harbour Lights', 'Sable & Finch', 'Warm-up', '132 MB'],
+      ['Not copied', 'Nine Rivers', 'Nadia Okoro', 'Warm-up', '146 MB']
+    ];
+    var colors = { 'Copied': '#a3a3a3', 'Copying': '#a3a3a3', 'Verified': '#4ade80', 'Incomplete': '#facc15', 'Not copied': '#fafafa' };
+    var ck = st.checked;
+    if (ck) T = T.map(function (t) {
+      if (t[0] === 'Copied') return ['Verified'].concat(t.slice(1));
+      if (t[0] === 'Copying') return ['Incomplete', t[1], t[2], t[3], '52 of 121 MB'];
+      return t;
+    });
+    var busy = !!st.work;
+    var ask = {
+      discard: { title: 'Discard the partial export?', body: 'Only the 11 files this export created, and that neither library uses, are deleted from KINGSTON. Files that were already on the drive are kept. The drive then matches its export from Sep 23, 21:14. Your library isn’t changed.', verb: 'Discard copies', go: function () { self.setState({ confirm: null }); self.run('discard', 60, { partial: 'discarded', checked: false }); } },
+      restore: st.sel === 4 ? { title: 'Restore KINGSTON’s library from Sep 12?', body: 'The drive’s library goes back to rekordbox’s 3 playlists as they were before Recrate’s first export. Recrate’s playlists disappear from the drive, and its audio files stay until you remove them. The current library is backed up first.', verb: 'Restore', go: function () { self.setState({ confirm: null, restored: true }); } }
+        : { title: 'Restore KINGSTON’s library from before ' + r.when + '?', body: 'The drive’s library goes back to how it was before this export. Playlists and cue changes written since then disappear from the drive, and audio files stay until you remove them. The current library is backed up first.', verb: 'Restore', go: function () { self.setState({ confirm: null, restored: true }); } }
+    };
+    var cf = st.confirm ? ask[st.confirm] : { title: '', body: '', verb: '', go: function () {} };
+    return {
+      runs: runVals,
+      d: {
+        title: r.status, meta: r.when + ' · ' + (st.sel === 3 ? 'Device Library' : 'Device Library and Device Library Plus') + ' · 4 playlists',
+        canOpen: !isPartial && st.sel <= 2,
+        isPartial: isPartial, isFinished: !isPartial,
+        stats: fin ? fin.stats.map(function (k) { return { label: k[0], value: k[1] }; }) : [],
+        hasProblems: !!(fin && fin.problems), problemText: fin && fin.problems ? fin.problems : '',
+        note: fin ? fin.note + (st.sel === 4 && st.restored ? ' The backup was restored on Sep 23.' : '') : '',
+        hasBackup: !!r.backup,
+        backupTitle: st.sel === 4 ? 'rekordbox 6 Device Library · 3 playlists · 137 tracks' : 'Device Library and Plus · rekordbox’s 3 playlists and Recrate’s',
+        backupPath: '~/Music/Recrate/Device backups/KINGSTON/' + ['2026-09-23 22.09', '2026-09-23 21.13', '2026-09-19 23.40', '2026-09-12 18.04', '2026-09-12 17.48'][st.sel],
+        backupNote: st.sel === 4 ? 'Restoring puts back the drive’s library exactly as it was before Recrate’s first export. Audio files stay on the drive.' : 'Every library and analysis file this export changed was backed up first. Restoring puts them back. Audio files stay on the drive.',
+      },
+      tracks: T.map(function (t) { return { state: t[0], color: colors[t[0]], title: t[1], artist: t[2], playlist: t[3], size: t[4] }; }),
+      busy: busy, working: busy,
+      workLabel: st.work === 'recover' ? 'Checking library files and restoring from the backup' : st.work === 'resume' ? 'Resuming · checking copied files, then copying 6 tracks' : (st.work === 'check' ? 'Checking KINGSTON' : 'Deleting 11 unlisted files'),
+      workPct: st.pct,
+      resumeBg: (busy || !ck) ? '#262626' : '#fafafa', resumeFg: (busy || !ck) ? '#a3a3a3' : '#171717',
+      resume: function () { self.run('resume', 120, { partial: 'resumed', checked: false }); },
+      check: function () { self.run('check', 50, { checked: true }); },
+      bannerTitle: scen === 'libwrite' ? 'KINGSTON was disconnected while its library was being written.' : 'KINGSTON was disconnected during the export.',
+      showCopyActions: scen !== 'libwrite' && !(scen === 'unexpected' && ck),
+      inspect: scen === 'unexpected' && ck,
+      isRecovery: scen === 'libwrite' && !st.recovered,
+      recovered: scen === 'libwrite' && st.recovered && isPartial,
+      showTracks: scen !== 'libwrite',
+      connColor: connected ? '#4ade80' : '#a3a3a3',
+      connText: connected ? 'Connected' : 'Not connected · waiting for KINGSTON',
+      restoreLocked: !connected || busy, restoreOpacity: connected ? 1 : 0.5,
+      restoreBg: (!connected || busy) ? '#262626' : '#fafafa', restoreFg: (!connected || busy) ? '#a3a3a3' : '#171717',
+      recover: function () { self.run('recover', 60, { recovered: true }); },
+      recoveryNote: connected ? 'Nothing has been restored yet. Don’t use KINGSTON in a player until this is done.' : 'Nothing has been restored yet, and can’t be until KINGSTON is connected. Don’t use it in a player until then.',
+      stateText: scen === 'libwrite'
+        ? (st.recovered ? 'Recovered with the backup from 22:09.' : 'The library files on the drive may be incomplete, so players may not read it or may show the wrong playlists. The backup from 22:09 is safe on this computer.')
+        : ck && scen === 'unexpected'
+        ? 'Checked just now: the drive has changed since the disconnect. Details are below.'
+        : ck
+        ? 'Checked just now: 10 files match, 1 is incomplete and 6 were never copied. The drive’s library still lists the playlists from Sep 23, 21:14, so players don’t see the new files.'
+        : 'Below is Recrate’s last record from 22:10, not a reading of the drive. Some files may be incomplete or missing. Check the drive before resuming or discarding.',
+      checkLabel: !connected ? 'Connect KINGSTON first' : (ck ? 'Check again' : 'Check drive'),
+      checkLocked: busy || !connected,
+      checkBg: (ck || !connected) ? '#262626' : '#fafafa', checkFg: !connected ? '#a3a3a3' : (ck ? '#fafafa' : '#171717'),
+      checkBorder: ck ? '#262626' : '#1d4ed8',
+      lockAfter: !ck || busy, afterOpacity: ck ? 1 : 0.5,
+      resumeText: ck ? 'Copy the incomplete file and the 6 missing ones, then write the library.' : 'Available after the check, using what’s actually on the drive.',
+      discardText: ck ? 'Delete only the 11 files this export created that neither library uses. Anything that was already on the drive, or that a library points to, is kept.' : 'Available after the check confirms which files this export created.',
+      gateNote: ck ? 'Checked just now. If you unplug KINGSTON again, check it again first.' : 'Resume and Discard are unavailable until the drive has been checked.',
+      tracksAsOf: ck ? 'checked just now' : 'last known at 22:10',
+      checked: st.checked && isPartial,
+      findings: scen === 'unexpected' ? [
+        { color: '#4ade80', label: '10 files match Recrate’s record', text: 'Created by this export at 22:10.' },
+        { color: '#f87171', label: 'The drive’s library changed at 23:02', text: 'Something other than Recrate wrote to it after the disconnect, possibly rekordbox.' },
+        { color: '#facc15', label: '2 of this export’s files are now in that library', text: 'Recrate won’t delete or overwrite files another library uses.' },
+        { color: '#a3a3a3', label: '3 files Recrate didn’t expect', text: 'Created after 22:10 in the drive’s library folder.' }
+      ] : [
+        { color: '#4ade80', label: '11 files were created by this export', text: 'Matched by name, size and time. Neither Device Library nor Device Library Plus uses them.' },
+        { color: '#facc15', label: '1 of them is incomplete', text: 'Slow Burn Theory stopped at 52 of 121 MB.' },
+        { color: '#a3a3a3', label: '6 tracks aren’t on the drive', text: 'Resume copies them.' },
+        { color: '#4ade80', label: 'Library files match the backup from 22:09', text: 'Players still see the playlists from Sep 23, 21:14.' }
+      ],
+      askDiscard: function () { self.setState({ confirm: 'discard' }); },
+      askRestore: function () { self.setState({ confirm: 'restore' }); },
+      confirmOpen: !!st.confirm, cf: cf,
+      closeConfirm: function () { self.setState({ confirm: null }); },
+      reportOpen: st.report,
+      openReport: function () { self.setState({ report: true }); },
+      closeReport: function () { self.setState({ report: false }); },
+      statusRight: partial === 'stopped' ? (scen === 'libwrite' ? (st.recovered ? 'KINGSTON · recovered' : 'KINGSTON · recovery needed') : 'KINGSTON · last export stopped Sep 23, 22:10') : 'KINGSTON · up to date'
+    };
+  }
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,277 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Recrate — Settings</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+.btn:hover{background:#292929}
+.ghost:hover{background:#262626}
+.snav:not(.sel):hover{background:#26262699}
+.brow:hover{background:#26262699}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid #737373;outline-offset:1px}
+</style>
+</helmet>
+<div role="dialog" aria-modal="true" aria-labelledby="st-title" style="position: relative; width: 960px; height: 680px; box-sizing: border-box; display: flex; flex-direction: column; background: #0a0a0a; color: #fafafa; border: 1px solid #262626; border-radius: 8px; box-shadow: 0px 12px 24px -4px rgba(0,0,0,0.18); font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI Variable Text', 'Segoe UI', system-ui, sans-serif; -webkit-font-smoothing: antialiased; overflow: hidden;">
+
+<!-- Header -->
+<div style="height: 52px; flex-shrink: 0; display: flex; align-items: center; gap: 8px; padding: 0 12px 0 20px; border-bottom: 1px solid #262626;">
+<h2 id="st-title" style="margin: 0; flex-grow: 1; font-size: 16px; font-weight: 600;">Settings</h2>
+<span style="font-size: 12px; color: #a3a3a3;">Changes apply right away</span>
+<button type="button" class="ghost" onClick="{{close}}" aria-label="Close" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; padding: 0; background: transparent; border: 0; border-radius: 6px; color: #fafafa;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg></button>
+</div>
+
+<div style="flex-grow: 1; min-height: 0; display: flex;">
+
+<!-- Sections -->
+<nav aria-label="Settings sections" style="width: 200px; flex-shrink: 0; display: flex; flex-direction: column; gap: 2px; padding: 12px 8px; box-sizing: border-box; border-right: 1px solid #262626;">
+<sc-for list="{{sections}}" as="n" hint-placeholder-count="5">
+<button type="button" class="{{n.cls}}" aria-current="{{n.current}}" onClick="{{n.pick}}" style="height: 30px; display: flex; align-items: center; gap: 8px; padding: 0 8px; background: {{n.bg}}; color: #fafafa; border: 0; border-radius: 6px; font-family: inherit; font-size: 14px; font-weight: {{n.weight}}; text-align: left;">{{n.label}}</button>
+</sc-for>
+<div style="flex-grow: 1;"></div>
+<div style="padding: 8px; font-size: 12px; color: #a3a3a3; line-height: 17px;">Analysis and device settings live with those features.</div>
+</nav>
+
+<div style="flex-grow: 1; min-width: 0; min-height: 0; overflow-y: auto; padding: 20px 24px 24px; display: flex; flex-direction: column; gap: 24px;">
+
+<!-- General -->
+<sc-if value="{{is.general}}" hint-placeholder-val="{{false}}">
+<section aria-labelledby="g-t" style="display: flex; flex-direction: column; gap: 16px;">
+<h3 id="g-t" style="margin: 0; font-size: 16px; font-weight: 600;">General</h3>
+<div style="display: grid; grid-template-columns: 180px minmax(0, 1fr); row-gap: 16px; column-gap: 16px; align-items: center; font-size: 14px;">
+<label for="s-lang" style="color: #a3a3a3;">Language</label>
+<select id="s-lang" style="width: 220px; height: 30px; padding: 0 8px; background: #262626; color: #fafafa; border: 0; border-radius: 6px; font-family: inherit; font-size: 14px;"><option>System (English)</option><option>English</option><option>简体中文</option><option>繁體中文（香港）</option></select>
+<label for="s-theme" style="color: #a3a3a3;">Appearance</label>
+<select id="s-theme" style="width: 220px; height: 30px; padding: 0 8px; background: #262626; color: #fafafa; border: 0; border-radius: 6px; font-family: inherit; font-size: 14px;"><option>Dark</option><option>Light</option><option>Match system</option></select>
+<label for="s-keys" style="color: #a3a3a3;">Key notation</label>
+<select id="s-keys" style="width: 220px; height: 30px; padding: 0 8px; background: #262626; color: #fafafa; border: 0; border-radius: 6px; font-family: inherit; font-size: 14px;"><option>Camelot (8A)</option><option>Musical (Am)</option><option>Open Key (1m)</option></select>
+<span style="color: #a3a3a3;">Updates</span>
+<label style="display: flex; align-items: center; gap: 8px;"><input type="checkbox" checked="{{yes}}" style="width: 16px; height: 16px; margin: 0; accent-color: #fafafa;">Check for updates automatically</label>
+</div>
+</section>
+</sc-if>
+
+<!-- Library -->
+<sc-if value="{{is.library}}" hint-placeholder-val="{{true}}">
+<section aria-labelledby="l-t" style="display: flex; flex-direction: column; gap: 16px;">
+<h3 id="l-t" style="margin: 0; font-size: 16px; font-weight: 600;">Library</h3>
+
+<div style="display: flex; flex-direction: column; gap: 6px;">
+<span style="font-size: 14px; font-weight: 500;">Library location</span>
+<div style="display: flex; align-items: center; gap: 8px;">
+<span style="flex-grow: 1; min-width: 0; height: 32px; display: flex; align-items: center; padding: 0 10px; border: 1px solid #262626; border-radius: 6px; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 13px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">~/Music/Recrate/Library</span>
+<button type="button" class="btn" style="height: 32px; padding: 0 12px; background: #262626; border: 0; border-radius: 6px; font-size: 14px; color: #fafafa; font-family: inherit;">Show</button>
+<button type="button" class="btn" style="height: 32px; padding: 0 12px; background: #262626; border: 0; border-radius: 6px; font-size: 14px; color: #fafafa; font-family: inherit;">Move…</button>
+</div>
+<span style="font-size: 12px; color: #a3a3a3;">Playlists, cues, tags and analysis for 2,418 tracks · 184 MB. Audio files are stored separately.</span>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 6px;">
+<span style="font-size: 14px; font-weight: 500;">Imported music</span>
+<label style="display: flex; align-items: center; gap: 8px; font-size: 14px;"><input type="radio" name="s-copy" checked="{{copyOn}}" onChange="{{pickCopy}}" style="width: 16px; height: 16px; margin: 0; accent-color: #fafafa;">Copy into <span style="font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 13px;">~/Music/Recrate/Music</span></label>
+<label style="display: flex; align-items: center; gap: 8px; font-size: 14px;"><input type="radio" name="s-copy" checked="{{leaveOn}}" onChange="{{pickLeave}}" style="width: 16px; height: 16px; margin: 0; accent-color: #fafafa;">Leave files where they are</label>
+<label style="display: flex; align-items: center; gap: 8px; margin-left: 24px; font-size: 14px; opacity: {{organizeOpacity}};"><input type="checkbox" checked="{{yes}}" disabled="{{leaveOn}}" style="width: 16px; height: 16px; margin: 0; accent-color: #fafafa;">Organize copies into Artist / Album folders</label>
+<span style="font-size: 12px; color: #a3a3a3;">This is the default for new imports. You can still choose per import.</span>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 6px;">
+<div style="display: flex; align-items: center; gap: 8px;">
+<span style="flex-grow: 1; font-size: 14px; font-weight: 500;">Watched folders</span>
+<button type="button" class="ghost" onClick="{{addWatch}}" style="height: 28px; display: flex; align-items: center; gap: 4px; padding: 0 8px; background: transparent; color: #fafafa; border: 0; border-radius: 6px; font-family: inherit; font-size: 13px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg>Add folder…</button>
+</div>
+<div style="display: flex; flex-direction: column; border: 1px solid #262626; border-radius: 6px;">
+<sc-for list="{{watch}}" as="w" hint-placeholder-count="2">
+<div style="height: 36px; display: flex; align-items: center; gap: 8px; padding: 0 6px 0 12px; border-bottom: 1px solid #262626b3;">
+<span style="flex-grow: 1; min-width: 0; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 13px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">{{w.path}}</span>
+<span style="font-size: 12px; color: #a3a3a3;">{{w.note}}</span>
+<button type="button" class="ghost" onClick="{{w.remove}}" aria-label="Stop watching {{w.path}}" style="width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; padding: 0; background: transparent; color: #a3a3a3; border: 0; border-radius: 6px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"></path></svg></button>
+</div>
+</sc-for>
+<sc-if value="{{noWatch}}" hint-placeholder-val="{{false}}"><div style="padding: 10px 12px; font-size: 13px; color: #a3a3a3;">No watched folders. New music is only added when you import it.</div></sc-if>
+</div>
+<span style="font-size: 12px; color: #a3a3a3;">New files in these folders show up in Import music for review. Nothing is added without you.</span>
+</div>
+</section>
+</sc-if>
+
+<!-- Tags and files -->
+<sc-if value="{{is.tags}}" hint-placeholder-val="{{false}}">
+<section aria-labelledby="t-t" style="display: flex; flex-direction: column; gap: 16px;">
+<h3 id="t-t" style="margin: 0; font-size: 16px; font-weight: 600;">Tags and files</h3>
+<fieldset style="margin: 0; padding: 0; border: 0; display: flex; flex-direction: column; gap: 8px;">
+<legend style="padding: 0 0 8px; font-size: 14px; font-weight: 500;">When you edit track info</legend>
+<sc-for list="{{policies}}" as="p" hint-placeholder-count="3">
+<label style="display: grid; grid-template-columns: 16px minmax(0, 1fr); column-gap: 8px; row-gap: 2px; font-size: 14px;">
+<input type="radio" name="s-policy" checked="{{p.on}}" onChange="{{p.pick}}" style="width: 16px; height: 16px; margin: 2px 0 0; accent-color: #fafafa;">
+<span>{{p.label}}</span>
+<span></span><span style="font-size: 13px; color: #a3a3a3;">{{p.desc}}</span>
+</label>
+</sc-for>
+</fieldset>
+<div style="display: flex; flex-direction: column; gap: 8px; opacity: {{writeOpacity}};">
+<span style="font-size: 14px; font-weight: 500;">When writing to files</span>
+<label style="display: flex; align-items: center; gap: 8px; font-size: 14px;"><input type="checkbox" checked="{{yes}}" disabled="{{neverWrite}}" style="width: 16px; height: 16px; margin: 0; accent-color: #fafafa;">Include BPM and key</label>
+<label style="display: flex; align-items: center; gap: 8px; font-size: 14px;"><input type="checkbox" checked="{{no}}" disabled="{{neverWrite}}" style="width: 16px; height: 16px; margin: 0; accent-color: #fafafa;">Include tags as #hashtags in the comment</label>
+<label style="display: flex; align-items: center; gap: 8px; font-size: 14px;"><input type="checkbox" checked="{{yes}}" disabled="{{neverWrite}}" style="width: 16px; height: 16px; margin: 0; accent-color: #fafafa;">Keep a copy of the original tags so they can be restored</label>
+<span style="font-size: 12px; color: #a3a3a3;">Cue points and beat grids stay in Recrate’s library and on exported drives. They’re never written into audio files.</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 8px;">
+<span style="font-size: 14px; font-weight: 500;">When files change outside Recrate</span>
+<label style="display: flex; align-items: center; gap: 8px; font-size: 14px;"><input type="checkbox" checked="{{yes}}" style="width: 16px; height: 16px; margin: 0; accent-color: #fafafa;">Offer to update Recrate when another app changes a file’s tags</label>
+</div>
+</section>
+</sc-if>
+
+<!-- Backup -->
+<sc-if value="{{is.backup}}" hint-placeholder-val="{{false}}">
+<section aria-labelledby="b-t" style="display: flex; flex-direction: column; gap: 16px;">
+<div style="display: flex; align-items: center; gap: 8px;">
+<h3 id="b-t" style="margin: 0; flex-grow: 1; font-size: 16px; font-weight: 600;">Backup and restore</h3>
+<button type="button" onClick="{{backupNow}}" disabled="{{backingUp}}" style="height: 32px; padding: 0 14px; background: {{bkBg}}; color: {{bkFg}}; border: 0; border-radius: 6px; font-family: inherit; font-size: 14px; font-weight: 500;">{{bkLabel}}</button>
+</div>
+<div style="display: flex; align-items: flex-start; gap: 10px; padding: 12px; border: 1px solid #262626; border-radius: 6px; font-size: 13px;">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a3a3a3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0; margin-top: 1px;"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg>
+<span style="color: #a3a3a3; line-height: 18px;"><span style="color: #fafafa;">Backups include playlists, cues, beat grids, tags and analysis.</span> Audio files aren’t included. Back up your music folder separately.</span>
+</div>
+<div style="display: grid; grid-template-columns: 180px minmax(0, 1fr); row-gap: 12px; column-gap: 16px; align-items: center; font-size: 14px;">
+<span style="color: #a3a3a3;">Automatic backups</span>
+<div style="display: flex; align-items: center; gap: 8px;">
+<select aria-label="Backup frequency" style="height: 30px; padding: 0 8px; background: #262626; color: #fafafa; border: 0; border-radius: 6px; font-family: inherit; font-size: 14px;"><option>Every day</option><option>Every time Recrate quits</option><option>Every week</option><option>Off</option></select>
+<span style="color: #a3a3a3;">keep the last</span>
+<select aria-label="Backups to keep" style="height: 30px; padding: 0 8px; background: #262626; color: #fafafa; border: 0; border-radius: 6px; font-family: inherit; font-size: 14px;"><option>14</option><option>30</option><option>60</option></select>
+</div>
+<span style="color: #a3a3a3;">Before risky changes</span>
+<label style="display: flex; align-items: center; gap: 8px;"><input type="checkbox" checked="{{yes}}" style="width: 16px; height: 16px; margin: 0; accent-color: #fafafa;">Back up before large imports, reanalysis and restores</label>
+<span style="color: #a3a3a3;">Location</span>
+<div style="display: flex; align-items: center; gap: 8px;">
+<span style="flex-grow: 1; min-width: 0; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 13px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">~/Music/Recrate/Backups</span>
+<button type="button" class="btn" style="height: 30px; padding: 0 12px; background: #262626; border: 0; border-radius: 6px; font-size: 14px; color: #fafafa; font-family: inherit;">Change…</button>
+</div>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 8px;">
+<span style="font-size: 14px; font-weight: 500;">Library backups</span>
+<div style="display: flex; flex-direction: column; border: 1px solid #262626; border-radius: 6px;">
+<sc-for list="{{backups}}" as="k" hint-placeholder-count="5">
+<div class="brow" style="height: 40px; display: grid; grid-template-columns: 150px minmax(0, 1fr) 64px 84px; column-gap: 12px; align-items: center; padding: 0 6px 0 12px; border-bottom: 1px solid #262626b3; font-size: 13px;">
+<span style="font-variant-numeric: tabular-nums;">{{k.when}}</span>
+<span style="color: #a3a3a3; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">{{k.why}}</span>
+<span style="text-align: right; color: #a3a3a3; font-variant-numeric: tabular-nums;">{{k.size}}</span>
+<button type="button" class="ghost" onClick="{{k.restore}}" aria-haspopup="dialog" aria-label="Restore library from {{k.when}}…" style="height: 28px; padding: 0 8px; background: transparent; color: #fafafa; border: 0; border-radius: 6px; font-family: inherit; font-size: 13px;">Restore…</button>
+</div>
+</sc-for>
+</div>
+<span style="font-size: 12px; color: #a3a3a3;">Device libraries are backed up separately, on each device’s History tab.</span>
+</div>
+</section>
+</sc-if>
+
+<!-- Pointers to feature-owned settings -->
+<sc-if value="{{is.elsewhere}}" hint-placeholder-val="{{false}}">
+<section aria-labelledby="e-t" style="display: flex; flex-direction: column; gap: 16px;">
+<h3 id="e-t" style="margin: 0; font-size: 16px; font-weight: 600;">Analysis and devices</h3>
+<div style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 1px solid #262626; border-radius: 6px;">
+<div style="flex-grow: 1; display: flex; flex-direction: column; gap: 2px;"><span style="font-size: 14px; font-weight: 500;">Analysis</span><span style="font-size: 13px; color: #a3a3a3;">BPM range, key detection, protecting your beat grid edits</span></div>
+<span style="font-size: 13px; color: #a3a3a3;">Analysis window › Settings</span>
+</div>
+<div style="display: flex; align-items: center; gap: 12px; padding: 12px; border: 1px solid #262626; border-radius: 6px;">
+<div style="flex-grow: 1; display: flex; flex-direction: column; gap: 2px;"><span style="font-size: 14px; font-weight: 500;">Devices</span><span style="font-size: 13px; color: #a3a3a3;">Library formats, players and the existing rekordbox library, per drive</span></div>
+<span style="font-size: 13px; color: #a3a3a3;">Device page › Device setup…</span>
+</div>
+</section>
+</sc-if>
+</div>
+</div>
+
+<!-- Restore confirmation -->
+<sc-if value="{{confirmOpen}}" hint-placeholder-val="{{false}}">
+<div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: #00000099;">
+<div role="alertdialog" aria-modal="true" aria-labelledby="rc-title" aria-describedby="rc-body" style="width: 460px; box-sizing: border-box; display: flex; flex-direction: column; gap: 16px; padding: 24px; background: #0a0a0a; border: 1px solid #262626; border-radius: 8px; box-shadow: 0px 12px 24px -4px rgba(0,0,0,0.18);">
+<h2 id="rc-title" style="margin: 0; font-size: 16px; font-weight: 600;">Restore the library from {{pending.when}}?</h2>
+<div id="rc-body" style="display: flex; flex-direction: column; gap: 8px; font-size: 14px; color: #a3a3a3; line-height: 20px;">
+<span>Changes made since then are replaced: <span style="color: #fafafa;">{{pending.lost}}</span>.</span>
+<span>The current library is backed up first, so you can undo this. Audio files aren’t touched, and drives aren’t changed until you export again.</span>
+</div>
+<div style="display: flex; justify-content: flex-end; gap: 8px;">
+<button type="button" class="btn" onClick="{{cancelRestore}}" style="height: 32px; padding: 0 12px; background: #262626; color: #fafafa; border: 0; border-radius: 6px; font-family: inherit; font-size: 14px;">Cancel</button>
+<button type="button" onClick="{{doRestore}}" style="height: 32px; padding: 0 12px; background: #f871711f; color: #f87171; border: 0; border-radius: 6px; font-family: inherit; font-size: 14px; font-weight: 500;">Restore</button>
+</div>
+</div>
+</div>
+</sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"onClose":{"editor":null},"$preview":{"width":960,"height":680}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = {
+      section: 'backup', copy: 'copy', policy: 'ask',
+      watch: ['~/Downloads/Promos', '/Volumes/Archive/Vinyl rips'],
+      backups: [
+        { when: 'Sep 23, 03:00', why: 'Daily', size: '184 MB', lost: 'nothing yet' },
+        { when: 'Sep 22, 19:42', why: 'Before importing 146 tracks', size: '181 MB', lost: '146 imported tracks and 38 cue edits' },
+        { when: 'Sep 22, 03:00', why: 'Daily', size: '181 MB', lost: '146 imported tracks, 38 cue edits and 1 new playlist' },
+        { when: 'Sep 21, 03:00', why: 'Daily', size: '180 MB', lost: '151 imported tracks, 52 cue edits and 2 new playlists' },
+        { when: 'Sep 18, 14:10', why: 'Before reanalyzing 12 tracks', size: '179 MB', lost: 'about 4 days of changes, including 12 reanalyzed tracks' }
+      ],
+      confirm: null, busy: false, note: ''
+    };
+  }
+  componentWillUnmount() { if (this.t) clearTimeout(this.t); }
+  renderVals() {
+    var self = this, st = this.state;
+    var S = [['general', 'General'], ['library', 'Library'], ['tags', 'Tags and files'], ['backup', 'Backup and restore'], ['elsewhere', 'Analysis and devices']];
+    var is = {};
+    S.forEach(function (x) { is[x[0]] = st.section === x[0]; });
+    var P = [
+      ['recrate', 'Only change Recrate’s library', 'Files are never touched. Other apps won’t see your edits.'],
+      ['ask', 'Choose each time', 'Edit track info offers Save and Save and write tags.'],
+      ['always', 'Always write to files too', 'Every save also updates the file’s ID3 tags or Vorbis comments.']
+    ];
+    var pending = st.confirm !== null ? st.backups[st.confirm] : { when: '', lost: '' };
+    return {
+      yes: true, no: false,
+      sections: S.map(function (x) {
+        var on = st.section === x[0];
+        return { label: x[1], current: on ? 'page' : 'false', cls: 'snav' + (on ? ' sel' : ''), bg: on ? '#262626' : 'transparent', weight: on ? 500 : 400, pick: function () { self.setState({ section: x[0] }); } };
+      }),
+      is: is,
+      copyOn: st.copy === 'copy', leaveOn: st.copy === 'leave', organizeOpacity: st.copy === 'leave' ? 0.5 : 1,
+      pickCopy: function () { self.setState({ copy: 'copy' }); },
+      pickLeave: function () { self.setState({ copy: 'leave' }); },
+      watch: st.watch.map(function (w, i) {
+        return { path: w, note: i === 0 ? '3 new files' : 'Up to date', remove: function () { self.setState({ watch: self.state.watch.filter(function (_, k) { return k !== i; }) }); } };
+      }),
+      noWatch: st.watch.length === 0,
+      addWatch: function () { if (self.state.watch.indexOf('~/Music/Bandcamp') < 0) self.setState({ watch: self.state.watch.concat(['~/Music/Bandcamp']) }); },
+      policies: P.map(function (p) { return { label: p[1], desc: p[2], on: st.policy === p[0], pick: function () { self.setState({ policy: p[0] }); } }; }),
+      neverWrite: st.policy === 'recrate', writeOpacity: st.policy === 'recrate' ? 0.5 : 1,
+      backups: st.backups.map(function (k, i) { return { when: k.when, why: k.why, size: k.size, restore: function () { self.setState({ confirm: i }); } }; }),
+      backingUp: st.busy,
+      bkLabel: st.busy ? 'Backing up…' : 'Back up now',
+      bkBg: st.busy ? '#262626' : '#fafafa', bkFg: st.busy ? '#a3a3a3' : '#171717',
+      backupNow: function () {
+        self.setState({ busy: true });
+        self.t = setTimeout(function () {
+          self.setState({ busy: false, backups: [{ when: 'Sep 23, 22:31', why: 'Manual', size: '184 MB', lost: 'nothing yet' }].concat(self.state.backups) });
+        }, 1200);
+      },
+      confirmOpen: st.confirm !== null, pending: pending,
+      cancelRestore: function () { self.setState({ confirm: null }); },
+      doRestore: function () {
+        var k = self.state.backups[self.state.confirm];
+        self.setState({ confirm: null, backups: [{ when: 'Sep 23, 22:32', why: 'Before restoring ' + k.when, size: '184 MB', lost: 'nothing yet' }].concat(self.state.backups) });
+      },
+      close: function () { if (self.props.onClose) self.props.onClose(); }
+    };
+  }
+}
+</script>
+</body>
+</html>

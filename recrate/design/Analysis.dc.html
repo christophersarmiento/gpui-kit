@@ -1,0 +1,445 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Recrate — Analysis</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+.ghost:hover{background:#262626}
+.btn:hover{background:#292929}
+.seg.on{background:#0a0a0a;color:#fafafa;box-shadow:0 1px 2px 0 rgba(0,0,0,0.18)}
+.seg:not(.on):hover{color:#fafafa}
+.jrow:not(.sel):hover{background:#26262699}
+.jrow.sel{background:#1e40af33;box-shadow:inset 0 0 0 1px #1d4ed8}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid #737373;outline-offset:1px}
+input::placeholder{color:#a3a3a3}
+</style>
+</helmet>
+<div role="dialog" aria-modal="true" aria-labelledby="an-title" style="width: 880px; height: 640px; box-sizing: border-box; display: flex; flex-direction: column; background: #0a0a0a; color: #fafafa; border: 1px solid #262626; border-radius: 8px; box-shadow: 0px 12px 24px -4px rgba(0,0,0,0.18); font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI Variable Text', 'Segoe UI', system-ui, sans-serif; -webkit-font-smoothing: antialiased; overflow: hidden;">
+
+<!-- Header -->
+<div style="height: 60px; flex-shrink: 0; display: flex; align-items: center; gap: 8px; padding: 0 12px 0 24px; border-bottom: 1px solid #262626;">
+<div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px;">
+<h2 id="an-title" style="margin: 0; font-size: 16px; line-height: 22px; font-weight: 600;">Analysis</h2>
+<div style="font-size: 13px; color: #a3a3a3; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">BPM, beat grid, key and waveform for tracks in your library</div>
+</div>
+<button type="button" class="ghost" onClick="{{close}}" aria-label="Close" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; padding: 0; background: transparent; border: 0; border-radius: 6px; color: #fafafa;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg></button>
+</div>
+
+<!-- Body -->
+<div style="flex-grow: 1; min-height: 0; display: flex; flex-direction: column; gap: 16px; padding: 24px;">
+<div role="tablist" aria-label="Analysis" style="align-self: flex-start; display: flex; padding: 2px; gap: 2px; background: #171717; border-radius: 6px;">
+<sc-for list="{{tabs}}" as="tb" hint-placeholder-count="2">
+<button type="button" role="tab" id="{{tb.id}}" class="{{tb.cls}}" aria-selected="{{tb.on}}" aria-controls="{{tb.panel}}" onClick="{{tb.pick}}" style="height: 28px; padding: 0 16px; background: transparent; border: 0; border-radius: 4px; font-family: inherit; font-size: 13px; color: #a3a3a3;">{{tb.label}}</button>
+</sc-for>
+</div>
+
+<!-- Queue -->
+<sc-if value="{{isQueue}}" hint-placeholder-val="{{true}}">
+<div id="panel-queue" role="tabpanel" aria-labelledby="tab-queue" style="flex-grow: 1; min-height: 0; display: flex; flex-direction: column; gap: 16px;">
+<div style="display: flex; align-items: center; gap: 16px;">
+<div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 8px;">
+<div style="display: flex; align-items: baseline; gap: 8px; font-size: 14px;">
+<span role="status" style="flex-grow: 1; font-variant-numeric: tabular-nums;">{{overall.label}}</span>
+<span style="font-size: 13px; color: #a3a3a3; font-variant-numeric: tabular-nums;">{{overall.eta}}</span>
+</div>
+<div role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{overall.pct}}" aria-label="Queue progress" style="height: 6px; border-radius: 9999px; background: #262626; overflow: hidden;"><div style="height: 100%; width: {{overall.pct}}%; background: {{overall.fill}};"></div></div>
+</div>
+<button type="button" class="btn" onClick="{{togglePause}}" disabled="{{overall.finished}}" style="height: 32px; min-width: 96px; display: flex; align-items: center; justify-content: center; gap: 8px; padding: 0 12px; background: #262626; color: {{overall.pauseFg}}; border: 0; border-radius: 6px; font-family: inherit; font-size: 14px;">
+<sc-if value="{{running}}" hint-placeholder-val="{{true}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="14" y="4" width="4" height="16" rx="1"></rect><rect x="6" y="4" width="4" height="16" rx="1"></rect></svg></sc-if>
+<sc-if value="{{paused}}" hint-placeholder-val="{{false}}"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polygon points="6 3 20 12 6 21 6 3"></polygon></svg></sc-if>
+{{pauseLabel}}</button>
+</div>
+
+<div style="height: 28px; display: flex; align-items: center; gap: 8px;">
+<span style="flex-grow: 1; min-width: 0; font-size: 13px; color: #a3a3a3; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-variant-numeric: tabular-nums;">{{toolbarText}}</span>
+<button type="button" class="btn" onClick="{{retryFailed}}" disabled="{{noFailed}}" style="height: 28px; display: flex; align-items: center; gap: 6px; padding: 0 10px; background: #262626; color: {{retryFg}}; border: 0; border-radius: 6px; font-family: inherit; font-size: 13px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>Retry failed</button>
+<div style="position: relative;">
+<button type="button" class="btn" onClick="{{toggleRe}}" disabled="{{noSelection}}" aria-expanded="{{reOpen}}" aria-haspopup="dialog" style="height: 28px; display: flex; align-items: center; gap: 6px; padding: 0 10px; background: #262626; color: {{reFg}}; border: 0; border-radius: 6px; font-family: inherit; font-size: 13px;">Reanalyze…<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg></button>
+<sc-if value="{{reOpen}}" hint-placeholder-val="{{false}}">
+<div role="dialog" aria-labelledby="re-title" style="position: absolute; top: 36px; right: 0; z-index: 10; width: 312px; box-sizing: border-box; display: flex; flex-direction: column; gap: 12px; padding: 16px; background: #0a0a0a; border: 1px solid #262626; border-radius: 8px; box-shadow: 0px 12px 24px -4px rgba(0,0,0,0.18);">
+<h3 id="re-title" style="margin: 0; font-size: 14px; font-weight: 600; font-variant-numeric: tabular-nums;">{{re.title}}</h3>
+<fieldset style="margin: 0; padding: 0; border: 0; display: flex; flex-direction: column; gap: 8px;">
+<legend style="padding: 0 0 8px; font-size: 12px; font-weight: 500; color: #a3a3a3;">Replace</legend>
+<label style="display: flex; align-items: center; gap: 8px; font-size: 14px;"><input type="checkbox" checked="{{re.bpm}}" onChange="{{re.toggleBpm}}" style="width: 16px; height: 16px; margin: 0; accent-color: #fafafa;">BPM and beat grid</label>
+<label style="display: flex; align-items: center; gap: 8px; font-size: 14px;"><input type="checkbox" checked="{{re.key}}" onChange="{{re.toggleKey}}" style="width: 16px; height: 16px; margin: 0; accent-color: #fafafa;">Key</label>
+<label style="display: flex; align-items: center; gap: 8px; font-size: 14px;"><input type="checkbox" checked="{{re.wave}}" onChange="{{re.toggleWave}}" style="width: 16px; height: 16px; margin: 0; accent-color: #fafafa;">Waveform</label>
+</fieldset>
+<sc-if value="{{re.bpm}}" hint-placeholder-val="{{true}}">
+<div style="display: flex; align-items: flex-start; gap: 8px; padding: 8px 10px; border: 1px solid #262626; border-radius: 6px; font-size: 13px;">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#facc15" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0; margin-top: 1px;"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"></path><path d="M12 9v4"></path><path d="M12 17h.01"></path></svg>
+<span>{{re.warning}}</span>
+</div>
+</sc-if>
+<div style="display: flex; justify-content: flex-end; gap: 8px;">
+<button type="button" class="ghost" onClick="{{toggleRe}}" style="height: 28px; padding: 0 10px; background: transparent; color: #fafafa; border: 0; border-radius: 6px; font-family: inherit; font-size: 13px;">Cancel</button>
+<button type="button" class="btn" onClick="{{re.apply}}" disabled="{{re.nothing}}" style="height: 28px; padding: 0 10px; background: #262626; color: {{re.applyFg}}; border: 0; border-radius: 6px; font-family: inherit; font-size: 13px; font-weight: 500;">Reanalyze</button>
+</div>
+</div>
+</sc-if>
+</div>
+</div>
+
+<div style="flex-grow: 1; min-height: 0; overflow-y: auto; border: 1px solid #262626; border-radius: 6px; display: flex; flex-direction: column;">
+<div style="height: 32px; flex-shrink: 0; display: grid; grid-template-columns: 16px minmax(0, 1fr) 64px 48px 208px; column-gap: 12px; align-items: center; padding: 0 12px; background: #17171766; border-bottom: 1px solid #262626; font-size: 12px; font-weight: 500; color: #a3a3a3;">
+<span></span><span>Track</span><span style="text-align: right;">BPM</span><span>Key</span><span>Status</span>
+</div>
+<sc-for list="{{jobs}}" as="j" hint-placeholder-count="6">
+<div class="{{j.cls}}" style="height: 44px; flex-shrink: 0; display: grid; grid-template-columns: 16px minmax(0, 1fr) 64px 48px 208px; column-gap: 12px; align-items: center; padding: 0 12px; border-bottom: 1px solid #262626b3;">
+<input type="checkbox" aria-label="{{j.selectLabel}}" checked="{{j.selected}}" onChange="{{j.toggle}}" style="width: 16px; height: 16px; margin: 0; accent-color: #fafafa;">
+<span style="min-width: 0; display: flex; flex-direction: column; gap: 2px;">
+<span style="font-size: 14px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">{{j.title}} <span style="color: #a3a3a3;">— {{j.artist}}</span></span>
+<span style="font-size: 12px; color: #a3a3a3; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-family: {{j.detailFont}};">{{j.detail}}</span>
+</span>
+<span style="text-align: right; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 13px; font-variant-numeric: tabular-nums; color: {{j.valueFg}};">{{j.bpm}}</span>
+<span style="font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 13px; color: {{j.valueFg}};">{{j.key}}</span>
+<span style="min-width: 0; display: flex; align-items: center; gap: 6px; font-size: 13px;">
+<sc-if value="{{j.isDone}}" hint-placeholder-val="{{true}}">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg><span>Done</span>
+</sc-if>
+<sc-if value="{{j.isAnalyzing}}" hint-placeholder-val="{{false}}">
+<span role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{j.pct}}" aria-label="{{j.progressLabel}}" style="width: 72px; height: 4px; border-radius: 9999px; background: #262626; overflow: hidden;"><span style="display: block; height: 100%; width: {{j.pct}}%; background: #3b82f6;"></span></span>
+<span style="font-variant-numeric: tabular-nums;">{{j.analyzingText}}</span>
+</sc-if>
+<sc-if value="{{j.isQueued}}" hint-placeholder-val="{{false}}">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a3a3a3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M12 6v6l4 2"></path></svg><span style="color: #a3a3a3;">Queued</span>
+</sc-if>
+<sc-if value="{{j.isFailed}}" hint-placeholder-val="{{false}}">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f87171" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="m15 9-6 6"></path><path d="m9 9 6 6"></path></svg><span style="flex-grow: 1; color: #f87171;">Failed</span>
+<button type="button" class="btn" onClick="{{j.retry}}" style="height: 24px; padding: 0 8px; background: #262626; color: #fafafa; border: 0; border-radius: 6px; font-family: inherit; font-size: 13px;">Retry</button>
+</sc-if>
+<sc-if value="{{j.isLocked}}" hint-placeholder-val="{{false}}">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a3a3a3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg><span style="flex-grow: 1; color: #a3a3a3;">Locked</span>
+<button type="button" class="btn" onClick="{{j.askUnlock}}" style="height: 24px; padding: 0 8px; background: #262626; color: #fafafa; border: 0; border-radius: 6px; font-family: inherit; font-size: 13px;">Unlock…</button>
+</sc-if>
+<sc-if value="{{j.isConfirm}}" hint-placeholder-val="{{false}}">
+<span style="flex-grow: 1;"></span>
+<button type="button" class="ghost" onClick="{{j.keepLocked}}" style="height: 24px; padding: 0 8px; background: transparent; color: #fafafa; border: 0; border-radius: 6px; font-family: inherit; font-size: 13px;">Keep locked</button>
+<button type="button" onClick="{{j.unlock}}" style="height: 24px; padding: 0 8px; background: #f871711f; color: #f87171; border: 0; border-radius: 6px; font-family: inherit; font-size: 13px; font-weight: 500;">Unlock</button>
+</sc-if>
+</span>
+</div>
+</sc-for>
+</div>
+</div>
+</sc-if>
+
+<!-- Settings -->
+<sc-if value="{{isSettings}}" hint-placeholder-val="{{false}}">
+<div id="panel-settings" role="tabpanel" aria-labelledby="tab-settings" style="flex-grow: 1; min-height: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 32px;">
+<div style="display: flex; flex-direction: column; gap: 24px;">
+<section aria-labelledby="set-tempo" style="display: flex; flex-direction: column; gap: 12px;">
+<h3 id="set-tempo" style="margin: 0; font-size: 14px; font-weight: 600;">Tempo</h3>
+<label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; font-weight: 500;">BPM range
+<select value="{{d.range}}" onChange="{{set.range}}" style="height: 32px; padding: 0 8px; background: #262626; color: #fafafa; border: 0; border-radius: 6px; font-family: inherit; font-size: 14px; font-weight: 400;">
+<option value="70-140">70–140</option>
+<option value="88-175">88–175</option>
+<option value="120-240">120–240</option>
+</select>
+<span style="font-size: 12px; font-weight: 400; color: #a3a3a3;">Tempos outside the range are doubled or halved to fit</span>
+</label>
+<fieldset style="margin: 0; padding: 0; border: 0; display: flex; flex-direction: column; gap: 8px;">
+<legend style="padding: 0 0 8px; font-size: 12px; font-weight: 500; color: #a3a3a3;">Beat grid</legend>
+<label style="display: grid; grid-template-columns: 16px minmax(0, 1fr); column-gap: 8px; row-gap: 2px; align-items: start; font-size: 14px;">
+<input type="radio" name="tempo" checked="{{d.constant}}" onChange="{{set.constant}}" style="width: 16px; height: 16px; margin: 2px 0 0; accent-color: #fafafa;">
+<span>Constant tempo</span>
+<span></span><span style="font-size: 13px; color: #a3a3a3;">Most electronic music · one straight grid per track</span>
+</label>
+<label style="display: grid; grid-template-columns: 16px minmax(0, 1fr); column-gap: 8px; row-gap: 2px; align-items: start; font-size: 14px;">
+<input type="radio" name="tempo" checked="{{d.dynamic}}" onChange="{{set.dynamic}}" style="width: 16px; height: 16px; margin: 2px 0 0; accent-color: #fafafa;">
+<span>Dynamic tempo</span>
+<span></span><span style="font-size: 13px; color: #a3a3a3;">Live recordings · the grid follows tempo changes</span>
+</label>
+</fieldset>
+</section>
+<section aria-labelledby="set-key" style="display: flex; flex-direction: column; gap: 12px; padding-top: 24px; border-top: 1px solid #262626;">
+<h3 id="set-key" style="margin: 0; font-size: 14px; font-weight: 600;">Key</h3>
+<label style="display: flex; align-items: center; gap: 8px; font-size: 14px;"><input type="checkbox" checked="{{d.detectKey}}" onChange="{{set.detectKey}}" style="width: 16px; height: 16px; margin: 0; accent-color: #fafafa;">Detect key</label>
+<label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; font-weight: 500; opacity: {{d.notationOpacity}};">Key notation
+<select value="{{d.notation}}" onChange="{{set.notation}}" disabled="{{d.noKey}}" style="height: 32px; padding: 0 8px; background: #262626; color: #fafafa; border: 0; border-radius: 6px; font-family: inherit; font-size: 14px; font-weight: 400;">
+<option value="camelot">Camelot · 8A</option>
+<option value="musical">Musical · Am</option>
+<option value="open">Open Key · 1m</option>
+</select>
+</label>
+</section>
+</div>
+
+<div style="display: flex; flex-direction: column; gap: 24px;">
+<section aria-labelledby="set-protect" style="display: flex; flex-direction: column; gap: 12px;">
+<div style="display: flex; flex-direction: column; gap: 4px;">
+<h3 id="set-protect" style="margin: 0; display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>Protect my edits</h3>
+<span style="font-size: 13px; color: #a3a3a3;">Tracks you’ve edited are locked. Analysis skips them until you unlock them.</span>
+</div>
+<label style="display: flex; align-items: center; gap: 8px; font-size: 14px;"><input type="checkbox" checked="{{d.protectGrids}}" onChange="{{set.protectGrids}}" style="width: 16px; height: 16px; margin: 0; accent-color: #fafafa;">Don’t replace beat grids I’ve edited</label>
+<label style="display: flex; align-items: center; gap: 8px; font-size: 14px;"><input type="checkbox" checked="{{d.protectCues}}" onChange="{{set.protectCues}}" style="width: 16px; height: 16px; margin: 0; accent-color: #fafafa;">Don’t replace cue points</label>
+<sc-if value="{{d.unprotected}}" hint-placeholder-val="{{false}}">
+<div style="display: flex; align-items: flex-start; gap: 8px; padding: 8px 10px; border: 1px solid #262626; border-radius: 6px; font-size: 13px;">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#facc15" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0; margin-top: 1px;"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"></path><path d="M12 9v4"></path><path d="M12 17h.01"></path></svg>
+<span>Reanalyzing will replace beat grids you’ve adjusted by hand</span>
+</div>
+</sc-if>
+</section>
+<section aria-labelledby="set-when" style="display: flex; flex-direction: column; gap: 12px; padding-top: 24px; border-top: 1px solid #262626;">
+<h3 id="set-when" style="margin: 0; font-size: 14px; font-weight: 600;">When to analyze</h3>
+<label style="display: flex; align-items: center; gap: 8px; font-size: 14px;"><input type="checkbox" checked="{{d.onImport}}" onChange="{{set.onImport}}" style="width: 16px; height: 16px; margin: 0; accent-color: #fafafa;">Analyze new tracks on import</label>
+<fieldset style="margin: 0; padding: 0; border: 0; display: flex; flex-direction: column; gap: 8px;">
+<legend style="padding: 0 0 8px; font-size: 12px; font-weight: 500; color: #a3a3a3;">Speed</legend>
+<label style="display: grid; grid-template-columns: 16px minmax(0, 1fr); column-gap: 8px; row-gap: 2px; align-items: start; font-size: 14px;">
+<input type="radio" name="speed" checked="{{d.background}}" onChange="{{set.background}}" style="width: 16px; height: 16px; margin: 2px 0 0; accent-color: #fafafa;">
+<span>In the background</span>
+<span></span><span style="font-size: 13px; color: #a3a3a3;">Keeps playback smooth while you prepare a set</span>
+</label>
+<label style="display: grid; grid-template-columns: 16px minmax(0, 1fr); column-gap: 8px; row-gap: 2px; align-items: start; font-size: 14px;">
+<input type="radio" name="speed" checked="{{d.fast}}" onChange="{{set.fast}}" style="width: 16px; height: 16px; margin: 2px 0 0; accent-color: #fafafa;">
+<span>As fast as possible</span>
+<span></span><span style="font-size: 13px; color: #a3a3a3;">Uses every processor core · avoid while playing out</span>
+</label>
+</fieldset>
+</section>
+</div>
+</div>
+</sc-if>
+</div>
+
+<!-- Footer -->
+<div style="height: 64px; flex-shrink: 0; display: flex; align-items: center; gap: 8px; padding: 0 24px; border-top: 1px solid #262626; font-size: 14px;">
+<sc-if value="{{isQueue}}" hint-placeholder-val="{{true}}">
+<span style="flex-grow: 1; font-size: 13px; color: #a3a3a3;">Analysis keeps running after you close this window</span>
+<button type="button" onClick="{{close}}" style="height: 32px; padding: 0 16px; background: #fafafa; color: #171717; border: 0; border-radius: 6px; font-family: inherit; font-size: 14px; font-weight: 500;">Done</button>
+</sc-if>
+<sc-if value="{{isSettings}}" hint-placeholder-val="{{false}}">
+<button type="button" class="btn" onClick="{{cancelSettings}}" style="height: 32px; padding: 0 12px; background: #262626; color: #fafafa; border: 0; border-radius: 6px; font-family: inherit; font-size: 14px;">Cancel</button>
+<span style="flex-grow: 1; text-align: right; font-size: 13px; color: #a3a3a3;">{{settingsNote}}</span>
+<button type="button" onClick="{{saveSettings}}" disabled="{{clean}}" style="height: 32px; padding: 0 16px; background: {{saveBg}}; color: {{saveFg}}; border: 0; border-radius: 6px; font-family: inherit; font-size: 14px; font-weight: 500;">Save</button>
+</sc-if>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"onClose":{"editor":null},"$preview":{"width":880,"height":640}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    var saved = { range: '88-175', tempo: 'constant', detectKey: true, notation: 'camelot', onImport: true, protectGrids: true, protectCues: true, speed: 'background' };
+    function job(id, title, artist, status, bpm, key, file, extra) {
+      return Object.assign({ id: id, title: title, artist: artist, status: status, pct: 0, bpm: bpm, key: key, file: file, reason: '', confirm: false }, extra || {});
+    }
+    this.state = {
+      tab: 'queue', running: true, reOpen: false, note: '',
+      re: { bpm: true, key: false, wave: false },
+      selected: {},
+      saved: saved, draft: Object.assign({}, saved), settingsNote: '',
+      jobs: [
+        job('j1', 'Low Tide Signal', 'Marlow Ashe', 'done', '122.00', '8A', 'AIFF · 6:12'),
+        job('j2', 'Lantern Code', 'Ama Idowu', 'done', '124.00', '5A', 'AIFF · 7:04'),
+        job('j3', 'Concrete Choir', 'Halden Rue', 'done', '128.00', '11B', 'FLAC · 5:48'),
+        job('j4', 'Salt Flats', 'Ama Idowu', 'done', '118.00', '3A', 'MP3 320 · 6:39'),
+        job('j5', 'Harbour Lights', 'Sable & Finch', 'done', '120.00', '9A', 'WAV · 8:15'),
+        job('j6', 'Kiln', 'Sable & Finch', 'failed', '126.00', '2A', 'FLAC · 6:02', { reason: 'Couldn’t open the file — connect the drive “Archive”, then retry' }),
+        job('j7', 'Night Ferry', 'Marlow Ashe', 'locked', '121.50', '10A', 'AIFF · 6:47'),
+        job('j8', 'Copper Wire', 'Halden Rue', 'analyzing', '130.00', '6A', 'AIFF · 5:21', { pct: 64 }),
+        job('j9', 'Glasshouse', 'Ama Idowu', 'queued', '123.00', '4B', 'FLAC · 6:55'),
+        job('j10', 'Undertow', 'Sable & Finch', 'queued', '125.00', '1A', 'AIFF · 7:30'),
+        job('j11', 'Northbound', 'Halden Rue', 'queued', '127.00', '12A', 'WAV · 6:18'),
+        job('j12', 'Quiet Engine', 'Marlow Ashe', 'queued', '119.00', '7B', 'AIFF · 5:59')
+      ]
+    };
+    this.timer = null;
+  }
+  componentWillUnmount() { if (this.timer) clearInterval(this.timer); this.timer = null; }
+  stopTimer() { if (this.timer) clearInterval(this.timer); this.timer = null; }
+  tick() {
+    var fast = this.state.saved.speed === 'fast';
+    var jobs = this.state.jobs.map(function (j) { return Object.assign({}, j); });
+    var cur = jobs.filter(function (j) { return j.status === 'analyzing'; })[0];
+    if (!cur) {
+      cur = jobs.filter(function (j) { return j.status === 'queued'; })[0];
+      if (!cur) { this.stopTimer(); return; }
+      cur.status = 'analyzing'; cur.pct = 0;
+    } else {
+      cur.pct = Math.min(100, cur.pct + (fast ? 14 : 7));
+      if (cur.pct >= 100) {
+        cur.status = 'done'; cur.pct = 0;
+        var next = jobs.filter(function (j) { return j.status === 'queued'; })[0];
+        if (next) { next.status = 'analyzing'; next.pct = 0; }
+      }
+    }
+    this.setState({ jobs: jobs });
+  }
+  renderVals() {
+    var self = this, st = this.state, sv = st.saved, d = st.draft;
+    var plural = function (n, one, many) { return n + ' ' + (n === 1 ? one : many); };
+    var jobs = st.jobs;
+    var count = function (s) { return jobs.filter(function (j) { return j.status === s; }).length; };
+    var nDone = count('done'), nFailed = count('failed'), nLocked = count('locked'), nQueued = count('queued');
+    var cur = jobs.filter(function (j) { return j.status === 'analyzing'; })[0];
+    var processed = nDone + nFailed + nLocked;
+    var total = jobs.length;
+    var hasWork = !!cur || nQueued > 0;
+
+    if (st.running && hasWork && !this.timer) {
+      this.timer = setInterval(function () { self.tick(); }, 350);
+    }
+    if ((!st.running || !hasWork) && this.timer) this.stopTimer();
+
+    var perTrack = sv.speed === 'fast' ? 12 : 25;
+    var secs = Math.round(((cur ? 1 - cur.pct / 100 : 0) + nQueued) * perTrack);
+    var eta = secs >= 60 ? 'about ' + Math.round(secs / 60) + ' min left' : secs > 0 ? 'less than a minute left' : '';
+    var pct = Math.round((processed + (cur ? cur.pct / 100 : 0)) / total * 100);
+
+    var camelotToMusical = { '1A': 'Abm', '2A': 'Ebm', '3A': 'Bbm', '4A': 'Fm', '5A': 'Cm', '6A': 'Gm', '7A': 'Dm', '8A': 'Am', '9A': 'Em', '10A': 'Bm', '11A': 'F#m', '12A': 'Dbm',
+      '1B': 'B', '2B': 'F#', '3B': 'Db', '4B': 'Ab', '5B': 'Eb', '6B': 'Bb', '7B': 'F', '8B': 'C', '9B': 'G', '10B': 'D', '11B': 'A', '12B': 'E' };
+    var showKey = function (k) {
+      if (!sv.detectKey) return '—';
+      if (sv.notation === 'musical') return camelotToMusical[k];
+      if (sv.notation === 'open') { var n = parseInt(k, 10); return (((n + 4) % 12) + 1) + (k.slice(-1) === 'A' ? 'm' : 'd'); }
+      return k;
+    };
+
+    var selIds = jobs.filter(function (j) { return st.selected[j.id]; });
+    var nSel = selIds.length;
+    var selLocked = selIds.filter(function (j) { return j.status === 'locked'; }).length;
+    var selBusy = selIds.filter(function (j) { return j.status === 'analyzing' || j.status === 'queued'; }).length;
+    var selTarget = nSel - selLocked - selBusy;
+    var reAny = st.re.bpm || st.re.key || st.re.wave;
+
+    var setRe = function (k) { return function () { var r = Object.assign({}, self.state.re); r[k] = !r[k]; self.setState({ re: r }); }; };
+    var patch = function (id, fields) {
+      self.setState({ jobs: self.state.jobs.map(function (j) { return j.id === id ? Object.assign({}, j, fields) : j; }), running: true });
+    };
+
+    var warnBits = ['Beat grid edits on unlocked tracks are replaced.'];
+    if (selLocked) warnBits.push(plural(selLocked, 'locked track is', 'locked tracks are') + ' skipped.');
+    else warnBits.push('Locked tracks are skipped.');
+
+    var toolbarText = st.note || (plural(total, 'track', 'tracks') + (nSel ? ' · ' + nSel + ' selected' : ''));
+
+    var setDraft = function (k, v) { var n = Object.assign({}, self.state.draft); n[k] = v; self.setState({ draft: n, settingsNote: '' }); };
+    var dirty = Object.keys(d).some(function (k) { return d[k] !== sv[k]; });
+
+    return {
+      close: function () { self.stopTimer(); if (self.props.onClose) self.props.onClose('done'); },
+      tabs: [['queue', 'Queue'], ['settings', 'Settings']].map(function (t) {
+        var on = st.tab === t[0];
+        return { id: 'tab-' + t[0], panel: 'panel-' + t[0], label: t[1], on: on, cls: 'seg' + (on ? ' on' : ''), pick: function () { self.setState({ tab: t[0], reOpen: false }); } };
+      }),
+      isQueue: st.tab === 'queue', isSettings: st.tab === 'settings',
+
+      overall: {
+        label: hasWork ? (st.running ? 'Analyzing ' : 'Paused · ') + processed + ' of ' + total : 'Finished · ' + plural(nDone, 'track', 'tracks') + ' analyzed' + (nFailed ? ', ' + nFailed + ' failed' : '') + (nLocked ? ', ' + nLocked + ' locked' : ''),
+        eta: hasWork && st.running ? eta : '',
+        pct: hasWork ? pct : 100,
+        fill: st.running || !hasWork ? '#fafafa' : '#737373',
+        finished: !hasWork,
+        pauseFg: hasWork ? '#fafafa' : '#a3a3a3'
+      },
+      running: st.running, paused: !st.running,
+      pauseLabel: st.running ? 'Pause' : 'Resume',
+      togglePause: function () { self.setState({ running: !self.state.running }); },
+
+      toolbarText: toolbarText,
+      noFailed: nFailed === 0,
+      retryFg: nFailed ? '#fafafa' : '#a3a3a3',
+      retryFailed: function () {
+        self.setState({
+          jobs: self.state.jobs.map(function (j) { return j.status === 'failed' ? Object.assign({}, j, { status: 'queued', reason: '' }) : j; }),
+          running: true, note: plural(nFailed, 'track', 'tracks') + ' added back to the queue'
+        });
+      },
+      noSelection: nSel === 0,
+      reFg: nSel ? '#fafafa' : '#a3a3a3',
+      reOpen: st.reOpen,
+      toggleRe: function () { self.setState({ reOpen: !self.state.reOpen }); },
+      re: {
+        title: 'Reanalyze ' + plural(nSel, 'track', 'tracks'),
+        bpm: st.re.bpm, key: st.re.key, wave: st.re.wave,
+        toggleBpm: setRe('bpm'), toggleKey: setRe('key'), toggleWave: setRe('wave'),
+        warning: warnBits.join(' '),
+        nothing: !reAny || selTarget === 0,
+        applyFg: reAny && selTarget ? '#fafafa' : '#a3a3a3',
+        apply: function () {
+          if (!reAny || !selTarget) return;
+          var ids = {};
+          selIds.forEach(function (j) { if (j.status === 'done' || j.status === 'failed') ids[j.id] = true; });
+          var bits = [plural(selTarget, 'track', 'tracks') + ' added to the queue'];
+          if (selLocked) bits.push(plural(selLocked, 'locked track', 'locked tracks') + ' skipped');
+          if (selBusy) bits.push(selBusy + ' already queued');
+          self.setState({
+            jobs: self.state.jobs.map(function (j) { return ids[j.id] ? Object.assign({}, j, { status: 'queued', reason: '', pct: 0 }) : j; }),
+            selected: {}, reOpen: false, running: true, note: bits.join(' · ')
+          });
+        }
+      },
+
+      jobs: jobs.map(function (j) {
+        var locked = j.status === 'locked';
+        var on = !!st.selected[j.id];
+        var analyzed = j.status === 'done' || locked;
+        var detail = j.file, detailFont = "ui-monospace, 'SF Mono', Menlo, Consolas, monospace";
+        if (j.status === 'failed') { detail = j.reason; detailFont = 'inherit'; }
+        if (locked) { detail = j.confirm ? 'Unlock to reanalyze? Your beat grid edits on this track will be replaced.' : 'Analysis locked — your beat grid edits are protected'; detailFont = 'inherit'; }
+        return {
+          title: j.title, artist: j.artist, detail: detail, detailFont: detailFont,
+          bpm: analyzed ? j.bpm : '—', key: analyzed ? showKey(j.key) : '—',
+          valueFg: analyzed ? '#fafafa' : '#a3a3a3',
+          cls: 'jrow' + (on ? ' sel' : ''), selected: on,
+          selectLabel: 'Select ' + j.title,
+          toggle: function () { var s = Object.assign({}, self.state.selected); s[j.id] = !s[j.id]; self.setState({ selected: s, note: '' }); },
+          isDone: j.status === 'done', isQueued: j.status === 'queued', isFailed: j.status === 'failed',
+          isAnalyzing: j.status === 'analyzing', pct: j.pct, analyzingText: st.running ? 'Analyzing ' + j.pct + '%' : 'Paused at ' + j.pct + '%',
+          progressLabel: 'Analyzing ' + j.title,
+          isLocked: locked && !j.confirm, isConfirm: locked && j.confirm,
+          retry: function () { patch(j.id, { status: 'queued', reason: '' }); },
+          askUnlock: function () { patch(j.id, { confirm: true }); },
+          keepLocked: function () { patch(j.id, { confirm: false }); },
+          unlock: function () { patch(j.id, { status: 'queued', confirm: false }); }
+        };
+      }),
+
+      d: {
+        range: d.range, constant: d.tempo === 'constant', dynamic: d.tempo === 'dynamic',
+        detectKey: d.detectKey, notation: d.notation, noKey: !d.detectKey, notationOpacity: d.detectKey ? '1' : '0.5',
+        onImport: d.onImport, protectGrids: d.protectGrids, protectCues: d.protectCues,
+        unprotected: !d.protectGrids,
+        background: d.speed === 'background', fast: d.speed === 'fast'
+      },
+      set: {
+        range: function (e) { setDraft('range', e.target.value); },
+        constant: function () { setDraft('tempo', 'constant'); },
+        dynamic: function () { setDraft('tempo', 'dynamic'); },
+        detectKey: function () { setDraft('detectKey', !self.state.draft.detectKey); },
+        notation: function (e) { setDraft('notation', e.target.value); },
+        onImport: function () { setDraft('onImport', !self.state.draft.onImport); },
+        protectGrids: function () { setDraft('protectGrids', !self.state.draft.protectGrids); },
+        protectCues: function () { setDraft('protectCues', !self.state.draft.protectCues); },
+        background: function () { setDraft('speed', 'background'); },
+        fast: function () { setDraft('speed', 'fast'); }
+      },
+      clean: !dirty,
+      saveBg: dirty ? '#fafafa' : '#262626',
+      saveFg: dirty ? '#171717' : '#a3a3a3',
+      settingsNote: st.settingsNote || (dirty ? 'Unsaved changes · applies to tracks analyzed from now on' : ''),
+      cancelSettings: function () { self.setState({ draft: Object.assign({}, self.state.saved), settingsNote: '', tab: 'queue' }); },
+      saveSettings: function () {
+        var next = Object.assign({}, self.state.draft);
+        var jobsNext = self.state.jobs;
+        var released = 0;
+        if (!next.protectGrids) {
+          jobsNext = jobsNext.map(function (j) { if (j.status === 'locked') { released++; return Object.assign({}, j, { status: 'queued', confirm: false }); } return j; });
+        }
+        self.setState({
+          saved: next, jobs: jobsNext, running: released ? true : self.state.running,
+          settingsNote: released ? 'Saved · ' + plural(released, 'unlocked track', 'unlocked tracks') + ' added to the queue' : 'Saved'
+        });
+      }
+    };
+  }
+}
+</script>
+</body>
+</html>

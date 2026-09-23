@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Recrate — Missing files</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+.btn:hover{background:#292929}
+.ghost:hover{background:#262626}
+.row:hover{background:#26262699}
+button:focus-visible,input:focus-visible{outline:2px solid #737373;outline-offset:1px}
+</style>
+</helmet>
+<div role="dialog" aria-modal="true" aria-labelledby="rl-title" aria-describedby="rl-sub" style="width: 960px; height: 640px; box-sizing: border-box; display: flex; flex-direction: column; background: #0a0a0a; color: #fafafa; border: 1px solid #262626; border-radius: 8px; box-shadow: 0px 12px 24px -4px rgba(0,0,0,0.18); font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI Variable Text', 'Segoe UI', system-ui, sans-serif; -webkit-font-smoothing: antialiased; overflow: hidden;">
+
+<!-- Header -->
+<div style="height: 60px; flex-shrink: 0; display: flex; align-items: center; gap: 8px; padding: 0 12px 0 24px; border-bottom: 1px solid #262626;">
+<div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px;">
+<h2 id="rl-title" style="margin: 0; font-size: 16px; line-height: 22px; font-weight: 600;">Missing files</h2>
+<div id="rl-sub" style="font-size: 13px; color: #a3a3a3; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">{{subtitle}}</div>
+</div>
+<button type="button" class="ghost" onClick="{{close}}" aria-label="Close" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; padding: 0; background: transparent; border: 0; border-radius: 6px; color: #fafafa;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg></button>
+</div>
+
+<!-- Body -->
+<div style="flex-grow: 1; min-height: 0; display: flex; flex-direction: column; gap: 24px; padding: 24px; overflow-y: auto;">
+
+<!-- Result banner -->
+<sc-if value="{{isDone}}" hint-placeholder-val="{{false}}">
+<div role="status" style="flex-shrink: 0; display: flex; align-items: flex-start; gap: 8px; padding: 12px; border: 1px solid #262626; border-radius: 6px;">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0; margin-top: 2px;"><path d="M20 6 9 17l-5-5"></path></svg>
+<div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px;">
+<span style="font-size: 14px; font-weight: 500;">{{doneTitle}}</span>
+<span style="font-size: 13px; color: #a3a3a3;">Recrate updated their file paths. Cues, beat grids and tags are unchanged.</span>
+</div>
+</div>
+<section aria-labelledby="rd-title" style="flex-shrink: 0; display: flex; flex-direction: column; gap: 8px;">
+<h3 id="rd-title" style="margin: 0; font-size: 14px; font-weight: 600;">Relinked</h3>
+<div style="border: 1px solid #262626; border-radius: 6px; overflow: hidden;">
+<sc-for list="{{relinked}}" as="r" hint-placeholder-count="3">
+<div style="height: 32px; display: grid; grid-template-columns: 16px minmax(0, 260px) minmax(0, 1fr); column-gap: 8px; align-items: center; padding: 0 12px; border-bottom: 1px solid #262626b3; font-size: 13px;">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg>
+<span style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">{{r.name}}</span>
+<span style="font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 12px; color: #a3a3a3; font-variant-numeric: tabular-nums; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">{{r.neu}}</span>
+</div>
+</sc-for>
+</div>
+</section>
+</sc-if>
+
+<!-- Search folder -->
+<sc-if value="{{isReview}}" hint-placeholder-val="{{true}}">
+<div style="flex-shrink: 0; display: flex; align-items: center; gap: 12px;">
+<button type="button" class="btn" onClick="{{pickFolder}}" disabled="{{searching}}" style="height: 32px; flex-shrink: 0; display: flex; align-items: center; gap: 8px; padding: 0 12px; background: #262626; color: #fafafa; border: 0; border-radius: 6px; font-family: inherit; font-size: 14px;">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10.7 20H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H20a2 2 0 0 1 2 2v4.1"></path><circle cx="17" cy="17" r="3"></circle><path d="m21 21-1.9-1.9"></path></svg>
+Search in folder…</button>
+<div aria-live="polite" style="flex-grow: 1; min-width: 0; display: flex; align-items: center; gap: 8px; font-size: 13px; color: #a3a3a3;">
+<span style="font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 12px; color: #fafafa; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">{{folder}}</span>
+<span style="flex-shrink: 0;">{{searchNote}}</span>
+</div>
+<button type="button" class="btn" onClick="{{searchAgain}}" disabled="{{searching}}" style="height: 32px; flex-shrink: 0; display: flex; align-items: center; gap: 8px; padding: 0 12px; background: #262626; color: #fafafa; border: 0; border-radius: 6px; font-family: inherit; font-size: 14px;">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8"></path><path d="M21 3v5h-5"></path><path d="M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16"></path><path d="M8 16H3v5"></path></svg>
+Search again</button>
+</div>
+</sc-if>
+
+<!-- Proposed matches -->
+<sc-if value="{{hasMatches}}" hint-placeholder-val="{{true}}">
+<section aria-labelledby="pm-title" style="flex-shrink: 0; display: flex; flex-direction: column; gap: 8px;">
+<div style="display: flex; align-items: baseline; gap: 8px;">
+<h3 id="pm-title" style="margin: 0; flex-grow: 1; font-size: 14px; font-weight: 600;">Proposed matches</h3>
+<span style="font-size: 12px; color: #a3a3a3; font-variant-numeric: tabular-nums;">{{checkedNote}}</span>
+</div>
+<div style="border: 1px solid #262626; border-radius: 6px; overflow: hidden;">
+<div style="height: 28px; display: grid; grid-template-columns: 16px minmax(0, 1fr) 16px minmax(0, 1fr); column-gap: 12px; align-items: center; padding: 0 12px; background: #17171766; border-bottom: 1px solid #262626; font-size: 12px; font-weight: 500; color: #a3a3a3;">
+<span></span><span>Missing track</span><span></span><span>Proposed location</span>
+</div>
+<sc-for list="{{matches}}" as="m" hint-placeholder-count="3">
+<label class="row" style="height: 52px; display: grid; grid-template-columns: 16px minmax(0, 1fr) 16px minmax(0, 1fr); column-gap: 12px; align-items: center; padding: 0 12px; border-bottom: 1px solid #262626b3;">
+<input type="checkbox" checked="{{m.on}}" onChange="{{m.toggle}}" aria-label="{{m.aria}}" style="width: 16px; height: 16px; margin: 0; accent-color: #fafafa;">
+<span style="min-width: 0; display: flex; flex-direction: column; gap: 4px;">
+<span style="font-size: 14px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">{{m.name}}</span>
+<span style="font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 12px; color: #a3a3a3; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">{{m.old}}</span>
+</span>
+<span style="display: flex; color: #a3a3a3;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg></span>
+<span style="min-width: 0; display: flex; flex-direction: column; gap: 4px;">
+<span style="font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 12px; color: #fafafa; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">{{m.neu}}</span>
+<span style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: #a3a3a3;">
+<sc-if value="{{m.isStrong}}" hint-placeholder-val="{{true}}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="m9 12 2 2 4-4"></path></svg></sc-if>
+<sc-if value="{{m.isWeak}}" hint-placeholder-val="{{false}}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#facc15" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"></path><path d="M12 9v4"></path><path d="M12 17h.01"></path></svg></sc-if>
+<sc-if value="{{m.isManual}}" hint-placeholder-val="{{false}}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path></svg></sc-if>
+<span style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">{{m.confidence}}</span>
+</span>
+</span>
+</label>
+</sc-for>
+</div>
+</section>
+</sc-if>
+
+<!-- Not found -->
+<sc-if value="{{hasMissing}}" hint-placeholder-val="{{true}}">
+<section aria-labelledby="nf-title" style="flex-shrink: 0; display: flex; flex-direction: column; gap: 8px;">
+<div style="display: flex; align-items: baseline; gap: 8px;">
+<h3 id="nf-title" style="margin: 0; flex-grow: 1; font-size: 14px; font-weight: 600;">{{missingHeading}}</h3>
+<span style="font-size: 12px; color: #a3a3a3;">{{missingNote}}</span>
+</div>
+<div style="border: 1px solid #262626; border-radius: 6px; overflow: hidden;">
+<sc-for list="{{missing}}" as="x" hint-placeholder-count="2">
+<div class="row" style="height: 52px; display: grid; grid-template-columns: 16px minmax(0, 1fr) 220px 216px; column-gap: 12px; align-items: center; padding: 0 12px; border-bottom: 1px solid #262626b3;">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#a3a3a3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"></path><path d="M14 2v4a2 2 0 0 0 2 2h4"></path><path d="m14.5 12.5-5 5"></path><path d="m9.5 12.5 5 5"></path></svg>
+<span style="min-width: 0; display: flex; flex-direction: column; gap: 4px;">
+<span style="font-size: 14px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">{{x.name}}</span>
+<span style="font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 12px; color: #a3a3a3; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">{{x.old}}</span>
+</span>
+<sc-if value="{{x.idle}}" hint-placeholder-val="{{true}}">
+<span style="min-width: 0; display: flex; align-items: center; gap: 6px; font-size: 13px; color: #a3a3a3;">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0;"><path d="M21 15V6"></path><path d="M18.5 18a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z"></path><path d="M12 12H3"></path><path d="M16 6H3"></path><path d="M12 18H3"></path></svg>
+<span style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">{{x.playlists}}</span>
+</span>
+<span style="display: flex; justify-content: flex-end; gap: 8px;">
+<button type="button" class="btn" onClick="{{x.locate}}" style="height: 28px; padding: 0 10px; background: #262626; color: #fafafa; border: 0; border-radius: 6px; font-family: inherit; font-size: 13px;">Locate…</button>
+<button type="button" class="ghost" onClick="{{x.askRemove}}" style="height: 28px; padding: 0 10px; background: transparent; color: #fafafa; border: 0; border-radius: 6px; font-family: inherit; font-size: 13px;">Remove from library…</button>
+</span>
+</sc-if>
+<sc-if value="{{x.confirming}}" hint-placeholder-val="{{false}}">
+<span role="alert" style="min-width: 0; font-size: 13px; color: #a3a3a3;">{{x.removeNote}}</span>
+<span style="display: flex; justify-content: flex-end; gap: 8px;">
+<button type="button" class="btn" onClick="{{x.keep}}" style="height: 28px; padding: 0 10px; background: #262626; color: #fafafa; border: 0; border-radius: 6px; font-family: inherit; font-size: 13px;">Keep</button>
+<button type="button" onClick="{{x.remove}}" style="height: 28px; padding: 0 10px; background: #f871711f; color: #f87171; border: 0; border-radius: 6px; font-family: inherit; font-size: 13px; font-weight: 500;">Remove</button>
+</span>
+</sc-if>
+</div>
+</sc-for>
+</div>
+</section>
+</sc-if>
+
+<sc-if value="{{hasRemoved}}" hint-placeholder-val="{{false}}">
+<div style="flex-shrink: 0; font-size: 12px; color: #a3a3a3;">{{removedNote}}</div>
+</sc-if>
+</div>
+
+<!-- Footer -->
+<div style="height: 64px; flex-shrink: 0; display: flex; align-items: center; gap: 8px; padding: 0 24px; border-top: 1px solid #262626; font-size: 14px;">
+<sc-if value="{{isReview}}" hint-placeholder-val="{{true}}">
+<button type="button" class="btn" onClick="{{close}}" style="height: 32px; padding: 0 12px; background: #262626; color: #fafafa; border: 0; border-radius: 6px; font-family: inherit; font-size: 14px;">Cancel</button>
+<div style="flex-grow: 1;"></div>
+<button type="button" onClick="{{relink}}" disabled="{{noneChecked}}" style="height: 32px; padding: 0 16px; background: {{btnBg}}; color: {{btnFg}}; border: 0; border-radius: 6px; font-family: inherit; font-size: 14px; font-weight: 500;">{{relinkLabel}}</button>
+</sc-if>
+<sc-if value="{{isDone}}" hint-placeholder-val="{{false}}">
+<div style="flex-grow: 1;"></div>
+<sc-if value="{{canRelinkMore}}" hint-placeholder-val="{{false}}">
+<button type="button" class="btn" onClick="{{relink}}" style="height: 32px; padding: 0 12px; background: #262626; color: #fafafa; border: 0; border-radius: 6px; font-family: inherit; font-size: 14px;">{{relinkLabel}}</button>
+</sc-if>
+<button type="button" onClick="{{close}}" style="height: 32px; padding: 0 16px; background: #fafafa; color: #171717; border: 0; border-radius: 6px; font-family: inherit; font-size: 14px; font-weight: 500;">Done</button>
+</sc-if>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"onClose":{"editor":null},"$preview":{"width":960,"height":640}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = this.initial();
+    this.timer = null;
+  }
+  initial() {
+    return {
+      phase: 'review', folder: '/Volumes/Archive', searching: false, removed: 0,
+      relinked: [],
+      matches: [
+        { id: 'lts', title: 'Low Tide Signal', artist: 'Marlow Ashe', old: '~/Music/Recrate/Marlow Ashe/Low Tide Signal.aiff', neu: '/Volumes/Archive/Recrate/Marlow Ashe/Low Tide Signal.aiff', conf: 'strong', on: true, exporting: false },
+        { id: 'lc', title: 'Lantern Code', artist: 'Ama Idowu', old: '~/Music/Recrate/Ama Idowu/Lantern Code.flac', neu: '/Volumes/Archive/Recrate/Ama Idowu/Lantern Code.flac', conf: 'strong', on: true, exporting: false },
+        { id: 'sf', title: 'Salt Flats', artist: 'Ama Idowu', old: '~/Music/Recrate/Ama Idowu/Salt Flats.aiff', neu: '/Volumes/Archive/Promos/2025/Salt Flats.aiff', conf: 'weak', on: false, exporting: false }
+      ],
+      missing: [
+        { id: 'cc', title: 'Concrete Choir', artist: 'Halden Rue', old: '~/Music/Recrate/Halden Rue/Concrete Choir.aiff', found: '/Volumes/Archive/Unsorted/concrete_choir_master.aiff', playlists: ['Warehouse — Oct 2026'], exporting: true, confirming: false },
+        { id: 'hl', title: 'Harbour Lights', artist: 'Sable & Finch', old: '~/Music/Recrate/Sable & Finch/Harbour Lights.mp3', found: '/Volumes/Archive/Unsorted/harbour-lights.mp3', playlists: ['Warm-up', 'Sunday rooftop'], exporting: true, confirming: false }
+      ]
+    };
+  }
+  componentWillUnmount() { if (this.timer) clearTimeout(this.timer); }
+  plural(n, one, many) { return n + ' ' + (n === 1 ? one : many); }
+  renderVals() {
+    var self = this, st = this.state;
+    var isDone = st.phase === 'done';
+    var checked = st.matches.filter(function (m) { return m.on; });
+    var n = checked.length;
+    var stillMissing = st.matches.length + st.missing.length;
+    var exporting = st.matches.concat(st.missing).filter(function (t) { return t.exporting; }).length;
+    var confText = {
+      strong: 'Same name, size and length',
+      weak: 'Same name, length differs by 0:02',
+      manual: 'Chosen by you'
+    };
+    var matches = st.matches.map(function (m, i) {
+      return {
+        name: m.title + ' — ' + m.artist, old: m.old, neu: m.neu, on: m.on,
+        aria: 'Relink ' + m.title + ' — ' + m.artist,
+        confidence: confText[m.conf],
+        isStrong: m.conf === 'strong', isWeak: m.conf === 'weak', isManual: m.conf === 'manual',
+        toggle: function () {
+          var list = self.state.matches.slice();
+          list[i] = Object.assign({}, list[i], { on: !list[i].on });
+          self.setState({ matches: list });
+        }
+      };
+    });
+    var setMissing = function (i, patch) {
+      var list = self.state.missing.slice();
+      list[i] = Object.assign({}, list[i], patch);
+      self.setState({ missing: list });
+    };
+    var missing = st.missing.map(function (x, i) {
+      var pl = x.playlists.length ? 'In ' + x.playlists.join(', ') : 'Not in any playlist';
+      return {
+        name: x.title + ' — ' + x.artist, old: x.old, playlists: pl,
+        idle: !x.confirming, confirming: x.confirming,
+        removeNote: x.playlists.length ? 'Also removes it from ' + self.plural(x.playlists.length, 'playlist', 'playlists') : 'Removes it from the collection',
+        locate: function () {
+          var rest = self.state.missing.filter(function (_, j) { return j !== i; });
+          var added = { id: x.id, title: x.title, artist: x.artist, old: x.old, neu: x.found, conf: 'manual', on: true, exporting: x.exporting };
+          self.setState({ missing: rest, matches: self.state.matches.concat([added]) });
+        },
+        askRemove: function () { setMissing(i, { confirming: true }); },
+        keep: function () { setMissing(i, { confirming: false }); },
+        remove: function () {
+          var rest = self.state.missing.filter(function (_, j) { return j !== i; });
+          self.setState({ missing: rest, removed: self.state.removed + 1 });
+        }
+      };
+    });
+    var subtitle;
+    if (!stillMissing) subtitle = 'Every track in the library can be found.';
+    else subtitle = (stillMissing === 1 ? '1 track can’t be found. ' : stillMissing + ' tracks can’t be found. ') +
+      (exporting === 0 ? 'None are in playlists you’re exporting.' : (exporting === 1 ? '1 is in a playlist you’re exporting.' : exporting + ' are in playlists you’re exporting.'));
+    var relinkedCount = st.relinked.length;
+    return {
+      subtitle: subtitle,
+      isDone: isDone, isReview: !isDone,
+      doneTitle: this.plural(relinkedCount, 'track', 'tracks') + ' relinked. ' + (stillMissing ? stillMissing + ' still missing' : 'Nothing is missing'),
+      relinked: st.relinked.map(function (r) { return { name: r.title + ' — ' + r.artist, neu: r.neu }; }),
+      folder: st.folder,
+      searching: st.searching,
+      searchNote: st.searching ? 'Searching…' : '· ' + this.plural(st.matches.length, 'match', 'matches') + ' found',
+      hasMatches: st.matches.length > 0,
+      matches: matches,
+      checkedNote: n + ' of ' + st.matches.length + ' selected',
+      hasMissing: st.missing.length > 0,
+      missingHeading: isDone ? 'Still missing' : 'Not found',
+      missingNote: isDone ? 'Export skips these tracks' : 'No file with a matching name in ' + st.folder,
+      missing: missing,
+      hasRemoved: st.removed > 0,
+      removedNote: this.plural(st.removed, 'track', 'tracks') + ' removed from the library',
+      noneChecked: n === 0,
+      canRelinkMore: n > 0,
+      btnBg: n ? '#fafafa' : '#262626',
+      btnFg: n ? '#171717' : '#a3a3a3',
+      relinkLabel: 'Relink ' + this.plural(n, 'track', 'tracks'),
+      pickFolder: function () {
+        var next = self.state.folder === '/Volumes/Archive' ? '~/Downloads' : '/Volumes/Archive';
+        self.setState({ folder: next });
+        self.runSearch();
+      },
+      searchAgain: function () { self.runSearch(); },
+      relink: function () {
+        if (!n) return;
+        var rest = self.state.matches.filter(function (m) { return !m.on; });
+        self.setState({ phase: 'done', relinked: self.state.relinked.concat(checked), matches: rest });
+      },
+      close: function () {
+        if (self.props.onClose) self.props.onClose(isDone ? 'done' : 'cancel');
+        else self.setState(self.initial());
+      }
+    };
+  }
+  runSearch() {
+    var self = this;
+    if (this.timer) clearTimeout(this.timer);
+    this.setState({ searching: true });
+    this.timer = setTimeout(function () { self.timer = null; self.setState({ searching: false }); }, 900);
+  }
+}
+</script>
+</body>
+</html>

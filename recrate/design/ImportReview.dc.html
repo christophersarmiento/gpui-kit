@@ -1,0 +1,460 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Recrate — Import music</title>
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<style>
+body{margin:0}
+.ghost:hover{background:#262626}
+.btn:hover{background:#292929}
+.frow:not(.sel):hover{background:#26262699}
+.frow.sel{background:#1e40af33;box-shadow:inset 0 0 0 1px #1d4ed8}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid #737373;outline-offset:1px}
+input::placeholder{color:#a3a3a3}
+</style>
+</helmet>
+<div role="dialog" aria-modal="true" aria-labelledby="im-title" style="width: 960px; height: 680px; box-sizing: border-box; display: flex; flex-direction: column; background: #0a0a0a; color: #fafafa; border: 1px solid #262626; border-radius: 8px; box-shadow: 0px 12px 24px -4px rgba(0,0,0,0.18); font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI Variable Text', 'Segoe UI', system-ui, sans-serif; -webkit-font-smoothing: antialiased; overflow: hidden;">
+
+<!-- Header -->
+<div style="height: 60px; flex-shrink: 0; display: flex; align-items: center; gap: 8px; padding: 0 12px 0 24px; border-bottom: 1px solid #262626;">
+<div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px;">
+<h2 id="im-title" style="margin: 0; font-size: 16px; line-height: 22px; font-weight: 600;">Import music</h2>
+<div style="font-size: 13px; color: #a3a3a3; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">{{subtitle}}</div>
+</div>
+<button type="button" class="ghost" onClick="{{close}}" aria-label="Close" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; padding: 0; background: transparent; border: 0; border-radius: 6px; color: #fafafa;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg></button>
+</div>
+
+<!-- Step: Review -->
+<sc-if value="{{isReview}}" hint-placeholder-val="{{true}}">
+<div style="flex-grow: 1; min-height: 0; display: grid; grid-template-columns: minmax(0, 1fr) 288px; gap: 24px; padding: 24px;">
+
+<!-- Summary and findings -->
+<div style="min-height: 0; display: flex; flex-direction: column; gap: 16px;">
+<section aria-labelledby="sum-title" style="display: flex; flex-direction: column; gap: 8px;">
+<h3 id="sum-title" style="margin: 0; height: 24px; display: flex; align-items: center; font-size: 14px; font-weight: 600;">Scan summary</h3>
+<dl style="margin: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px;">
+<sc-for list="{{tiles}}" as="t" hint-placeholder-count="4">
+<div style="display: flex; flex-direction: column-reverse; gap: 2px; padding: 8px 12px; border: 1px solid #262626; border-radius: 6px;">
+<dt style="font-size: 12px; color: #a3a3a3; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">{{t.label}}</dt>
+<dd style="margin: 0; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 20px; line-height: 28px; font-weight: 600; font-variant-numeric: tabular-nums;">{{t.n}}</dd>
+</div>
+</sc-for>
+</dl>
+</section>
+
+<section aria-labelledby="fi-title" style="flex-grow: 1; min-height: 0; display: flex; flex-direction: column; gap: 8px;">
+<div style="height: 24px; display: flex; align-items: center; gap: 8px;">
+<h3 id="fi-title" style="margin: 0; flex-grow: 1; font-size: 14px; font-weight: 600;">Needs a decision</h3>
+<span style="font-size: 12px; color: #a3a3a3;">{{findingsMeta}}</span>
+</div>
+<div style="flex-grow: 1; min-height: 0; overflow-y: auto; border: 1px solid #262626; border-radius: 6px; display: flex; flex-direction: column;">
+<sc-if value="{{noFindings}}" hint-placeholder-val="{{false}}">
+<div style="flex-grow: 1; display: flex; align-items: center; justify-content: center; padding: 24px; font-size: 13px; color: #a3a3a3;">{{noFindingsText}}</div>
+</sc-if>
+
+<sc-if value="{{dup.show}}" hint-placeholder-val="{{true}}">
+<div style="height: 36px; flex-shrink: 0; display: flex; align-items: center; gap: 8px; padding: 0 8px 0 12px; background: #17171766; border-bottom: 1px solid #262626; font-size: 13px; font-weight: 500;">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color: #a3a3a3;"><rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path></svg>
+<span style="flex-grow: 1;">Duplicates <span style="font-weight: 400; color: #a3a3a3; font-variant-numeric: tabular-nums;">{{dup.count}}</span></span>
+<select aria-label="What to do with duplicates" value="{{dupAction}}" onChange="{{setDup}}" style="width: 176px; height: 28px; padding: 0 8px; background: #262626; color: #fafafa; border: 0; border-radius: 6px; font-family: inherit; font-size: 13px;">
+<option value="skip">Skip</option>
+<option value="import">Import anyway</option>
+<option value="replace">Replace older copy</option>
+</select>
+</div>
+<sc-for list="{{dup.items}}" as="r" hint-placeholder-count="3">
+<div style="height: 40px; flex-shrink: 0; display: flex; flex-direction: column; justify-content: center; gap: 2px; padding: 0 12px 0 36px; border-bottom: 1px solid #262626b3;">
+<span style="font-size: 14px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">{{r.name}}</span>
+<span style="font-size: 12px; color: #a3a3a3; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">{{r.detail}}</span>
+</div>
+</sc-for>
+<sc-if value="{{dup.hasMore}}" hint-placeholder-val="{{true}}">
+<div style="height: 32px; flex-shrink: 0; display: flex; align-items: center; padding: 0 12px 0 36px; border-bottom: 1px solid #262626b3; font-size: 13px; color: #a3a3a3;">{{dup.more}}</div>
+</sc-if>
+</sc-if>
+
+<sc-if value="{{moved.show}}" hint-placeholder-val="{{true}}">
+<div style="height: 36px; flex-shrink: 0; display: flex; align-items: center; gap: 8px; padding: 0 8px 0 12px; background: #17171766; border-bottom: 1px solid #262626; font-size: 13px; font-weight: 500;">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="color: #a3a3a3;"><path d="M2 9V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H20a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H2"></path><path d="m8 16 3-3-3-3"></path><path d="M2 16v-1a2 2 0 0 1 2-2h6"></path></svg>
+<span style="flex-grow: 1;">Already in library, but moved <span style="font-weight: 400; color: #a3a3a3; font-variant-numeric: tabular-nums;">{{moved.count}}</span></span>
+<select aria-label="What to do with moved files" value="{{movedAction}}" onChange="{{setMoved}}" style="width: 176px; height: 28px; padding: 0 8px; background: #262626; color: #fafafa; border: 0; border-radius: 6px; font-family: inherit; font-size: 13px;">
+<option value="update">Update location</option>
+<option value="skip">Skip</option>
+</select>
+</div>
+<sc-for list="{{moved.items}}" as="r" hint-placeholder-count="2">
+<div style="height: 40px; flex-shrink: 0; display: flex; flex-direction: column; justify-content: center; gap: 2px; padding: 0 12px 0 36px; border-bottom: 1px solid #262626b3;">
+<span style="font-size: 14px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">{{r.name}}</span>
+<span style="font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 12px; color: #a3a3a3; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">{{r.detail}}</span>
+</div>
+</sc-for>
+</sc-if>
+
+<sc-if value="{{unsup.show}}" hint-placeholder-val="{{true}}">
+<div style="height: 36px; flex-shrink: 0; display: flex; align-items: center; gap: 8px; padding: 0 12px; background: #17171766; border-bottom: 1px solid #262626; font-size: 13px; font-weight: 500;">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#facc15" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"></path><path d="M12 9v4"></path><path d="M12 17h.01"></path></svg>
+<span style="flex-grow: 1;">Unsupported <span style="font-weight: 400; color: #a3a3a3; font-variant-numeric: tabular-nums;">{{unsup.count}}</span></span>
+<span style="font-size: 13px; font-weight: 400; color: #a3a3a3;">Won’t be imported</span>
+</div>
+<sc-for list="{{unsup.items}}" as="r" hint-placeholder-count="3">
+<div style="height: 40px; flex-shrink: 0; display: flex; flex-direction: column; justify-content: center; gap: 2px; padding: 0 12px 0 36px; border-bottom: 1px solid #262626b3;">
+<span style="font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 13px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">{{r.name}}</span>
+<span style="font-size: 12px; color: #a3a3a3; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">{{r.detail}}</span>
+</div>
+</sc-for>
+</sc-if>
+</div>
+</section>
+</div>
+
+<!-- Sources and options -->
+<div style="min-height: 0; display: flex; flex-direction: column; gap: 16px;">
+<section aria-labelledby="src-title" style="display: flex; flex-direction: column; gap: 8px;">
+<div style="height: 24px; display: flex; align-items: center; gap: 8px;">
+<h3 id="src-title" style="margin: 0; flex-grow: 1; font-size: 14px; font-weight: 600;">Sources</h3>
+<button type="button" class="btn" onClick="{{addFolder}}" style="height: 24px; padding: 0 8px; background: #262626; color: #fafafa; border: 0; border-radius: 6px; font-family: inherit; font-size: 13px;">Add folder…</button>
+</div>
+<div style="border: 1px solid #262626; border-radius: 6px; overflow: hidden; display: flex; flex-direction: column;">
+<sc-if value="{{noSources}}" hint-placeholder-val="{{false}}">
+<div style="height: 40px; display: flex; align-items: center; padding: 0 12px; font-size: 13px; color: #a3a3a3;">Add a folder to scan for music</div>
+</sc-if>
+<sc-for list="{{sources}}" as="s" hint-placeholder-count="2">
+<div style="height: 40px; flex-shrink: 0; display: flex; align-items: center; gap: 8px; padding: 0 4px 0 12px; border-bottom: 1px solid #262626b3;">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0; color: #a3a3a3;"><path d="M20 20a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.9a2 2 0 0 1-1.69-.9L9.6 3.9A2 2 0 0 0 7.93 3H4a2 2 0 0 0-2 2v13a2 2 0 0 0 2 2Z"></path></svg>
+<div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px;">
+<span style="font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 13px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">{{s.path}}</span>
+<span style="font-size: 12px; color: #a3a3a3; font-variant-numeric: tabular-nums;">{{s.meta}}</span>
+</div>
+<button type="button" class="ghost" onClick="{{s.remove}}" aria-label="{{s.removeLabel}}" style="width: 28px; height: 28px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; padding: 0; background: transparent; border: 0; border-radius: 6px; color: #a3a3a3;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg></button>
+</div>
+</sc-for>
+</div>
+</section>
+
+<section aria-labelledby="opt-title" style="display: flex; flex-direction: column; gap: 12px; padding-top: 16px; border-top: 1px solid #262626;">
+<h3 id="opt-title" style="margin: 0; font-size: 14px; font-weight: 600;">Options</h3>
+<fieldset style="margin: 0; padding: 0; border: 0; display: flex; flex-direction: column; gap: 8px;">
+<legend style="padding: 0 0 8px; font-size: 12px; font-weight: 500; color: #a3a3a3;">Files</legend>
+<label style="display: grid; grid-template-columns: 16px minmax(0, 1fr); column-gap: 8px; row-gap: 2px; align-items: start; font-size: 14px;">
+<input type="radio" name="files" checked="{{copyOn}}" onChange="{{pickCopy}}" style="width: 16px; height: 16px; margin: 2px 0 0; accent-color: #fafafa;">
+<span>Copy files into <span style="font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 13px;">~/Music/Recrate</span></span>
+<span></span><span style="font-size: 13px; color: #a3a3a3;">Originals stay where they are</span>
+</label>
+<label style="display: grid; grid-template-columns: 16px minmax(0, 1fr); column-gap: 8px; row-gap: 2px; align-items: start; font-size: 14px;">
+<input type="radio" name="files" checked="{{leaveOn}}" onChange="{{pickLeave}}" style="width: 16px; height: 16px; margin: 2px 0 0; accent-color: #fafafa;">
+<span>Leave files where they are</span>
+<span></span><span style="font-size: 13px; color: #a3a3a3;">Tracks go missing if the drive is unplugged</span>
+</label>
+</fieldset>
+<label style="display: flex; align-items: center; gap: 8px; font-size: 14px;"><input type="checkbox" checked="{{analyze}}" onChange="{{toggleAnalyze}}" style="width: 16px; height: 16px; margin: 0; accent-color: #fafafa;">Analyze after import</label>
+<label style="display: flex; flex-direction: column; gap: 4px; font-size: 13px; font-weight: 500;">Add to playlist
+<select value="{{playlist}}" onChange="{{setPlaylist}}" style="height: 32px; padding: 0 8px; background: #262626; color: #fafafa; border: 0; border-radius: 6px; font-family: inherit; font-size: 14px; font-weight: 400;">
+<option value="none">None</option>
+<option value="warehouse">Warehouse — Oct 2026</option>
+<option value="new">New playlist…</option>
+</select>
+</label>
+<sc-if value="{{isNewPlaylist}}" hint-placeholder-val="{{false}}">
+<input type="text" aria-label="New playlist name" placeholder="Playlist name" value="{{newName}}" onChange="{{setNewName}}" style="height: 32px; box-sizing: border-box; padding: 0 10px; background: #0a0a0a; color: #fafafa; border: 1px solid #2f2f2f; border-radius: 6px; font-family: inherit; font-size: 14px;">
+</sc-if>
+</section>
+</div>
+</div>
+</sc-if>
+
+<!-- Step: Importing -->
+<sc-if value="{{isImporting}}" hint-placeholder-val="{{false}}">
+<div style="flex-grow: 1; min-height: 0; display: flex; align-items: center; justify-content: center; padding: 24px;">
+<div style="width: 480px; display: flex; flex-direction: column; gap: 8px;">
+<div style="display: flex; align-items: baseline; gap: 8px; font-size: 14px;">
+<span style="flex-grow: 1; font-variant-numeric: tabular-nums;">{{prog.label}}</span>
+<span style="font-size: 13px; color: #a3a3a3; font-variant-numeric: tabular-nums;">{{prog.pct}}%</span>
+</div>
+<div role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="{{prog.pct}}" aria-label="Import progress" style="height: 6px; border-radius: 9999px; background: #262626; overflow: hidden;"><div style="height: 100%; width: {{prog.pct}}%; background: #fafafa;"></div></div>
+<div style="font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 12px; color: #a3a3a3; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">{{prog.current}}</div>
+</div>
+</div>
+</sc-if>
+
+<!-- Step: Results -->
+<sc-if value="{{isResults}}" hint-placeholder-val="{{false}}">
+<div style="flex-grow: 1; min-height: 0; display: flex; flex-direction: column; gap: 16px; padding: 24px;">
+<div style="display: flex; align-items: flex-start; gap: 12px;">
+<sc-if value="{{res.hasFailed}}" hint-placeholder-val="{{true}}">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#facc15" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0; margin-top: 2px;"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"></path><path d="M12 9v4"></path><path d="M12 17h.01"></path></svg>
+</sc-if>
+<sc-if value="{{res.allOk}}" hint-placeholder-val="{{false}}">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0; margin-top: 2px;"><path d="M20 6 9 17l-5-5"></path></svg>
+</sc-if>
+<div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px;">
+<h3 role="status" style="margin: 0; font-size: 14px; font-weight: 600; font-variant-numeric: tabular-nums;">{{res.headline}}</h3>
+<span style="font-size: 13px; color: #a3a3a3; font-variant-numeric: tabular-nums;">{{res.details}}</span>
+<sc-if value="{{res.hasPlace}}" hint-placeholder-val="{{true}}">
+<span style="font-size: 13px; color: #a3a3a3;">{{res.place}}</span>
+</sc-if>
+<sc-if value="{{res.queued}}" hint-placeholder-val="{{true}}">
+<span style="display: flex; align-items: center; gap: 6px; font-size: 13px; font-variant-numeric: tabular-nums;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22d3ee" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M2 10v3"></path><path d="M6 6v11"></path><path d="M10 3v18"></path><path d="M14 8v7"></path><path d="M18 5v13"></path><path d="M22 10v3"></path></svg>{{res.queuedText}}</span>
+</sc-if>
+</div>
+</div>
+
+<sc-if value="{{res.hasFailed}}" hint-placeholder-val="{{true}}">
+<section aria-labelledby="fail-title" style="flex-grow: 1; min-height: 0; display: flex; flex-direction: column; gap: 8px;">
+<div style="height: 24px; display: flex; align-items: center; gap: 8px;">
+<h3 id="fail-title" style="margin: 0; flex-grow: 1; font-size: 14px; font-weight: 600;">{{res.failTitle}}</h3>
+<span style="font-size: 12px; color: #a3a3a3;">Fix the problem, then retry</span>
+</div>
+<div style="flex-grow: 1; min-height: 0; overflow-y: auto; border: 1px solid #262626; border-radius: 6px; display: flex; flex-direction: column;">
+<div style="height: 32px; flex-shrink: 0; display: grid; grid-template-columns: minmax(0, 1fr) 320px; column-gap: 16px; align-items: center; padding: 0 12px; background: #17171766; border-bottom: 1px solid #262626; font-size: 12px; font-weight: 500; color: #a3a3a3;">
+<span>File</span><span>Problem</span>
+</div>
+<sc-for list="{{failures}}" as="x" hint-placeholder-count="3">
+<button type="button" class="{{x.cls}}" aria-pressed="{{x.selected}}" onClick="{{x.pick}}" style="height: 44px; flex-shrink: 0; display: grid; grid-template-columns: minmax(0, 1fr) 320px; column-gap: 16px; align-items: center; padding: 0 12px; background: transparent; color: #fafafa; border: 0; border-bottom: 1px solid #262626b3; text-align: left; font-family: inherit;">
+<span style="min-width: 0; display: flex; flex-direction: column; gap: 2px;">
+<span style="font-size: 14px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">{{x.name}}</span>
+<span style="font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 12px; color: #a3a3a3; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">{{x.path}}</span>
+</span>
+<span style="min-width: 0; display: flex; flex-direction: column; gap: 2px;">
+<span style="display: flex; align-items: center; gap: 6px; font-size: 13px; color: #f87171;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="m15 9-6 6"></path><path d="m9 9 6 6"></path></svg>{{x.reason}}</span>
+<span style="font-size: 12px; color: #a3a3a3; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">{{x.fix}}</span>
+</span>
+</button>
+</sc-for>
+</div>
+</section>
+</sc-if>
+</div>
+</sc-if>
+
+<!-- Footer -->
+<div style="height: 64px; flex-shrink: 0; display: flex; align-items: center; gap: 8px; padding: 0 24px; border-top: 1px solid #262626; font-size: 14px;">
+<sc-if value="{{isReview}}" hint-placeholder-val="{{true}}">
+<button type="button" class="btn" onClick="{{close}}" style="height: 32px; padding: 0 12px; background: #262626; color: #fafafa; border: 0; border-radius: 6px; font-family: inherit; font-size: 14px;">Cancel</button>
+<div style="flex-grow: 1;"></div>
+<span style="font-size: 13px; color: #a3a3a3; font-variant-numeric: tabular-nums;">{{footNote}}</span>
+<button type="button" onClick="{{startImport}}" disabled="{{cannotImport}}" style="height: 32px; padding: 0 16px; background: {{importBg}}; color: {{importFg}}; border: 0; border-radius: 6px; font-family: inherit; font-size: 14px; font-weight: 500; font-variant-numeric: tabular-nums;">{{importLabel}}</button>
+</sc-if>
+<sc-if value="{{isImporting}}" hint-placeholder-val="{{false}}">
+<button type="button" class="btn" onClick="{{cancelImport}}" style="height: 32px; padding: 0 12px; background: #262626; color: #fafafa; border: 0; border-radius: 6px; font-family: inherit; font-size: 14px;">Cancel</button>
+<div style="flex-grow: 1;"></div>
+<span style="font-size: 13px; color: #a3a3a3;">Tracks already imported stay in your library if you cancel</span>
+</sc-if>
+<sc-if value="{{isResults}}" hint-placeholder-val="{{false}}">
+<button type="button" class="btn" onClick="{{showInFinder}}" disabled="{{noSelection}}" style="height: 32px; display: flex; align-items: center; gap: 8px; padding: 0 12px; background: #262626; color: {{finderFg}}; border: 0; border-radius: 6px; font-family: inherit; font-size: 14px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 14 1.5-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.54 6a2 2 0 0 1-1.95 1.5H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H18a2 2 0 0 1 2 2v2"></path></svg>Show in Finder</button>
+<span style="flex-grow: 1; font-size: 13px; color: #a3a3a3; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">{{finderNote}}</span>
+<sc-if value="{{res.hasFailed}}" hint-placeholder-val="{{true}}">
+<button type="button" class="btn" onClick="{{retryFailed}}" style="height: 32px; display: flex; align-items: center; gap: 8px; padding: 0 12px; background: #262626; color: #fafafa; border: 0; border-radius: 6px; font-family: inherit; font-size: 14px;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"></path><path d="M3 3v5h5"></path></svg>Retry failed</button>
+</sc-if>
+<button type="button" onClick="{{done}}" style="height: 32px; padding: 0 16px; background: #fafafa; color: #171717; border: 0; border-radius: 6px; font-family: inherit; font-size: 14px; font-weight: 500;">Done</button>
+</sc-if>
+</div>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props='{"onClose":{"editor":null},"$preview":{"width":960,"height":680}}'>
+class Component extends DCLogic {
+  constructor(props) {
+    super(props);
+    this.state = {
+      phase: 'review', sources: ['promos', 'vinyl'],
+      dupAction: 'skip', movedAction: 'update', copy: true, analyze: true,
+      playlist: 'warehouse', newName: '',
+      total: 0, doneCount: 0, imported: 0, failures: [], selected: null, finderNote: '', round: 0
+    };
+    this.timer = null;
+  }
+  componentWillUnmount() { if (this.timer) clearInterval(this.timer); }
+  stopTimer() { if (this.timer) clearInterval(this.timer); this.timer = null; }
+  run(total, current, finish) {
+    var self = this;
+    var step = Math.max(1, Math.ceil(total / 24));
+    this.stopTimer();
+    this.setState({ phase: 'importing', total: total, doneCount: 0 });
+    this.timer = setInterval(function () {
+      var d = Math.min(total, self.state.doneCount + step);
+      if (d >= total) { self.stopTimer(); finish(); return; }
+      self.setState({ doneCount: d });
+    }, 110);
+  }
+  renderVals() {
+    var self = this, st = this.state;
+    var catalog = {
+      promos: { path: '~/Downloads/Promos Sept', n: 91, dup: 9, moved: 0, unsup: 2 },
+      vinyl: { path: '/Volumes/Archive/Vinyl rips', n: 55, dup: 3, moved: 2, unsup: 1 },
+      bandcamp: { path: '~/Music/Bandcamp 2026', n: 24, dup: 1, moved: 0, unsup: 0 }
+    };
+    var order = ['promos', 'vinyl', 'bandcamp'];
+    var has = function (id) { return st.sources.indexOf(id) >= 0; };
+    var sum = { n: 0, dup: 0, moved: 0, unsup: 0 };
+    st.sources.forEach(function (id) { var c = catalog[id]; sum.n += c.n; sum.dup += c.dup; sum.moved += c.moved; sum.unsup += c.unsup; });
+
+    var dupAll = [
+      { src: 'promos', name: 'Lantern Code — Ama Idowu', detail: 'Same audio as the copy in your library · this one is AIFF, yours is MP3 320' },
+      { src: 'promos', name: 'Low Tide Signal — Marlow Ashe', detail: 'Same audio and tags as the copy in your library' },
+      { src: 'vinyl', name: 'Concrete Choir — Halden Rue', detail: 'Same audio, different tags · your copy has cue points' },
+      { src: 'bandcamp', name: 'Salt Flats — Ama Idowu', detail: 'Same audio as the copy in your library · this one is FLAC' }
+    ].filter(function (r) { return has(r.src); });
+    var dupShown = dupAll.slice(0, 3);
+    var movedAll = [
+      { src: 'vinyl', name: 'Harbour Lights — Sable & Finch', detail: '/Volumes/USB-OLD/Rips → /Volumes/Archive/Vinyl rips' },
+      { src: 'vinyl', name: 'Kiln — Sable & Finch', detail: '/Volumes/USB-OLD/Rips → /Volumes/Archive/Vinyl rips' }
+    ].filter(function (r) { return has(r.src); });
+    var unsupAll = [
+      { src: 'promos', name: 'Night Ferry — Marlow Ashe.ogg', detail: '.ogg isn’t supported — convert it to FLAC or AIFF, then import again' },
+      { src: 'promos', name: 'Glasshouse — Ama Idowu.m4p', detail: 'DRM-protected .m4p — Recrate can’t read protected files' },
+      { src: 'vinyl', name: 'Undertow — Halden Rue.wma', detail: '.wma isn’t supported — convert it to FLAC or AIFF, then import again' }
+    ].filter(function (r) { return has(r.src); });
+
+    var dupIn = st.dupAction === 'skip' ? 0 : sum.dup;
+    var importCount = sum.n + dupIn;
+    var plural = function (n, one, many) { return n + ' ' + (n === 1 ? one : many); };
+
+    var notes = [];
+    if (sum.dup) notes.push(st.dupAction === 'skip' ? 'Skips ' + plural(sum.dup, 'duplicate', 'duplicates') : st.dupAction === 'replace' ? 'Replaces ' + plural(sum.dup, 'older copy', 'older copies') : 'Imports ' + plural(sum.dup, 'duplicate', 'duplicates') + ' as new tracks');
+    if (sum.moved) notes.push(st.movedAction === 'update' ? 'updates ' + plural(sum.moved, 'location', 'locations') : 'skips ' + plural(sum.moved, 'moved file', 'moved files'));
+    var footNote = notes.join(' · ');
+
+    var playlistName = st.playlist === 'warehouse' ? 'Warehouse — Oct 2026' : st.playlist === 'new' ? (st.newName.trim() || 'Untitled playlist') : '';
+
+    var failAll = [
+      { id: 'f1', name: 'Concrete Choir (Extended) — Halden Rue', path: '/Volumes/Archive/Vinyl rips/Halden Rue/Concrete Choir (Extended).flac', reason: 'File is damaged', fix: 'Re-download it, then retry', fixed: false },
+      { id: 'f2', name: 'Lantern Code (Dub) — Ama Idowu', path: '~/Downloads/Promos Sept/Ama Idowu - Lantern Code (Dub).aiff', reason: 'Couldn’t read the file', fix: 'Check its permissions in Finder, then retry', fixed: true },
+      { id: 'f3', name: 'Harbour Lights (Live) — Sable & Finch', path: '/Volumes/Archive/Vinyl rips/Sable & Finch/Harbour Lights EP (2019 Remaster)/Disc 1/…/Harbour Lights (Live).wav', reason: 'Path too long', fix: 'Rename a folder to shorten the path, then retry', fixed: false }
+    ];
+
+    var tiles = [
+      { n: String(sum.n), label: 'new tracks' },
+      { n: String(sum.dup), label: sum.dup === 1 ? 'duplicate' : 'duplicates' },
+      { n: String(sum.moved), label: 'in library, but moved' },
+      { n: String(sum.unsup), label: 'unsupported files' }
+    ];
+    var findingsCount = sum.dup + sum.moved + sum.unsup;
+
+    var pct = st.total ? Math.round(st.doneCount / st.total * 100) : 0;
+    var sampleNames = ['Promos Sept/Ama Idowu - Lantern Code.aiff', 'Promos Sept/Marlow Ashe - Tidewater.aiff', 'Vinyl rips/Halden Rue - Concrete Choir.flac', 'Vinyl rips/Sable & Finch - Kiln.wav', 'Promos Sept/Ama Idowu - Salt Flats.aiff'];
+    var copyVerb = st.copy ? 'Copying ' : 'Adding ';
+
+    var failures = st.failures.map(function (f) {
+      var on = st.selected === f.id;
+      return {
+        name: f.name, path: f.path, reason: f.reason, fix: f.fix, selected: on,
+        cls: 'frow' + (on ? ' sel' : ''),
+        pick: function () { self.setState({ selected: f.id, finderNote: '' }); }
+      };
+    });
+    var nf = st.failures.length;
+    var sel = st.failures.filter(function (f) { return f.id === st.selected; })[0];
+    var detailBits = [];
+    if (st.round === 0) {
+      if (sum.dup) detailBits.push(st.dupAction === 'skip' ? plural(sum.dup, 'duplicate', 'duplicates') + ' skipped' : st.dupAction === 'replace' ? plural(sum.dup, 'older copy', 'older copies') + ' replaced' : plural(sum.dup, 'duplicate', 'duplicates') + ' imported');
+      if (sum.moved) detailBits.push(st.movedAction === 'update' ? plural(sum.moved, 'location', 'locations') + ' updated' : plural(sum.moved, 'moved file', 'moved files') + ' skipped');
+      if (sum.unsup) detailBits.push(plural(sum.unsup, 'unsupported file', 'unsupported files') + ' not imported');
+    } else {
+      detailBits.push('Retried ' + plural(st.lastRetry || 0, 'track', 'tracks') + ' · ' + plural(st.recovered || 0, 'track', 'tracks') + ' imported this time');
+    }
+    var placeBits = [st.copy ? 'Copied to ~/Music/Recrate/' : 'Files left where they are'];
+    if (playlistName) placeBits.push('added to ' + playlistName);
+
+    var finishFirst = function () {
+      var list = failAll.slice(0, Math.min(3, importCount));
+      self.setState({ phase: 'results', imported: importCount - list.length, failures: list, selected: list.length ? list[0].id : null, finderNote: '', round: 0, analyzedCount: importCount - list.length });
+    };
+
+    return {
+      subtitle: st.phase === 'review'
+        ? (st.sources.length ? plural(st.sources.length, 'folder', 'folders') + ' scanned · ' + (sum.n + sum.dup + sum.moved + sum.unsup) + ' audio files found' : 'No folders to scan')
+        : st.phase === 'importing' ? (st.copy ? 'Copying into ~/Music/Recrate/' : 'Adding files in place') : 'Import finished',
+      close: function () { self.stopTimer(); if (self.props.onClose) self.props.onClose('cancel'); else self.setState({ phase: 'review' }); },
+      isReview: st.phase === 'review', isImporting: st.phase === 'importing', isResults: st.phase === 'results',
+
+      tiles: tiles,
+      findingsMeta: findingsCount ? plural(findingsCount, 'file', 'files') : '',
+      noFindings: findingsCount === 0,
+      noFindingsText: st.sources.length ? 'Nothing needs a decision — every file is new' : 'Add a folder to see what will be imported',
+      dupAction: st.dupAction, movedAction: st.movedAction,
+      setDup: function (e) { self.setState({ dupAction: e.target.value }); },
+      setMoved: function (e) { self.setState({ movedAction: e.target.value }); },
+      dup: { show: sum.dup > 0, count: String(sum.dup), items: dupShown, hasMore: sum.dup > dupShown.length, more: plural(sum.dup - dupShown.length, 'more duplicate', 'more duplicates') },
+      moved: { show: sum.moved > 0, count: String(sum.moved), items: movedAll },
+      unsup: { show: sum.unsup > 0, count: String(sum.unsup), items: unsupAll },
+
+      noSources: st.sources.length === 0,
+      sources: order.filter(has).map(function (id) {
+        var c = catalog[id];
+        return {
+          path: c.path, meta: plural(c.n + c.dup + c.moved + c.unsup, 'audio file', 'audio files') + ' · ' + c.n + ' new',
+          removeLabel: 'Remove ' + c.path,
+          remove: function () { self.setState({ sources: self.state.sources.filter(function (x) { return x !== id; }) }); }
+        };
+      }),
+      addFolder: function () {
+        var missing = ['bandcamp', 'promos', 'vinyl'].filter(function (x) { return self.state.sources.indexOf(x) < 0; });
+        if (missing.length) self.setState({ sources: self.state.sources.concat([missing[0]]) });
+      },
+
+      copyOn: st.copy, leaveOn: !st.copy,
+      pickCopy: function () { self.setState({ copy: true }); },
+      pickLeave: function () { self.setState({ copy: false }); },
+      analyze: st.analyze,
+      toggleAnalyze: function () { self.setState({ analyze: !self.state.analyze }); },
+      playlist: st.playlist,
+      setPlaylist: function (e) { self.setState({ playlist: e.target.value }); },
+      isNewPlaylist: st.playlist === 'new',
+      newName: st.newName,
+      setNewName: function (e) { self.setState({ newName: e.target.value }); },
+
+      footNote: footNote,
+      cannotImport: importCount === 0,
+      importBg: importCount ? '#fafafa' : '#262626',
+      importFg: importCount ? '#171717' : '#a3a3a3',
+      importLabel: importCount ? 'Import ' + plural(importCount, 'track', 'tracks') : 'Import',
+      startImport: function () { if (importCount) self.run(importCount, 0, finishFirst); },
+
+      prog: {
+        pct: pct,
+        label: copyVerb.replace(' ', '') + ' track ' + Math.max(1, st.doneCount) + ' of ' + st.total,
+        current: sampleNames[Math.floor(st.doneCount / Math.max(1, Math.ceil(st.total / 24))) % sampleNames.length]
+      },
+      cancelImport: function () { self.stopTimer(); self.setState({ phase: 'review', doneCount: 0 }); },
+
+      res: {
+        hasFailed: nf > 0, allOk: nf === 0,
+        headline: st.imported + ' imported' + (nf ? ', ' + nf + ' failed' : ''),
+        details: detailBits.join(' · '),
+        hasPlace: true, place: placeBits.join(' · '),
+        queued: st.analyze,
+        queuedText: 'Analysis queued for ' + plural(st.analyzedCount || 0, 'track', 'tracks') + ' · see progress in Analysis',
+        failTitle: 'Couldn’t import ' + plural(nf, 'track', 'tracks')
+      },
+      failures: failures,
+      noSelection: !sel,
+      finderFg: sel ? '#fafafa' : '#a3a3a3',
+      finderNote: st.finderNote,
+      showInFinder: function () { if (sel) self.setState({ finderNote: 'Revealed ' + sel.path.split('/').pop() + ' in Finder' }); },
+      retryFailed: function () {
+        var list = self.state.failures;
+        self.run(list.length, 0, function () {
+          var left = list.filter(function (f) { return !f.fixed; });
+          var ok = list.length - left.length;
+          self.setState({
+            phase: 'results', imported: self.state.imported + ok, failures: left,
+            selected: left.length ? left[0].id : null, finderNote: '', round: self.state.round + 1,
+            lastRetry: list.length, recovered: ok, analyzedCount: (self.state.analyzedCount || 0) + ok
+          });
+        });
+      },
+      done: function () {
+        self.stopTimer();
+        if (self.props.onClose) self.props.onClose('done');
+        else self.setState({ phase: 'review', failures: [], round: 0, doneCount: 0 });
+      }
+    };
+  }
+}
+</script>
+</body>
+</html>
