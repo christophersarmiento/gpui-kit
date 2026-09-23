@@ -203,7 +203,7 @@ Import…</button>
 <sc-if value="{{inspect}}" hint-placeholder-val="{{false}}">
 <div role="alert" style="display: flex; flex-direction: column; gap: 10px; padding: 12px; border: 1px solid #facc15; border-radius: 6px;">
 <span style="font-size: 14px; font-weight: 600;">Recrate stopped here</span>
-<span style="font-size: 13px; color: #a3a3a3; line-height: 18px;">KINGSTON isn’t in a state this export expects, so Resume and Discard are off. Nothing on the drive has been changed. Look at what’s different below before doing anything else with the drive.</span>
+<span style="font-size: 13px; color: #a3a3a3; line-height: 18px;">{{inspectText}}</span>
 <div style="display: flex; gap: 8px;">
 <button type="button" class="btn" style="height: 32px; padding: 0 12px; background: #262626; border: 0; border-radius: 6px; font-size: 14px;">Save report…</button>
 <button type="button" class="btn" style="height: 32px; padding: 0 12px; background: #262626; border: 0; border-radius: 6px; font-size: 14px;">Show drive in Finder</button>
@@ -357,7 +357,7 @@ Import…</button>
 </sc-if>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"scenario":{"editor":"enum","options":["copy","unexpected","libwrite"],"default":"copy"},"driveConnected":{"editor":"boolean","default":true},"startChecked":{"editor":null},"$preview":{"width":1440,"height":900}}'>
+<script type="text/x-dc" data-dc-script data-props='{"scenario":{"editor":"enum","options":["copy","unexpected","unproven","libwrite"],"default":"copy"},"driveConnected":{"editor":"boolean","default":true},"startChecked":{"editor":null},"$preview":{"width":1440,"height":900}}'>
 class Component extends DCLogic {
   constructor(props) {
     super(props);
@@ -385,10 +385,10 @@ class Component extends DCLogic {
       partial === 'stopped'
         ? (scen === 'libwrite'
           ? { status: st.recovered ? 'Recovered · library restored' : 'Recovery needed', when: 'Sep 23, 22:10', summary: st.recovered ? 'Drive matches the export from Sep 23, 21:14' : 'Disconnected while writing the library', kind: st.recovered ? 'ok' : 'stop', backup: true }
-          : { status: !st.checked ? 'Stopped · not checked yet' : (scen === 'unexpected' ? 'Stopped · needs inspection' : 'Stopped · checked'), when: 'Sep 23, 22:10', summary: !st.checked ? 'KINGSTON disconnected · last known: 11 of 17 copied' : (scen === 'unexpected' ? 'Drive changed since the disconnect' : '11 files from this export · 1 incomplete · 6 not copied'), kind: 'stop', backup: true })
+          : { status: !st.checked ? 'Stopped · not checked yet' : ((scen === 'unexpected' || scen === 'unproven') ? 'Stopped · needs inspection' : 'Stopped · checked'), when: 'Sep 23, 22:10', summary: !st.checked ? 'KINGSTON disconnected · last known: 11 of 17 copied' : (scen === 'unexpected' ? 'Drive changed since the disconnect' : scen === 'unproven' ? '1 file can’t be proven to be this export’s' : '11 files from this export · 1 incomplete · 6 not copied'), kind: 'stop', backup: true })
         : partial === 'resumed'
           ? { status: 'Complete · resumed', when: 'Sep 23, 22:10', summary: '17 copied · 9 updated · 1 playlist removed', kind: 'ok', backup: true }
-          : { status: 'Discarded', when: 'Sep 23, 22:10', summary: '11 unlisted files deleted · drive matches Sep 23, 21:14', kind: 'ok', backup: true },
+          : { status: 'Discarded', when: 'Sep 23, 22:10', summary: '11 files this export created deleted · drive matches Sep 23, 21:14', kind: 'ok', backup: true },
       { status: 'Finished with 2 problems', when: 'Sep 23, 21:14', summary: '15 copied · 9 updated · 2 failed · 2 skipped', kind: 'warn', backup: true },
       { status: 'Complete', when: 'Sep 19, 23:41', summary: '24 copied · 6 updated', kind: 'ok', backup: true },
       { status: 'Complete · 1 skipped', when: 'Sep 12, 18:05', summary: '8 copied · 1 skipped (missing file)', kind: 'ok', backup: true },
@@ -413,7 +413,7 @@ class Component extends DCLogic {
       3: { stats: [['Copied', '8'], ['Updated', '0'], ['Failed', '0'], ['Skipped', '1']], problems: 'Kiln was skipped because its file was missing. It was relinked on Sep 13 and copied in the next export.', note: 'Device Library was written.' },
       4: { stats: [['Copied', '96'], ['Updated', '0'], ['Failed', '0'], ['Skipped', '0']], note: 'First export from Recrate. rekordbox’s 3 playlists were kept, and the drive’s library was backed up first.' }
     };
-    if (partial === 'discarded') FIN[0] = { stats: [['Copied', '0'], ['Deleted', '11 files'], ['Failed', '0'], ['Skipped', '6']], note: 'The 11 unlisted files were deleted. Players see the playlists from Sep 23, 21:14.' };
+    if (partial === 'discarded') FIN[0] = { stats: [['Copied', '0'], ['Deleted', '11 files'], ['Failed', '0'], ['Skipped', '6']], note: 'The 11 files this export created were rechecked and deleted. Nothing else on the drive changed. Players see the playlists from Sep 23, 21:14.' };
     var isPartial = st.sel === 0 && partial === 'stopped';
     var fin = FIN[st.sel];
     var T = [
@@ -435,7 +435,7 @@ class Component extends DCLogic {
     });
     var busy = !!st.work;
     var ask = {
-      discard: { title: 'Discard the partial export?', body: 'Only the 11 files this export created, and that neither library uses, are deleted from KINGSTON. Files that were already on the drive are kept. The drive then matches its export from Sep 23, 21:14. Your library isn’t changed.', verb: 'Discard copies', go: function () { self.setState({ confirm: null }); self.run('discard', 60, { partial: 'discarded', checked: false }); } },
+      discard: { title: 'Discard the partial export?', body: 'Only the 11 files proven to be this export’s are deleted from KINGSTON: each path was empty before the export, and each file’s content matches what Recrate recorded writing. Just before deleting, Recrate checks both again and confirms neither library refers to the file. If any check fails, it stops and deletes nothing more. Files that were already on the drive are kept, and your library isn’t changed.', verb: 'Discard copies', go: function () { self.setState({ confirm: null }); self.run('discard', 60, { partial: 'discarded', checked: false }); } },
       restore: st.sel === 4 ? { title: 'Restore KINGSTON’s library from Sep 12?', body: 'The drive’s library goes back to rekordbox’s 3 playlists as they were before Recrate’s first export. Recrate’s playlists disappear from the drive, and its audio files stay until you remove them. The current library is backed up first.', verb: 'Restore', go: function () { self.setState({ confirm: null, restored: true }); } }
         : { title: 'Restore KINGSTON’s library from before ' + r.when + '?', body: 'The drive’s library goes back to how it was before this export. Playlists and cue changes written since then disappear from the drive, and audio files stay until you remove them. The current library is backed up first.', verb: 'Restore', go: function () { self.setState({ confirm: null, restored: true }); } }
     };
@@ -456,14 +456,17 @@ class Component extends DCLogic {
       },
       tracks: T.map(function (t) { return { state: t[0], color: colors[t[0]], title: t[1], artist: t[2], playlist: t[3], size: t[4] }; }),
       busy: busy, working: busy,
-      workLabel: st.work === 'recover' ? 'Checking library files and restoring from the backup' : st.work === 'resume' ? 'Resuming · checking copied files, then copying 6 tracks' : (st.work === 'check' ? 'Checking KINGSTON' : 'Deleting 11 unlisted files'),
+      workLabel: st.work === 'recover' ? 'Checking library files and restoring from the backup' : st.work === 'resume' ? 'Resuming · checking copied files, then copying 6 tracks' : (st.work === 'check' ? 'Checking KINGSTON' : 'Rechecking proof, then deleting 11 files this export created'),
       workPct: st.pct,
       resumeBg: (busy || !ck) ? '#262626' : '#fafafa', resumeFg: (busy || !ck) ? '#a3a3a3' : '#171717',
       resume: function () { self.run('resume', 120, { partial: 'resumed', checked: false }); },
       check: function () { self.run('check', 50, { checked: true }); },
       bannerTitle: scen === 'libwrite' ? 'KINGSTON was disconnected while its library was being written.' : 'KINGSTON was disconnected during the export.',
-      showCopyActions: scen !== 'libwrite' && !(scen === 'unexpected' && ck),
-      inspect: scen === 'unexpected' && ck,
+      showCopyActions: scen !== 'libwrite' && !((scen === 'unexpected' || scen === 'unproven') && ck),
+      inspect: (scen === 'unexpected' || scen === 'unproven') && ck,
+      inspectText: scen === 'unproven'
+        ? 'Recrate can’t prove that one file on KINGSTON was created by this export, so Resume and Discard are off. Nothing on the drive has been changed. Recrate won’t delete or overwrite a file it can’t prove is its own. Look at the findings below, then decide what to do with that file yourself.'
+        : 'KINGSTON isn’t in a state this export expects, so Resume and Discard are off. Nothing on the drive has been changed. Look at what’s different below before doing anything else with the drive.',
       isRecovery: scen === 'libwrite' && !st.recovered,
       recovered: scen === 'libwrite' && st.recovered && isPartial,
       showTracks: scen !== 'libwrite',
@@ -477,6 +480,8 @@ class Component extends DCLogic {
         ? (st.recovered ? 'Recovered with the backup from 22:09.' : 'The library files on the drive may be incomplete, so players may not read it or may show the wrong playlists. The backup from 22:09 is safe on this computer.')
         : ck && scen === 'unexpected'
         ? 'Checked just now: the drive has changed since the disconnect. Details are below.'
+        : ck && scen === 'unproven'
+        ? 'Checked just now: 10 files are proven to be this export’s, but 1 file can’t be matched to Recrate’s record. Details are below.'
         : ck
         ? 'Checked just now: 10 files match, 1 is incomplete and 6 were never copied. The drive’s library still lists the playlists from Sep 23, 21:14, so players don’t see the new files.'
         : 'Below is Recrate’s last record from 22:10, not a reading of the drive. Some files may be incomplete or missing. Check the drive before resuming or discarding.',
@@ -486,18 +491,24 @@ class Component extends DCLogic {
       checkBorder: ck ? '#262626' : '#1d4ed8',
       lockAfter: !ck || busy, afterOpacity: ck ? 1 : 0.5,
       resumeText: ck ? 'Copy the incomplete file and the 6 missing ones, then write the library.' : 'Available after the check, using what’s actually on the drive.',
-      discardText: ck ? 'Delete only the 11 files this export created that neither library uses. Anything that was already on the drive, or that a library points to, is kept.' : 'Available after the check confirms which files this export created.',
+      discardText: ck ? 'Delete only the 11 files proven to be this export’s. Proof and library references are checked again just before deleting. Anything else on the drive is kept.' : 'Available after the check proves which files this export created.',
       gateNote: ck ? 'Checked just now. If you unplug KINGSTON again, check it again first.' : 'Resume and Discard are unavailable until the drive has been checked.',
       tracksAsOf: ck ? 'checked just now' : 'last known at 22:10',
       checked: st.checked && isPartial,
-      findings: scen === 'unexpected' ? [
+      findings: scen === 'unproven' ? [
+        { color: '#4ade80', label: '10 files are proven to be this export’s', text: 'Each path was empty in the drive inventory taken before the export, and each file’s content hash matches the one Recrate recorded after writing it.' },
+        { color: '#f87171', label: 'Dust Motes.aiff can’t be proven', text: 'It’s where this export would have copied it, but Recrate’s record has no finished entry for it. It may be a copy that completed just as the drive disconnected, or a file something else put there.' },
+        { color: '#4ade80', label: 'Neither library refers to any of these files', text: 'Device Library and Device Library Plus were both read just now.' },
+        { color: '#a3a3a3', label: '6 tracks aren’t on the drive', text: 'A new export can copy them once the file above is dealt with.' }
+      ] : scen === 'unexpected' ? [
         { color: '#4ade80', label: '10 files match Recrate’s record', text: 'Created by this export at 22:10.' },
         { color: '#f87171', label: 'The drive’s library changed at 23:02', text: 'Something other than Recrate wrote to it after the disconnect, possibly rekordbox.' },
         { color: '#facc15', label: '2 of this export’s files are now in that library', text: 'Recrate won’t delete or overwrite files another library uses.' },
         { color: '#a3a3a3', label: '3 files Recrate didn’t expect', text: 'Created after 22:10 in the drive’s library folder.' }
       ] : [
-        { color: '#4ade80', label: '11 files were created by this export', text: 'Matched by name, size and time. Neither Device Library nor Device Library Plus uses them.' },
-        { color: '#facc15', label: '1 of them is incomplete', text: 'Slow Burn Theory stopped at 52 of 121 MB.' },
+        { color: '#4ade80', label: '10 complete files are proven to be this export’s', text: 'Each path was empty in the drive inventory taken before the export, and each file’s content hash matches the one Recrate recorded after writing it.' },
+        { color: '#facc15', label: '1 incomplete file is proven to be this export’s', text: 'Slow Burn Theory stopped at 52 of 121 MB. Its path was reserved in the record before copying began and was empty before, and its first 52 MB match the source file.' },
+        { color: '#4ade80', label: 'Neither library refers to these 11 files', text: 'Device Library and Device Library Plus were both read just now. Name, size and time are shown for reference only; they aren’t the proof.' },
         { color: '#a3a3a3', label: '6 tracks aren’t on the drive', text: 'Resume copies them.' },
         { color: '#4ade80', label: 'Library files match the backup from 22:09', text: 'Players still see the playlists from Sep 23, 21:14.' }
       ],

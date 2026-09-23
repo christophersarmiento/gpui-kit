@@ -213,17 +213,24 @@ Import…</button>
 <label style="display: flex; align-items: center; gap: 8px; font-size: 14px;"><input type="checkbox" checked="{{yes}}" style="width: 16px; height: 16px; margin: 0; accent-color: #fafafa;">Waveforms</label>
 <label style="display: flex; align-items: center; gap: 8px; font-size: 14px;"><input type="checkbox" checked="{{yes}}" style="width: 16px; height: 16px; margin: 0; accent-color: #fafafa;">Artwork</label>
 </div>
-<label style="display: flex; align-items: center; gap: 8px; font-size: 14px;"><input type="checkbox" checked="{{yes}}" style="width: 16px; height: 16px; margin: 0; accent-color: #fafafa;">Tags as My Tag <span style="color: #a3a3a3;">(first 4 categories)</span></label>
-<label style="display: flex; align-items: center; gap: 8px; font-size: 14px;"><input type="checkbox" checked="{{yes}}" style="width: 16px; height: 16px; margin: 0; accent-color: #fafafa;">Convert FLAC to AIFF for older players</label>
+<label style="display: grid; grid-template-columns: 16px minmax(0, 1fr); column-gap: 8px; row-gap: 2px; align-items: start; font-size: 14px;"><input type="checkbox" checked="{{yes}}" style="width: 16px; height: 16px; margin: 2px 0 0; accent-color: #fafafa;"><span>Tags as My Tag</span><span></span><span style="font-size: 12px; color: #a3a3a3;">{{mytagText}}</span></label>
+<sc-if value="{{needsConvert}}" hint-placeholder-val="{{false}}">
+<label style="display: grid; grid-template-columns: 16px minmax(0, 1fr); column-gap: 8px; row-gap: 2px; align-items: start; font-size: 14px;"><input type="checkbox" checked="{{yes}}" style="width: 16px; height: 16px; margin: 2px 0 0; accent-color: #fafafa;"><span>Convert FLAC to AIFF on the drive</span><span></span><span style="font-size: 12px; color: #a3a3a3;">{{convertText}}</span></label>
+</sc-if>
+<sc-if value="{{noConvert}}" hint-placeholder-val="{{true}}">
+<span style="font-size: 12px; color: #a3a3a3;">FLAC files are copied as they are. Every player set up for this drive plays FLAC.</span>
+</sc-if>
 </fieldset>
 
 <div style="flex-grow: 1;"></div>
 
+<sc-if value="{{missingOn}}" hint-placeholder-val="{{true}}">
 <div style="display: flex; align-items: center; gap: 8px; padding: 8px 8px 8px 10px; border: 1px solid #262626; border-radius: 6px; font-size: 13px;">
 <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#facc15" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"></path><path d="M12 9v4"></path><path d="M12 17h.01"></path></svg>
-<span style="flex-grow: 1;">2 tracks can’t be found and will be skipped</span>
+<span style="flex-grow: 1;">2 tracks can’t be found · Locate them, or decide in review</span>
 <button type="button" class="btn" onClick="{{openRelink}}" aria-haspopup="dialog" style="height: 24px; padding: 0 8px; background: #262626; border: 0; border-radius: 6px; font-size: 13px;">Locate…</button>
 </div>
+</sc-if>
 
 <sc-if value="{{idle}}" hint-placeholder-val="{{true}}">
 <div style="display: flex; flex-direction: column; gap: 12px; padding-top: 12px; border-top: 1px solid #262626;">
@@ -231,12 +238,13 @@ Import…</button>
 <dt style="color: #a3a3a3;">Copy</dt><dd style="margin: 0; text-align: right; font-variant-numeric: tabular-nums;">{{sum.copy}}</dd>
 <dt style="color: #a3a3a3;">Update cues</dt><dd style="margin: 0; text-align: right; font-variant-numeric: tabular-nums;">{{sum.update}}</dd>
 <dt style="color: #a3a3a3;">Remove from drive</dt><dd style="margin: 0; text-align: right; font-variant-numeric: tabular-nums;">{{sum.remove}}</dd>
+<dt style="color: #a3a3a3;">Needs your decision</dt><dd style="margin: 0; text-align: right; font-variant-numeric: tabular-nums; color: {{sum.decideColor}};">{{sum.decide}}</dd>
 </dl>
-<sc-if value="{{sum.needsReview}}" hint-placeholder-val="{{false}}">
-<div style="display: flex; gap: 6px; font-size: 12px; color: #a3a3a3;">Removing playlists deletes files from the drive, so you’ll confirm the changes first.</div>
+<sc-if value="{{sum.needsReview}}" hint-placeholder-val="{{true}}">
+<div style="display: flex; gap: 6px; font-size: 12px; color: #a3a3a3;">{{sum.reviewWhy}}</div>
 <button type="button" onClick="{{openReview}}" aria-haspopup="dialog" style="height: 32px; background: #fafafa; color: #171717; border: 0; border-radius: 6px; font-size: 14px; font-weight: 500;">Review and export…</button>
 </sc-if>
-<sc-if value="{{sum.direct}}" hint-placeholder-val="{{true}}">
+<sc-if value="{{sum.direct}}" hint-placeholder-val="{{false}}">
 <div style="display: flex; gap: 8px;">
 <button type="button" class="btn" onClick="{{openReview}}" aria-haspopup="dialog" style="flex-grow: 1; height: 32px; background: #262626; border: 0; border-radius: 6px; font-size: 14px;">Review changes…</button>
 <button type="button" onClick="{{start}}" disabled="{{sum.nothing}}" style="flex-grow: 1; height: 32px; background: {{sum.btnBg}}; color: {{sum.btnFg}}; border: 0; border-radius: 6px; font-size: 14px; font-weight: 500;">Export</button>
@@ -288,17 +296,17 @@ Import…</button>
 <!-- Dialogs -->
 <sc-if value="{{dlg.device}}" hint-placeholder-val="{{false}}">
 <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: #00000099;">
-<dc-import name="DeviceSetup" on-close="{{closeDevice}}" hint-size="880px,640px"></dc-import>
+<dc-import name="DeviceSetup" on-close="{{closeDevice}}" hint-size="880px,720px"></dc-import>
 </div>
 </sc-if>
 <sc-if value="{{dlg.relink}}" hint-placeholder-val="{{false}}">
 <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: #00000099;">
-<dc-import name="Relink" on-close="{{closeDialog}}" hint-size="960px,640px"></dc-import>
+<dc-import name="Relink" on-close="{{closeRelink}}" hint-size="960px,640px"></dc-import>
 </div>
 </sc-if>
 <sc-if value="{{dlg.review}}" hint-placeholder-val="{{false}}">
 <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: #00000099;">
-<dc-import name="ExportReview" on-close="{{closeDialog}}" on-back="{{closeDialog}}" on-export="{{exportFromReview}}" hint-size="960px,680px"></dc-import>
+<dc-import name="ExportReview" removing="{{sum.removing}}" missing-resolved="{{relinked}}" convert-for="{{setup.convertFor}}" formats-label="{{formatsLabel}}" on-close="{{closeDialog}}" on-back="{{closeDialog}}" on-export="{{exportFromReview}}" hint-size="960px,680px"></dc-import>
 </div>
 </sc-if>
 <sc-if value="{{dlg.results}}" hint-placeholder-val="{{false}}">
@@ -313,7 +321,8 @@ class Component extends DCLogic {
   constructor(props) {
     super(props);
     this.state = {
-      phase: 'idle', done: 0, format: 'device', dialog: null, players: 'both',
+      phase: 'idle', done: 0, format: 'device', dialog: null, relinked: false,
+      setup: { formats: ['legacy', 'plus'], readers: { legacy: 'CDJ-2000NXS2', plus: 'CDJ-3000' }, convertFor: '', mytag: ['Mood', 'Energy', 'Set slot'] },
       on: { warehouse: true, rooftop: true, warmup: true, deep: false, minimal: true, edits: false }
     };
     this.timer = null;
@@ -354,14 +363,18 @@ class Component extends DCLogic {
     var nothing = add === 0 && cues === 0 && removeN === 0;
     var names = ['Low Tide Signal — Marlow Ashe', 'Lantern Code — Ama Idowu', 'Concrete Choir — Halden Rue', 'Parallel Rooms — Sable & Finch', 'Glass Corridor — Oona Brandt'];
     var pct = add ? Math.round(st.done / add * 100) : 100;
-    var LIBS = {
-      older: [{ name: 'Device Library', for: 'older players', note: 'Up to 10 memory cues per track. You choose which in the Cue editor' }],
-      newer: [{ name: 'Device Library Plus', for: 'newer players', note: 'Every memory cue is written. Players may show fewer' }],
-      both: [
-        { name: 'Device Library', for: 'older players', note: 'Up to 10 memory cues per track. You choose which in the Cue editor' },
-        { name: 'Device Library Plus', for: 'newer players', note: 'Every memory cue is written. Players may show fewer' }
-      ]
-    };
+    var su = st.setup;
+    var FNAME = { legacy: 'Device Library', plus: 'Device Library Plus' };
+    var libs = su.formats.map(function (f) {
+      return { name: FNAME[f], for: 'for ' + su.readers[f], note: 'Up to 10 memory cues per track, the tested limit. You choose which when a track has more' };
+    });
+    // Everything that needs a decision before export, not only removals.
+    var missing = st.relinked ? 0 : 2, cueChoices = 1;
+    var why = [];
+    if (missing) why.push(missing + ' missing files');
+    if (cueChoices) why.push(cueChoices + ' track over the memory-cue limit');
+    if (removeN) why.push(removeN + (removeN === 1 ? ' playlist removal' : ' playlist removals'));
+    var decisions = why.length;
     var startExport = function () {
       self.setState({ phase: 'busy', done: 0 });
       if (self.timer) clearInterval(self.timer);
@@ -393,22 +406,32 @@ class Component extends DCLogic {
         copy: add + ' tracks · ' + this.gb(addGB),
         update: cues + ' tracks',
         remove: removeN ? removeN + (removeN === 1 ? ' playlist' : ' playlists') : 'Nothing',
+        removing: removeN > 0,
+        decide: decisions ? why.join(' · ') : 'Nothing',
+        decideColor: decisions ? '#facc15' : '#fafafa',
+        reviewWhy: 'Export stays off until you’ve decided on these in review.',
         nothing: nothing || free < 0,
-        needsReview: removeN > 0, direct: removeN === 0,
+        needsReview: decisions > 0, direct: decisions === 0,
         btnBg: nothing || free < 0 ? '#262626' : '#fafafa',
         btnFg: nothing || free < 0 ? '#a3a3a3' : '#171717',
-        doneText: add + ' tracks copied, cues updated on ' + cues + ' tracks. 2 missing tracks were skipped.'
+        doneText: add + ' tracks copied, cues updated on ' + cues + ' tracks.' + (st.relinked ? '' : ' 2 missing tracks were left out, as you chose in review.')
       },
       prog: { done: Math.min(st.done + 1, add), total: add, pct: pct, current: names[st.done % names.length] },
-      libs: LIBS[st.players],
-      libsFooter: st.players === 'both' ? 'Both are written on every export' : (st.players === 'older' ? 'Newer players may read this too, with its limits' : 'Older players won’t see this export'),
+      libs: libs,
+      libsFooter: su.formats.length === 2 ? 'Both share the audio files and are written on every export' : 'Only this library is written',
+      formatsLabel: su.formats.map(function (f) { return FNAME[f]; }).join(' and '),
+      setup: su, relinked: st.relinked, missingOn: !st.relinked,
+      mytagText: su.mytag.length ? su.mytag.join(', ') + ' · other categories aren’t exported · change in Device setup' : 'No categories chosen · choose in Device setup',
+      needsConvert: !!su.convertFor, noConvert: !su.convertFor,
+      convertText: '6 FLAC tracks, for ' + su.convertFor + ' · +0.9 GB · your FLAC files aren’t changed',
       dlg: { device: st.dialog === 'device', relink: st.dialog === 'relink', review: st.dialog === 'review', results: st.dialog === 'results' },
       openDevice: function () { self.setState({ dialog: 'device' }); },
       openRelink: function () { self.setState({ dialog: 'relink' }); },
       openReview: function () { self.setState({ dialog: 'review' }); },
       openResults: function () { self.setState({ dialog: 'results' }); },
       closeDialog: function () { self.setState({ dialog: null }); },
-      closeDevice: function (r) { self.setState(r && r.players ? { dialog: null, players: r.players } : { dialog: null }); },
+      closeDevice: function (r) { self.setState(r && r.formats ? { dialog: null, setup: r } : { dialog: null }); },
+      closeRelink: function (r) { self.setState(r === 'done' ? { dialog: null, relinked: true } : { dialog: null }); },
       exportFromReview: function () { self.setState({ dialog: null }); startExport(); },
       start: function () { startExport(); },
       cancel: function () { if (self.timer) clearInterval(self.timer); self.timer = null; self.setState({ phase: 'idle', done: 0 }); },

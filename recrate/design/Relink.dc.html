@@ -81,7 +81,8 @@ Search again</button>
 <span></span><span>Missing track</span><span></span><span>Proposed location</span>
 </div>
 <sc-for list="{{matches}}" as="m" hint-placeholder-count="3">
-<label class="row" style="height: 52px; display: grid; grid-template-columns: 16px minmax(0, 1fr) 16px minmax(0, 1fr); column-gap: 12px; align-items: center; padding: 0 12px; border-bottom: 1px solid #262626b3;">
+<div style="border-bottom: 1px solid #262626b3;">
+<label class="row" style="height: 52px; display: grid; grid-template-columns: 16px minmax(0, 1fr) 16px minmax(0, 1fr); column-gap: 12px; align-items: center; padding: 0 12px;">
 <input type="checkbox" checked="{{m.on}}" onChange="{{m.toggle}}" aria-label="{{m.aria}}" style="width: 16px; height: 16px; margin: 0; accent-color: #fafafa;">
 <span style="min-width: 0; display: flex; flex-direction: column; gap: 4px;">
 <span style="font-size: 14px; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">{{m.name}}</span>
@@ -98,6 +99,20 @@ Search again</button>
 </span>
 </span>
 </label>
+<sc-if value="{{m.askDiff}}" hint-placeholder-val="{{false}}">
+<fieldset style="margin: 0 12px 12px 40px; padding: 10px 12px; border: 1px solid #facc15; border-radius: 6px; display: flex; flex-direction: column; gap: 8px; font-size: 13px;">
+<legend style="padding: 0 4px; font-size: 13px; font-weight: 500;">This looks like different audio</legend>
+<span style="color: #a3a3a3; line-height: 18px;">{{m.diffText}}</span>
+<sc-for list="{{m.choices}}" as="c" hint-placeholder-count="3">
+<label style="display: grid; grid-template-columns: 16px minmax(0, 1fr); column-gap: 8px; row-gap: 2px; align-items: start; font-size: 14px;">
+<input type="radio" name="{{c.group}}" checked="{{c.on}}" onChange="{{c.pick}}" style="width: 16px; height: 16px; margin: 2px 0 0; accent-color: #fafafa;">
+<span>{{c.label}}</span>
+<span></span><span style="font-size: 12px; color: #a3a3a3;">{{c.note}}</span>
+</label>
+</sc-for>
+</fieldset>
+</sc-if>
+</div>
 </sc-for>
 </div>
 </section>
@@ -151,7 +166,8 @@ Search again</button>
 <sc-if value="{{isReview}}" hint-placeholder-val="{{true}}">
 <button type="button" class="btn" onClick="{{close}}" style="height: 32px; padding: 0 12px; background: #262626; color: #fafafa; border: 0; border-radius: 6px; font-family: inherit; font-size: 14px;">Cancel</button>
 <div style="flex-grow: 1;"></div>
-<button type="button" onClick="{{relink}}" disabled="{{noneChecked}}" style="height: 32px; padding: 0 16px; background: {{btnBg}}; color: {{btnFg}}; border: 0; border-radius: 6px; font-family: inherit; font-size: 14px; font-weight: 500;">{{relinkLabel}}</button>
+<span role="status" style="font-size: 13px; color: #a3a3a3;">{{relinkHint}}</span>
+<button type="button" onClick="{{relink}}" disabled="{{relinkBlocked}}" style="height: 32px; padding: 0 16px; background: {{btnBg}}; color: {{btnFg}}; border: 0; border-radius: 6px; font-family: inherit; font-size: 14px; font-weight: 500;">{{relinkLabel}}</button>
 </sc-if>
 <sc-if value="{{isDone}}" hint-placeholder-val="{{false}}">
 <div style="flex-grow: 1;"></div>
@@ -177,7 +193,7 @@ class Component extends DCLogic {
       matches: [
         { id: 'lts', title: 'Low Tide Signal', artist: 'Marlow Ashe', old: '~/Music/Recrate/Marlow Ashe/Low Tide Signal.aiff', neu: '/Volumes/Archive/Recrate/Marlow Ashe/Low Tide Signal.aiff', conf: 'strong', on: true, exporting: false },
         { id: 'lc', title: 'Lantern Code', artist: 'Ama Idowu', old: '~/Music/Recrate/Ama Idowu/Lantern Code.flac', neu: '/Volumes/Archive/Recrate/Ama Idowu/Lantern Code.flac', conf: 'strong', on: true, exporting: false },
-        { id: 'sf', title: 'Salt Flats', artist: 'Ama Idowu', old: '~/Music/Recrate/Ama Idowu/Salt Flats.aiff', neu: '/Volumes/Archive/Promos/2025/Salt Flats.aiff', conf: 'weak', on: false, exporting: false }
+        { id: 'sf', title: 'Salt Flats', artist: 'Ama Idowu', old: '~/Music/Recrate/Ama Idowu/Salt Flats.aiff', neu: '/Volumes/Archive/Promos/2025/Salt Flats.aiff', conf: 'weak', on: false, exporting: false, diff: { was: '5:44', now: '5:46', cues: 6, loops: 2 }, choice: null }
       ],
       missing: [
         { id: 'cc', title: 'Concrete Choir', artist: 'Halden Rue', old: '~/Music/Recrate/Halden Rue/Concrete Choir.aiff', found: '/Volumes/Archive/Unsorted/concrete_choir_master.aiff', playlists: ['Warehouse — Oct 2026'], exporting: true, confirming: false },
@@ -192,19 +208,31 @@ class Component extends DCLogic {
     var isDone = st.phase === 'done';
     var checked = st.matches.filter(function (m) { return m.on; });
     var n = checked.length;
+    var undecided = checked.filter(function (m) { return m.diff && !m.choice; }).length;
     var stillMissing = st.matches.length + st.missing.length;
     var exporting = st.matches.concat(st.missing).filter(function (t) { return t.exporting; }).length;
     var confText = {
-      strong: 'Same name, size and length',
-      weak: 'Same name, length differs by 0:02',
-      manual: 'Chosen by you'
+      strong: 'Same audio content and length · name matches',
+      weak: 'Same name · different audio, length 5:44 → 5:46',
+      manual: 'Chosen by you · same audio content and length'
     };
+    var CHOICES = [
+      { id: 'review', label: 'Relink, then check cues and the beat grid', note: 'The grid is reanalyzed and your old grid is kept so you can restore it. Cues and loops keep their times and are marked “Check” until you confirm them in the Cue editor.' },
+      { id: 'asis', label: 'Relink and keep everything as it is', note: 'Choose this only if it’s the same recording with a different file length, such as extra silence. Cues and the grid aren’t moved.' },
+      { id: 'new', label: 'Import it as a separate track', note: 'The missing track stays in your library and playlists, and this file is added as a new track with no cues.' }
+    ];
     var matches = st.matches.map(function (m, i) {
       return {
         name: m.title + ' — ' + m.artist, old: m.old, neu: m.neu, on: m.on,
         aria: 'Relink ' + m.title + ' — ' + m.artist,
         confidence: confText[m.conf],
         isStrong: m.conf === 'strong', isWeak: m.conf === 'weak', isManual: m.conf === 'manual',
+        askDiff: !!m.diff && m.on,
+        diffText: m.diff ? 'The file at the new location is ' + m.diff.now + ' long; the missing one was ' + m.diff.was + '. It may be another edit or master. Your beat grid, ' + m.diff.cues + ' cues and ' + m.diff.loops + ' loops were placed on the old file, so their times may not line up.' : '',
+        choices: CHOICES.map(function (c) {
+          return { group: 'diff-' + m.id, label: c.label, note: c.note, on: m.choice === c.id,
+            pick: function () { var list = self.state.matches.slice(); list[i] = Object.assign({}, list[i], { choice: c.id }); self.setState({ matches: list }); } };
+        }),
         toggle: function () {
           var list = self.state.matches.slice();
           list[i] = Object.assign({}, list[i], { on: !list[i].on });
@@ -222,7 +250,7 @@ class Component extends DCLogic {
       return {
         name: x.title + ' — ' + x.artist, old: x.old, playlists: pl,
         idle: !x.confirming, confirming: x.confirming,
-        removeNote: x.playlists.length ? 'Also removes it from ' + self.plural(x.playlists.length, 'playlist', 'playlists') : 'Removes it from the collection',
+        removeNote: (x.playlists.length ? 'Also removes it from ' + self.plural(x.playlists.length, 'playlist', 'playlists') + '.' : 'Removes it from the collection.') + ' No file is deleted, here or on a drive.',
         locate: function () {
           var rest = self.state.missing.filter(function (_, j) { return j !== i; });
           var added = { id: x.id, title: x.title, artist: x.artist, old: x.old, neu: x.found, conf: 'manual', on: true, exporting: x.exporting };
@@ -245,7 +273,10 @@ class Component extends DCLogic {
       subtitle: subtitle,
       isDone: isDone, isReview: !isDone,
       doneTitle: this.plural(relinkedCount, 'track', 'tracks') + ' relinked. ' + (stillMissing ? stillMissing + ' still missing' : 'Nothing is missing'),
-      relinked: st.relinked.map(function (r) { return { name: r.title + ' — ' + r.artist, neu: r.neu }; }),
+      relinked: st.relinked.map(function (r) {
+        var how = { review: ' · grid reanalyzed, cues marked Check', asis: ' · cues and grid unchanged, by your choice', 'new': ' · added as a separate track' };
+        return { name: r.title + ' — ' + r.artist, neu: r.neu + (r.diff && r.choice ? how[r.choice] : '') };
+      }),
       folder: st.folder,
       searching: st.searching,
       searchNote: st.searching ? 'Searching…' : '· ' + this.plural(st.matches.length, 'match', 'matches') + ' found',
@@ -254,14 +285,16 @@ class Component extends DCLogic {
       checkedNote: n + ' of ' + st.matches.length + ' selected',
       hasMissing: st.missing.length > 0,
       missingHeading: isDone ? 'Still missing' : 'Not found',
-      missingNote: isDone ? 'Export skips these tracks' : 'No file with a matching name in ' + st.folder,
+      missingNote: isDone ? 'Export asks what to do with these' : 'No file with a matching name in ' + st.folder,
       missing: missing,
       hasRemoved: st.removed > 0,
       removedNote: this.plural(st.removed, 'track', 'tracks') + ' removed from the library',
       noneChecked: n === 0,
+      relinkBlocked: n === 0 || undecided > 0,
+      relinkHint: undecided ? 'Choose what happens to ' + (undecided === 1 ? 'the track with different audio' : undecided + ' tracks with different audio') : '',
       canRelinkMore: n > 0,
-      btnBg: n ? '#fafafa' : '#262626',
-      btnFg: n ? '#171717' : '#a3a3a3',
+      btnBg: n && !undecided ? '#fafafa' : '#262626',
+      btnFg: n && !undecided ? '#171717' : '#a3a3a3',
       relinkLabel: 'Relink ' + this.plural(n, 'track', 'tracks'),
       pickFolder: function () {
         var next = self.state.folder === '/Volumes/Archive' ? '~/Downloads' : '/Volumes/Archive';
@@ -270,7 +303,7 @@ class Component extends DCLogic {
       },
       searchAgain: function () { self.runSearch(); },
       relink: function () {
-        if (!n) return;
+        if (!n || undecided) return;
         var rest = self.state.matches.filter(function (m) { return !m.on; });
         self.setState({ phase: 'done', relinked: self.state.relinked.concat(checked), matches: rest });
       },

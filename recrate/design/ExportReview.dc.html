@@ -23,7 +23,7 @@ button:focus-visible,input:focus-visible{outline:2px solid #737373;outline-offse
 <div style="height: 60px; flex-shrink: 0; display: flex; align-items: center; gap: 8px; padding: 0 12px 0 24px; border-bottom: 1px solid #262626;">
 <div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px;">
 <h2 id="xr-title" style="margin: 0; font-size: 16px; line-height: 22px; font-weight: 600;">Review export to KINGSTON</h2>
-<div style="font-size: 13px; color: #a3a3a3;">Device Library and Device Library Plus · 4 playlists</div>
+<div style="font-size: 13px; color: #a3a3a3;">{{formatsLabel}} · 4 playlists</div>
 </div>
 <button type="button" class="ghost" onClick="{{close}}" aria-label="Close" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; padding: 0; background: transparent; border: 0; border-radius: 6px; color: #fafafa;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg></button>
 </div>
@@ -46,7 +46,7 @@ button:focus-visible,input:focus-visible{outline:2px solid #737373;outline-offse
 <span style="font-size: 12px; color: #a3a3a3; font-variant-numeric: tabular-nums;">{{chips.update.meta}}</span>
 </button>
 <button type="button" class="chip" aria-pressed="{{chips.skip.on}}" onClick="{{chips.skip.pick}}" style="display: flex; flex-direction: column; justify-content: center; align-items: flex-start; gap: 2px; padding: 0 12px; background: {{chips.skip.bg}}; box-shadow: {{chips.skip.ring}}; border: 1px solid #262626; border-radius: 6px; font-family: inherit; color: #fafafa; text-align: left;">
-<span style="display: flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 500;"><span style="display: flex; color: #facc15;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="m4.9 4.9 14.2 14.2"></path></svg></span>Skip</span>
+<span style="display: flex; align-items: center; gap: 6px; font-size: 14px; font-weight: 500;"><span style="display: flex; color: #facc15;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="m4.9 4.9 14.2 14.2"></path></svg></span>Missing</span>
 <span style="font-size: 12px; color: #a3a3a3; font-variant-numeric: tabular-nums;">{{chips.skip.meta}}</span>
 </button>
 <button type="button" class="chip" aria-pressed="{{chips.remove.on}}" onClick="{{chips.remove.pick}}" style="display: flex; flex-direction: column; justify-content: center; align-items: flex-start; gap: 2px; padding: 0 12px; background: {{chips.remove.bg}}; box-shadow: {{chips.remove.ring}}; border: 1px solid #262626; border-radius: 6px; font-family: inherit; color: #fafafa; text-align: left;">
@@ -91,6 +91,19 @@ button:focus-visible,input:focus-visible{outline:2px solid #737373;outline-offse
 
 <!-- Warnings -->
 <div aria-label="Before you export" role="group" style="flex-shrink: 0; display: flex; flex-direction: column; border: 1px solid #262626; border-radius: 6px; font-size: 13px;">
+<sc-if value="{{missingOpen}}" hint-placeholder-val="{{true}}">
+<div style="display: flex; align-items: flex-start; gap: 12px; padding: 10px 12px; border-bottom: 1px solid #262626;">
+<span style="display: flex; padding-top: 1px; color: #facc15;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M12 8v4"></path><path d="M12 16h.01"></path></svg></span>
+<div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 8px;">
+<span id="xr-missing-text" style="line-height: 18px;">{{missingTitle}} <span style="color: #a3a3a3;">{{missingBody}}</span></span>
+<label style="display: flex; align-items: center; gap: 8px; font-size: 14px;">
+<input type="checkbox" checked="{{missingAck}}" onChange="{{toggleMissing}}" aria-describedby="xr-missing-text" style="accent-color: #fafafa; width: 16px; height: 16px; margin: 0;">
+{{missingLabel}}</label>
+</div>
+<button type="button" class="ghost" aria-pressed="{{missOn}}" onClick="{{showMissing}}" style="height: 28px; padding: 0 8px; background: transparent; color: #fafafa; border: 0; border-radius: 6px; font-family: inherit; font-size: 13px;">{{missLabel}}</button>
+</div>
+</sc-if>
+<sc-if value="{{removing}}" hint-placeholder-val="{{true}}">
 <div style="display: flex; gap: 12px; padding: 10px 12px; border-bottom: 1px solid #262626;">
 <span style="display: flex; padding-top: 1px; color: #f87171;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg></span>
 <div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 8px;">
@@ -100,13 +113,14 @@ button:focus-visible,input:focus-visible{outline:2px solid #737373;outline-offse
 Remove Minimal from the drive</label>
 </div>
 </div>
+</sc-if>
 <div style="display: flex; align-items: flex-start; gap: 12px; padding: 10px 12px; border-bottom: 1px solid #262626;">
 <span style="display: flex; padding-top: 1px; color: #facc15;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"></path><path d="M12 9v4"></path><path d="M12 17h.01"></path></svg></span>
 <div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 8px;">
-<span id="xr-cue-text" style="line-height: 18px;">3 tracks have more than 10 memory cues. <span style="color: #a3a3a3;">You chose the 10 for Device Library on 2. Concrete Choir has no choice yet.</span></span>
+<span id="xr-cue-text" style="line-height: 18px;">3 tracks have more than 10 memory cues. <span style="color: #a3a3a3;">The players set up for KINGSTON show up to 10. You chose which 10 on 2 tracks. Concrete Choir has no choice yet; its other cues stay in Recrate either way.</span></span>
 <label style="display: flex; align-items: center; gap: 8px; font-size: 14px;">
 <input type="checkbox" checked="{{cueAck}}" onChange="{{toggleCueAck}}" aria-describedby="xr-cue-text" style="accent-color: #fafafa; width: 16px; height: 16px; margin: 0;">
-Use Concrete Choir’s first 10 for Device Library</label>
+Use Concrete Choir’s first 10 by position (bars 1–129) · 4 later cues aren’t exported</label>
 </div>
 <a href="CueEditor.dc.html" class="ghost" style="height: 28px; flex-shrink: 0; display: flex; align-items: center; padding: 0 8px; border-radius: 6px; font-size: 13px; color: #fafafa;">Choose cues…</a>
 <button type="button" class="ghost" aria-pressed="{{cuesOn}}" onClick="{{showCues}}" style="height: 28px; padding: 0 8px; background: transparent; color: #fafafa; border: 0; border-radius: 6px; font-family: inherit; font-size: 13px;">{{cuesLabel}}</button>
@@ -127,7 +141,7 @@ Use Concrete Choir’s first 10 for Device Library</label>
 </div>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"onBack":{"editor":null},"onExport":{"editor":null},"onClose":{"editor":null},"$preview":{"width":960,"height":680}}'>
+<script type="text/x-dc" data-dc-script data-props='{"removing":{"editor":"boolean","default":true},"missingResolved":{"editor":"boolean","default":false},"convertFor":{"editor":null},"formatsLabel":{"editor":null},"onBack":{"editor":null},"onExport":{"editor":null},"onClose":{"editor":null},"$preview":{"width":960,"height":680}}'>
 class Component extends DCLogic {
   constructor(props) {
     super(props);
@@ -135,10 +149,10 @@ class Component extends DCLogic {
     var rows = [
       { id: 'c1', a: 'copy', t: 'Night Ferry', ar: 'Oona Brandt', p: W, mb: 168, note: 'New in playlist' },
       { id: 'c2', a: 'copy', t: 'Parallel Rooms', ar: 'Sable & Finch', p: W, mb: 152, note: 'New in playlist' },
-      { id: 'c3', a: 'copy', t: 'Glass Corridor', ar: 'Oona Brandt', p: W, mb: 180, note: '12 memory cues — your 10 go to Device Library', many: true },
+      { id: 'c3', a: 'copy', t: 'Glass Corridor', ar: 'Oona Brandt', p: W, mb: 180, note: '12 memory cues — your 10 are exported', many: true },
       { id: 'c4', a: 'copy', t: 'Salt Flats', ar: 'Ama Idowu', p: U, mb: 142, note: '' },
       { id: 'c5', a: 'copy', t: 'Harbour Lights', ar: 'Sable & Finch', p: U, mb: 156, note: '' },
-      { id: 'c6', a: 'copy', t: 'Kiln', ar: 'Sable & Finch', p: U, mb: 138, note: 'FLAC — converted to AIFF' },
+      { id: 'c6', a: 'copy', t: 'Kiln', ar: 'Sable & Finch', p: U, mb: 138, note: '', flac: true },
       { id: 'c7', a: 'copy', t: 'Slow Orbit', ar: 'Juno Vale', p: U, mb: 161, note: '' },
       { id: 'c8', a: 'copy', t: 'Paper Lanterns', ar: 'Ama Idowu', p: U, mb: 149, note: '' },
       { id: 'c9', a: 'copy', t: 'Tidewater', ar: 'Marlow Ashe', p: U, mb: 158, note: '' },
@@ -152,22 +166,23 @@ class Component extends DCLogic {
       { id: 'c17', a: 'copy', t: 'First Light Transit', ar: 'Keel & Marsh', p: U, mb: 152, note: '' },
       { id: 'u1', a: 'update', t: 'Low Tide Signal', ar: 'Marlow Ashe', p: W, note: '4 cue edits' },
       { id: 'u2', a: 'update', t: 'Lantern Code', ar: 'Ama Idowu', p: W, note: 'Beat grid moved' },
-      { id: 'u3', a: 'update', t: 'Concrete Choir', ar: 'Halden Rue', p: W, note: '14 memory cues — choose 10 for Device Library', many: true },
+      { id: 'u3', a: 'update', t: 'Concrete Choir', ar: 'Halden Rue', p: W, note: '14 memory cues — choose 10 to export', many: true },
       { id: 'u4', a: 'update', t: 'Signal Fires', ar: 'Keel & Marsh', p: W, note: '2 cue edits' },
       { id: 'u5', a: 'update', t: 'Northbound', ar: 'Juno Vale', p: W, note: 'Loop added' },
       { id: 'u6', a: 'update', t: 'Hollow Grid', ar: 'Halden Rue', p: W, note: '1 cue edit · beat grid moved' },
-      { id: 'u7', a: 'update', t: 'Amber Room', ar: 'Oona Brandt', p: W, note: '11 memory cues — your 10 go to Device Library', many: true },
+      { id: 'u7', a: 'update', t: 'Amber Room', ar: 'Oona Brandt', p: W, note: '11 memory cues — your 10 are exported', many: true },
       { id: 'u8', a: 'update', t: 'Undertow', ar: 'Marlow Ashe', p: W, note: '3 cue edits' },
       { id: 'u9', a: 'update', t: 'Chalk Lines', ar: 'Ama Idowu', p: W, note: 'Hot cue colors' },
-      { id: 's1', a: 'skip', t: 'Brass Weather', ar: 'Keel & Marsh', p: W, mb: 171, note: 'File not found' },
-      { id: 's2', a: 'skip', t: 'Sodium Lights', ar: 'Juno Vale', p: W, mb: 149, note: 'File not found' },
+      { id: 's1', a: 'skip', t: 'Brass Weather', ar: 'Keel & Marsh', p: W, mb: 171, note: 'File not found · last seen on MUSIC-SSD' },
+      { id: 's2', a: 'skip', t: 'Sodium Lights', ar: 'Juno Vale', p: W, mb: 149, note: 'File not found · moved or deleted' },
       { id: 'r1', a: 'remove', t: 'Frost Pattern', ar: 'Halden Rue', p: M, mb: 162, note: 'Deleted from drive' },
       { id: 'r2', a: 'keep', t: 'Lantern Code', ar: 'Ama Idowu', p: M, note: 'Also in Warehouse — Oct 2026 — stays on drive' },
       { id: 'r3', a: 'remove', t: 'Mercury Steps', ar: 'Oona Brandt', p: M, mb: 148, note: 'Deleted from drive' },
       { id: 'r4', a: 'keep', t: 'Morning Tram', ar: 'Keel & Marsh', p: M, note: 'Also in Sunday rooftop — stays on drive' },
       { id: 'r5', a: 'remove', t: 'Thin Air', ar: 'Juno Vale', p: M, mb: 155, note: 'Deleted from drive' }
     ];
-    this.state = { rows: rows, filter: 'all', confirmed: false, cueAck: false, started: false };
+    if (props.missingResolved) rows = rows.map(function (r) { return r.a === 'skip' ? Object.assign({}, r, { a: 'copy', note: 'Relinked' }) : r; });
+    this.state = { rows: rows, filter: 'all', confirmed: false, cueAck: false, missingAck: false, started: false };
   }
   gb(mb) { return (mb / 1000).toFixed(1) + ' GB'; }
   renderVals() {
@@ -189,7 +204,8 @@ class Component extends DCLogic {
       if (st.filter === 'remove') return r.a === 'remove' || r.a === 'keep';
       return r.a === st.filter;
     };
-    var words = { copy: 'Copy', update: 'Update', skip: 'Skip', remove: 'Remove', keep: 'Keep' };
+    var words = { copy: 'Copy', update: 'Update', skip: st.missingAck ? 'Leave out' : 'Missing', remove: 'Remove', keep: 'Keep' };
+    var conv = this.props.convertFor || '';
     var rows = st.rows.filter(matches).map(function (r) {
       var id = r.id;
       return {
@@ -198,7 +214,7 @@ class Component extends DCLogic {
         wordColor: r.a === 'remove' ? '#f87171' : (r.a === 'keep' ? '#a3a3a3' : '#fafafa'),
         title: r.t, artist: r.ar, playlist: r.p,
         size: r.a === 'copy' || r.a === 'remove' ? r.mb + ' MB' : '—',
-        note: r.note,
+        note: r.flac ? (conv ? 'FLAC — converted to AIFF for ' + conv : 'FLAC — copied as is') : r.note,
         noteColor: r.a === 'skip' ? '#fafafa' : '#a3a3a3',
         locatable: r.a === 'skip',
         locate: function () {
@@ -210,28 +226,44 @@ class Component extends DCLogic {
       };
     });
     var showRemove = st.filter === 'all' || st.filter === 'remove';
-    var free = 36.1 - copyMB / 1000 + 9.4;
+    var removing = this.props.removing === undefined ? true : !!this.props.removing;
+    var free = 36.1 - copyMB / 1000 + (removing ? 9.4 : 0);
+    // Every unresolved decision blocks Export, not only removals.
+    var open = [];
+    if (nSkip && !st.missingAck) open.push('the ' + nSkip + ' missing files');
+    if (!st.cueAck) open.push('Concrete Choir’s memory cues');
+    if (removing && !st.confirmed) open.push('removing Minimal');
     var hint = '';
     if (st.started) hint = 'Starting export…';
-    else if (!st.confirmed) hint = 'Tick “Remove Minimal from the drive” to export';
-    else if (!st.cueAck) hint = 'Choose Concrete Choir’s 10 memory cues, or tick to use its first 10';
-    else hint = copy.length + ' copies · ' + nUpdate + ' updates · 1 removal';
-    var disabled = !st.confirmed || !st.cueAck || st.started;
+    else if (open.length) hint = 'Decide on ' + open.join(', ') + ' to export';
+    else hint = copy.length + ' copies · ' + nUpdate + ' updates' + (removing ? ' · 1 removal' : '') + (nSkip ? ' · ' + nSkip + ' left out' : '');
+    var disabled = open.length > 0 || st.started;
     var labels = { all: 'All changes', copy: 'Tracks to copy', update: 'Tracks to update', skip: 'Tracks to skip', remove: 'Tracks in Minimal', cues: 'Tracks with more than 10 memory cues' };
     return {
       chips: {
         all: chip('all', '4 playlists'),
         copy: chip('copy', copy.length + ' tracks · ' + this.gb(copyMB)),
         update: chip('update', nUpdate + ' tracks (cues and beat grids)'),
-        skip: chip('skip', nSkip ? nSkip + ' (missing files)' : 'Nothing'),
-        remove: chip('remove', '1 playlist · 88 tracks')
+        skip: chip('skip', nSkip ? nSkip + ' files not found' : 'Nothing'),
+        remove: chip('remove', removing ? '1 playlist · 88 tracks' : 'Nothing')
       },
       tableLabel: labels[st.filter],
       rows: rows,
-      hasMore: showRemove,
+      hasMore: showRemove && removing,
       moreText: '83 more tracks in Minimal · 58 deleted, 25 stay on the drive',
       isEmpty: rows.length === 0,
-      emptyText: 'No tracks will be skipped',
+      emptyText: st.filter === 'skip' ? 'Every track’s file was found' : 'Nothing to show',
+      formatsLabel: this.props.formatsLabel || 'Device Library and Device Library Plus',
+      removing: removing,
+      missingOpen: nSkip > 0,
+      missingTitle: nSkip + (nSkip === 1 ? ' track’s file can’t be found.' : ' tracks’ files can’t be found.'),
+      missingBody: 'Locate them in the table, or export without them. The drive has no copy of them, and an older copy won’t be reused in their place.',
+      missingLabel: 'Export without ' + (nSkip === 1 ? 'this track' : 'these ' + nSkip + ' tracks') + ' · they stay in your playlists',
+      missingAck: st.missingAck,
+      toggleMissing: function (e) { self.setState({ missingAck: e.target.checked }); },
+      missOn: st.filter === 'skip' ? 'true' : 'false',
+      missLabel: st.filter === 'skip' ? 'Show all' : 'Show tracks',
+      showMissing: function () { self.setState({ filter: self.state.filter === 'skip' ? 'all' : 'skip' }); },
       confirmed: st.confirmed,
       toggleConfirm: function (e) { self.setState({ confirmed: e.target.checked }); },
       cueAck: st.cueAck,
@@ -251,7 +283,7 @@ class Component extends DCLogic {
       },
       back: function () {
         if (self.props.onBack) self.props.onBack();
-        else self.setState({ filter: 'all', confirmed: false, cueAck: false, started: false });
+        else self.setState({ filter: 'all', confirmed: false, cueAck: false, missingAck: false, started: false });
       },
       close: function () {
         if (self.props.onClose) self.props.onClose();

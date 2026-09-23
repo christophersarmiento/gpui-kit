@@ -1,42 +1,58 @@
 # Recrate design handoff
 
-Recrate is a desktop DJ library manager: an alternative to rekordbox for
-organizing playlists, setting cue points and exporting to USB drives for
-Pioneer CDJ and XDJ players. It is not a performance app. There are no decks,
-mixer or effects.
+Recrate is a local-first desktop DJ library manager for macOS and Windows.
+It imports and organizes music, prepares beat grids and cue points, and
+exports verified libraries to USB drives for supported DJ players. It is not a
+performance app: there are no decks, mixer or effects.
 
-This folder is the design handoff for building Recrate with GPUI Kit. It holds
-a written spec (this file) and the interactive mockups it was derived from
-(`design/`). The mockups show layout, copy and behavior. This file states the
-decisions behind them. When the two disagree, this file wins.
+This folder holds the interactive mockups (`design/`) and a guide to reading
+them against the product requirements.
+
+## What takes precedence
+
+1. **[`recrate-prd.md`](recrate-prd.md)** is the source of truth for
+   behavior, scope and safety. Requirement IDs such as `SAFE-09` and `EXP-03`
+   refer to it.
+2. **The decision log (`recrate-decisions.md`)** records later approvals and
+   open gates, including the stack, scale and publication model. The PRD links
+   to it and to the library architecture, but neither is in this folder. Get
+   them from the product owner before writing an implementation
+   specification.
+3. **This README** summarizes how the mockups apply the PRD. Where it
+   disagrees with the PRD or the decision log, they win.
+4. **The mockups** show layout, copy and interaction for the states they
+   draw. They are not complete, and some copy and behavior are shortcuts. See
+   [Mockup shortcuts](#mockup-shortcuts). Where a mockup disagrees with the
+   PRD, the PRD wins. Report the conflict rather than copying it.
 
 ## Before you start
 
-1. Read the repository's [Design Guides](../website/docs/design-guides.md) and
-   [Coding Guides](../website/docs/coding-guides.md). They are requirements.
-2. Recrate is an application built on `gpui-kit`. Put application code in its
-   own crate or example. Do not add Recrate-specific behavior to `gpui-base`
-   or `gpui-component`.
-3. Treat the **Contracts** section as acceptance criteria. Most of them protect
-   users' USB drives and libraries from data loss.
-4. Everything in the mockups is sample data: track names, counts, sizes, dates
-   and paths. The drive is always "KINGSTON" and the demo playlist is
-   "Warehouse — Oct 2026".
+- Recrate is an application built on `gpui-kit`. Put application code in its
+  own crate. Don't add Recrate-specific behavior to `gpui-base` or
+  `gpui-component`.
+- If this folder sits inside the gpui-kit repository, that repository's
+  Design Guides and Coding Guides (`website/docs/design-guides.md` and
+  `website/docs/coding-guides.md`) also apply. Elsewhere, follow the PRD's
+  nonfunctional requirements (§10) and the interface rules below.
+- Everything in the mockups is sample data: track names, counts, sizes, dates,
+  paths, player models and firmware versions. The drive is always "KINGSTON"
+  and the demo playlist is "Warehouse — Oct 2026". None of it is a
+  compatibility claim.
 
 ## How to read the mockups
 
 `design/*.dc.html` are self-contained HTML pages from a design canvas. Each
-file is one frame. `design/canvas.json` lists every frame with its title,
-size and position. They use a small template runtime (`{{holes}}`,
-`<sc-for>`, `<sc-if>`, `<dc-import>`), and the logic lives in the
-`class Component` script at the end of each file. They will not render
-without that runtime, so read them as source. The markup gives exact copy,
-spacing and structure. The script gives state and behavior.
+file is one frame, and `design/canvas.json` lists each frame's title, size and
+position. They use a small template runtime (`{{holes}}`, `<sc-for>`,
+`<sc-if>`, `<dc-import>`), and each file's logic is the `class Component`
+script at its end. They won't render without that runtime, so read them as
+source. The markup gives copy, spacing and structure. The script gives state
+and behavior.
 
-The visual language is the GPUI Kit default dark theme. The hex values in
-the mockups are that theme's tokens; `design/ds/gpui-kit/tokens.json` maps
-them to names. In GPUI, read every color, radius and spacing value from
-`cx.theme()` by semantic role. Do not copy hex values into code.
+The visual language is the GPUI Kit default dark theme.
+`design/ds/gpui-kit/tokens.json` maps the mockups' hex values to token names.
+In GPUI, read every color, radius and spacing value from `cx.theme()` by
+semantic role. Don't copy hex values into code.
 
 | Mockup value | Token in `tokens.json` |
 | --- | --- |
@@ -53,30 +69,31 @@ them to names. In GPUI, read every color, radius and spacing value from
 
 ## Screens
 
-Every screen is a view or dialog in one desktop window. Dialogs open over the
-screen that launched them, and closing returns there. They never stack: at
-most one dialog is open at a time.
+Each screen is a view or dialog in one desktop window. A dialog opens over
+the screen that launched it and returns focus there when it closes. Dialogs
+never stack. PRD §5 lists the required purpose of each surface.
 
 | Frame | What it is | Opened from |
 | --- | --- | --- |
 | `Main.dc.html` | **Library.** Sidebar, playlist header, selected-track panel with waveform, track table, status bar | App start |
 | `LibrarySplit.dc.html` | Library with **Split view** on: a source pane (collection or another playlist) to drag or add tracks from | Split view toggle |
 | `EditMetadata.dc.html` | **Edit track info** dialog | Pencil on a row, or double-click |
-| `CueEditor.dc.html` | **Cue editor**: overview and zoomed waveform, beat grid, 8 hot-cue pads, memory cue list, inspector | Edit cues in the track panel |
-| `Tags.dc.html` | **Tags**: categories, tag chips, and a "find tracks by tag" query | Sidebar › Tags |
+| `CueEditor.dc.html` | **Cue editor**: overview and zoomed waveform, beat grid, hot-cue pads, memory cue list, inspector | Edit cues in the track panel |
+| `Tags.dc.html` | **Tags**: categories, tag chips and "find tracks by tag" | Sidebar › Tags |
 | `SmartPlaylist.dc.html` | **Smart playlist** rule editor with live preview | Sidebar smart playlist |
 | `ImportReview.dc.html` | **Import music**: review, progress, results | Import › Music files… |
 | `Migrate.dc.html` | **Import from rekordbox**: source, review, import, done | Import › rekordbox library… |
 | `Analysis.dc.html` | **Analysis** queue and settings | Analyze, or Sidebar › Needs analysis |
-| `Relink.dc.html` | **Missing files**: proposed matches and relinking | Sidebar › Missing files, Export's Locate…, Migrate's Relink… |
-| `Settings.dc.html` | **Settings**: General, Library, Tags and files, Backup and restore | Gear in the toolbar (⌘,) |
-| `Export.dc.html` | **Device page, Export tab**: storage, playlists to export, settings | Sidebar › Devices › KINGSTON |
+| `Relink.dc.html` | **Missing files**: proposed matches, different-audio decisions, relinking | Sidebar › Missing files, Export's Locate…, Migrate's Relink… |
+| `Settings.dc.html` | **Settings**: General, Library, Tags and files, Backup and restore | Gear in the toolbar |
+| `Export.dc.html` | **Device page, Export tab**: storage, selections, settings, decisions summary | Sidebar › Devices › KINGSTON |
 | `DeviceHistory.dc.html` | **Device page, History tab**: past exports, repair, drive backups | History tab |
 | `HistoryInspect.dc.html` | History when a drive check finds unexpected changes | (state of History) |
+| `HistoryUnproven.dc.html` | History when a file's ownership can't be proven | (state of History) |
 | `HistoryRecovery.dc.html` | History when the drive needs recovery | (state of History) |
-| `DeviceSetup.dc.html` | **Device setup**: players, library formats, existing rekordbox library | Export › Device setup… |
-| `ExportReview.dc.html` | **Export review**: preflight before an export that removes anything | Review and export… / Review changes… |
-| `ExportResults.dc.html` | **Export results** and recovery | View results…, History › Open report… |
+| `DeviceSetup.dc.html` | **Device setup**: player profiles, effective formats, My Tag categories, existing library | Export › Device setup… |
+| `ExportReview.dc.html` | **Export review**: preflight that must resolve every open decision | Review and export… |
+| `ExportResults.dc.html` | **Export results** and follow-up | View results…, History › Open report… |
 
 ### Suggested GPUI Kit components
 
@@ -95,136 +112,166 @@ most one dialog is open at a time.
 | Settings window | `setting` components |
 | Waveforms, beat grid, cue flags | Custom elements (paint), not HTML-like layout |
 
-## Core concepts
+## How the mockups apply the PRD
 
-- **Collection, playlists, folders.** Playlists live in folders. Smart
-  playlists are rule-based and marked "Smart" in the sidebar.
-- **Hot cues and memory cues are different things.**
-  - Hot cues are triggers: 8 pads (A–H) per track, each with color, name and
-    optional loop. On the waveform they are flags along the top.
-  - Memory cues are markers with no pads and no limit in Recrate. On the
-    waveform they are triangles along the bottom.
-  - Copying one kind to the other never moves or removes the original.
-- **Tags** belong to user-defined, colored, reorderable categories. When
-  finding tracks, tags in the same category combine with OR, and different
-  categories combine with AND.
-- **Device libraries.**
-  - A USB drive can hold Device Library (older players), Device Library Plus
-    (newer players), or both.
-  - Which ones a drive gets is a property of the drive, set in Device setup
-    ("Older players", "Newer players", "Both / not sure"). Export only shows
-    what will be written.
-  - Plain folders (audio files plus M3U, no cues) is a separate export mode.
-
-## Contracts
-
-These are the rules the design depends on. Implement them as behavior, and
-test them where the Coding Guides call for tests.
+These notes explain the mockups' behavior. They restate PRD requirements in
+screen terms. They are not additional rules.
 
 ### Library and editing
 
-1. **Tag writing follows one policy** (Settings › Tags and files): only change
-   Recrate's library, choose each time, or always write to files too.
-   - With "choose each time", Edit track info offers **Save** (library only)
-     and **Save and write tags** (also writes ID3 tags or Vorbis comments).
-   - Cue points and beat grids are never written into audio files.
-   - Known gap: the Edit track info mockup always shows both buttons. Make it
-     follow the policy.
-2. **Unsaved edits.** Cancel, the close button and Escape close at once when
-   nothing changed. With changes, the footer turns into "Discard N unsaved
-   changes?" with **Keep editing** and **Discard**. It is not a second dialog.
-3. **Split view** hides Tags, Hot cues and Added in the playlist table. Adding
-   works both by dragging and by a + button on each row, so it never depends
-   on dragging. Tracks already in the playlist can't be added twice.
-   Every add can be undone from the status bar.
-4. **Smart playlists.**
-   - Each rule row shows how many tracks are left after it (or how many it
-     matches, for "any").
-   - Unfinished rules are ignored rather than emptying the result.
-   - Players can't evaluate rules. On export, a smart playlist is written as
-     an ordinary playlist of its current matches, either refreshed on every
-     export or frozen at the first one (the user chooses).
+- **Tag writing** follows the policy in Settings › Tags and files (`META-03`).
+  Edit track info reports saving to Recrate separately from writing tags to
+  the file. Cue points and beat grids are never written into audio files.
+- **Unsaved edits.** With changes, closing turns the footer into "Discard N
+  unsaved changes?" with **Keep editing** and **Discard**.
+- **Split view** (`ORG-01`, `ORG-02`). Tracks can be added by dragging or with
+  a + button on each row. A track already in the playlist shows "In
+  playlist". Adding it again asks "Add it again?" in the status bar, so a
+  duplicate occurrence is always an explicit choice. Every add can be undone.
+- **Smart playlists** (`ORG-03`, `ORG-04`). Players get an ordinary playlist
+  of the matches, frozen into the reviewed export plan.
 
-### Cues and device limits
+### Players, formats and cues
 
-5. **Device Library holds at most 10 memory cues per track.**
-   - Recrate keeps every memory cue. In the Cue editor, a "DL" checkbox on
-     each memory cue chooses which ones go to Device Library, with at most 10
-     ticked.
-   - Device Library Plus gets every memory cue. Don't claim players will show
-     them all.
-   - Export must not silently keep "the first 10". If a track over the limit
-     has no choice, Export review blocks the export until the user chooses
-     cues or ticks "Use <track>'s first 10 for Device Library".
+- **Device setup chooses player profiles, not "older" or "newer" players**
+  (`DEV-02`, `DEV-03`). Each profile is labelled Tested, Untested or Not
+  supported. Not supported can't be chosen, and choosing Untested shows a
+  warning. The formats written are derived from the chosen profiles, and the
+  same formats appear on Export, Review, Results and History.
+- **Cue limits are per profile** (`PREP-04`, `PREP-05`). Recrate keeps every
+  memory cue. The Cue editor's "Use" checkbox picks up to the profile's limit
+  (10 in the sample data) for export. Plus isn't assumed to show more. A
+  track over the limit with no choice blocks export until the user picks cues
+  or accepts "first 10 by position", which names the bars it covers.
+- **My Tag** exports only the categories the user chooses in Device setup, up
+  to the profile's limit. The categories left out are named (`ORG-05`).
+- **FLAC conversion** is offered only when a chosen profile can't play FLAC,
+  and names that player (`EXP-06`).
 
-### Export safety
+### Export and recovery
 
-6. **Review before deleting from a drive.** If an export would remove
-   anything from the drive, Export goes through Export review. Export stays
-   disabled until the user ticks the removal confirmation, and until every
-   memory cue choice from contract 5 is resolved.
-7. **Shared drive library.** A drive has one shared library, so adding
-   Recrate's playlists means rewriting it even when the user keeps
-   rekordbox's.
-   - Before every export, back up each library and analysis file that will
-     change.
-   - After writing, read the library back and compare it. If anything of
-     rekordbox's is missing or different, mark the export failed and restore
-     the backup.
-   - Only write library versions Recrate recognizes. Refuse unfamiliar
-     formats.
-   - The "Recrate's playlist" marker is a convenience for listing and
-     removal. It is not the safety mechanism.
-8. **Removing a playlist** frees only tracks no other playlist on the drive
-   uses. Space estimates must reflect that.
-9. **Interrupted export: check before anything else.**
-   - History shows an interrupted export as its last known state ("last known
-     at 22:10"), not as facts about the drive.
-   - Check drive comes first and requires the drive to be connected. Resume
-     and Discard stay disabled until a check has run.
-10. **Discard deletes only what this export provably created.** Delete only
-    files the check identified as created by this export (by name, size and
-    time) and not used by either device library. Files that were already on
-    the drive, or that any library points to, are kept.
-11. **An unexpected check result stops everything.** For example, the
-    library changed after the disconnect, or the export's files are now used
-    by another library.
-    - Show "Recrate stopped here" with the differences.
-    - Offer only Save report…, Show drive in Finder and Check again.
-    - Resume and Discard are not offered.
-12. **Disconnected during a library write means recovery is needed.**
-    - Show "Recovery needed". Don't claim the old library is intact or that a
-      rollback happened.
-    - Step 1: reconnect the drive. Step 2: Check and restore (compare with the
-      pre-export backup, put back files that don't match, read them back).
-    - Tell the user not to use the drive in a player until recovery is done.
-13. **Every export's backup is listed in History** with Restore…. Restoring
-    first backs up the current drive library.
+- **Every open decision gates export** (`EXP-03`). Missing files, cue choices
+  and removals are listed under "Needs your decision" on Export, and each is
+  a checkbox or action in Export review. Export stays disabled until all are
+  resolved. Missing tracks are left out only after "Export without these
+  tracks" is ticked.
+- **Keep versus replace** (`DEV-04`, `SAFE-09`). Keep preserves the existing
+  library's semantics and refuses the write if that can't be done. Replace
+  shows its exact scope: what's removed from the drive's library, what's
+  kept on the drive (rekordbox's audio, by default), and what's backed up.
+  Deleting that audio is a separate, unticked option. Each file is then
+  listed in Export review and copied to the computer before deletion.
+  Replacing never claims the computer has another copy.
+- **Interrupted export** (`REC-03`, `REC-04`). History shows the last known
+  state until a read-only check runs. Resume and Discard stay disabled until
+  then.
+- **Discard needs proof of ownership** (`SAFE-04`, `SAFE-08`). The check
+  proves a file is this export's when its path was empty in the pre-export
+  inventory and its content hash matches the hash Recrate recorded after
+  writing it. For an incomplete file, the path was reserved before copying
+  and the written part matches the source. Name, size and time appear only for
+  reference. Proof and library references are checked again just before
+  deleting. A file without proof moves History to "Recrate stopped here"
+  (`HistoryUnproven`), and nothing is deleted.
+- **Unexpected changes** stop Resume and Discard and offer Save report…,
+  Show drive and Check again (`REC-05`).
+- **Disconnected during a library write** means Recovery needed (`REC-06`).
+  History never claims the old library is intact. It restores from the
+  verified backup and reads it back before it reports recovery.
 
-### Library-wide safety
+### Analysis and missing files
 
-14. **Recrate library backups** (Settings › Backup and restore) cover
-    playlists, cues, beat grids, tags and analysis, but not audio files.
-    - Back up automatically on a schedule, and before large imports,
-      reanalysis and restores.
-    - A restore's confirmation says what will be lost, and backs up the
-      current library first.
-15. **Missing files are a collection problem.** They are reachable from the
-    Library sidebar (Missing files, with a count), Export's Locate… and the
-    migration's Relink….
-    - Weak matches start unticked.
-    - Relink applies only to ticked matches.
-16. **rekordbox migration** reads a copy and never changes rekordbox or its
-    files.
-    - It backs up Recrate's own library first.
-    - It shows a mapping table (imported / imported with changes / not
-      imported) before anything is imported.
-    - It asks how to resolve tracks that exist in both apps.
-    - It can lock imported beat grids.
-    - Its Done step links straight to Missing files.
-17. **Analysis never replaces locked or user-edited beat grids** unless the
-    user unlocks them. Reanalyze warns when unlocked grid edits will be
-    replaced.
+- **Changing analysis defaults never unlocks or queues tracks** (`AN-03`).
+  Reanalyzing locked tracks is a separate, scoped action in the queue, and
+  the replaced grid is kept so it can be restored.
+- **Different audio** (`HEALTH-03`). A proposed match whose audio or length
+  differs asks the user to choose one of three options:
+  - relink, reanalyze the grid and mark cues "Check";
+  - relink and keep everything as it is;
+  - import the file as a separate track.
+
+  Relink stays disabled until the user chooses.
+- **Removing a missing track** from the library deletes no file, on the
+  computer or on any drive (`HEALTH-04`).
+
+## Mockup shortcuts
+
+Don't implement these as drawn. They are simplifications or open gaps in
+the mockups.
+
+- **Fixed canvas sizes.** Frames are 1440×900 or fixed dialog sizes. The
+  product must work at smaller window sizes and with scaled text.
+- **macOS only and dark only.** Paths, "Show drive in Finder" and shortcuts
+  are macOS. Windows paths and shortcuts, and light or system appearance,
+  aren't drawn.
+- **Sample player profiles.** Model names, firmware, hot-cue counts, the
+  10-cue limit and FLAC support are illustrative. Real values come from the
+  qualification matrix.
+- **Edit track info always shows both Save buttons.** It should follow the
+  tag-writing policy.
+- **Choose cues…** in Export review links to the Cue editor, but the return
+  to the same review, with decisions kept and rechecked, isn't drawn.
+- **Progress closes by Cancel.** Closing a job without cancelling it,
+  reopening its progress, and recovery after restart aren't drawn.
+- **Populated states only.** Most frames show working examples. Empty,
+  error and offline states are listed under Not yet designed.
+
+## Not yet designed
+
+Taken from the PRD review. Most of these extend existing screens rather than
+adding pages.
+
+- **Library organization and browsing:** creating, renaming, moving,
+  duplicating and deleting playlists and folders; removing an occurrence
+  versus removing a collection record; reorder and insertion feedback;
+  multi-selection; structured filters; configurable columns; showing sorted
+  view versus stored order. (`LIB-05`, `BROWSE-01`, `ORG-01`, `ORG-02`)
+- **Bulk metadata and external changes:** mixed-value editing with explicit
+  field selection; the remaining metadata fields; removing artwork; "saved
+  locally, file write failed or pending"; reviewing tag rereads and
+  restoring original tags. (`META-01`–`META-05`)
+- **Import and migration:** inspectable duplicate evidence and what
+  replacement changes; scan and cancel states; partial cancellation results;
+  separate reviews for desktop, XML and USB sources; which grid stays active
+  with "keep both"; backup failure and retry. (`LIB-01`–`LIB-06`,
+  `MIG-01`–`MIG-05`)
+- **Preparation editor:** grid nudge and alignment; half and double tempo
+  correction; lock and unlock; variable-tempo anchors and sections with a
+  preview of the affected span; editable cue positions and loop bounds;
+  active-loop intent; undo and dirty-exit confirmation; output volume. The
+  rendering mode of the three-band waveform, what its bands mean, and its
+  unavailable and loading states. (`PREP-01`–`PREP-03`)
+- **Analysis queue:** cancel and cancelled states; partial results per
+  component; reviewing stale or protected results; interrupted work;
+  preparation provenance. (`AN-02`–`AN-04`)
+- **Smart playlists and tags:** invalid-rule errors distinct from empty
+  results; deeper nested groups; missing-value behavior; a proper tag picker;
+  category settings; review of what a deletion affects; assignment controls;
+  keyboard reordering. (`ORG-03`, `ORG-05`)
+- **Export planning:** preservation conflicts that block the write; selecting
+  individual tracks; stale plans and revalidation; conversion choices; peak
+  space needed on the drive and the computer, including staging and backups;
+  review and results for plain folders and M3U. (`DEV-02`–`DEV-04`,
+  `EXP-01`–`EXP-07`)
+- **Export progress and recovery:** separate statuses for legacy, Plus and
+  shared resources; partial dual-format publication; stopping at a safe
+  boundary; a missing or corrupt backup; a failed restore; repeated
+  disconnection; the OS reporting the drive busy or failing to eject it.
+  (`SAFE-05`–`SAFE-10`, `REC-01`–`REC-08`)
+- **Local backup and relocation:** snapshot validation and compatibility;
+  restore progress and failure; unavailable backup destinations; protected
+  retention; a real library-move workflow. (`SET-02`–`SET-05`)
+- **Computer handoff (new workflow):** publishing and adopting a snapshot;
+  managed versus referenced audio scope; downloading audio on demand and
+  Download all; incomplete delivery; divergent branches; unavailable
+  removable catalogs. (Decision log D-07, D-08)
+- **Cross-screen states:**
+  - First launch and an empty library; no results across the collection; no
+    connected drive.
+  - An offline volume versus a missing file versus a permission failure.
+  - Read-only or unsupported drives, and not enough space.
+  - Keyboard and focus behavior, smaller windows, scaled text.
+  - Windows paths and shortcuts, and light-theme examples.
 
 ## Interface language
 
@@ -234,44 +281,23 @@ test them where the Coding Guides call for tests.
   **Device setup…**).
 - Destructive confirmations name the object and use the result verb
   (**Discard copies…**, then **Discard copies**).
-- Errors say what happened and how to recover. No "successfully", no
-  "Are you sure".
+- Errors say what happened and how to recover. Don't write "successfully"
+  or "Are you sure".
 - Status color always comes with an icon or a word.
 - Desktop conventions: default arrow cursor on buttons, one primary button per
-  surface, keyboard reachable everything, no hover-only actions.
-- Localization: `en`, `zh-CN`, `zh-HK` (see the root `CLAUDE.md`).
-
-## Open items
-
-- **Supported players list.** Device setup shows placeholders
-  (`[Player model]`, `[x.yz]`, `Recrate [version]`). Fill it from real,
-  versioned compatibility testing before release. Until then, don't claim
-  compatibility beyond what's tested.
-- **rekordbox details to verify** against the rekordbox version you target:
-  - The XML export menu path.
-  - What XML omits (for example My Tag).
-  - That phrase analysis, history and sampler are not imported.
-  - The mapping of intelligent playlist conditions.
-- **Device library facts to verify:** hot cues per track (the design assumes
-  8) and track colors on each format.
-- **Not yet designed:**
-  - Import history (reopening past import reports).
-  - Batch editing and tag "recipes" for many tracks at once.
-  - A proper tag picker in smart playlist rules (they are typed text today).
-  - Playlist reordering by drag.
-  - The category settings dialog on the Tags page.
-- **Sample data** throughout: replace with real data sources.
+  surface, everything keyboard-reachable, no hover-only actions.
+- Release UI is English, with Unicode metadata and localization-ready text.
+  Which other languages to ship is an open release decision (PRD §3.2).
 
 ## Kickoff prompt for an implementing agent
 
-> Build Recrate, a desktop DJ library manager, as an application on
-> `gpui-kit` in this repository. Read `recrate/README.md` first. It is the
-> spec, and its Contracts section is the acceptance criteria. Then read the
-> repository's Design Guides and Coding Guides and follow them. Use
-> `recrate/design/*.dc.html` as the reference for layout, copy and interaction
-> (read them as source; they don't render on their own). Start with the
-> Library screen (`Main.dc.html`) using sample data. Then add the Cue editor,
-> the device page (Export and History) with its dialogs, and the remaining
-> dialogs. Use GPUI Kit components and theme tokens rather than the mockups'
-> hex values. Don't modify `gpui-base` or `gpui-component` for app-specific
-> needs. Ask before deciding anything the Open items section leaves open.
+> Produce the technical specification and architecture for Recrate that
+> `recrate/recrate-prd.md` §14 asks for, not production code. The PRD and its
+> decision log are the authority. Ask for `recrate-decisions.md` and the
+> library architecture if they aren't available, and don't treat open gates
+> as decided. Use `recrate/README.md` to read the mockups in
+> `recrate/design/*.dc.html` as source; they don't render on their own. Map
+> each PRD requirement and each board to components, workflows and tests.
+> Treat the README's Mockup shortcuts and Not yet designed lists as known
+> gaps, not as behavior to copy. The stack is Rust, SQLite (rusqlite) and
+> `gpui-kit`. Keep application code out of `gpui-base` and `gpui-component`.

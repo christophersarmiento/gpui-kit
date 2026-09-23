@@ -121,8 +121,8 @@ class Component extends DCLogic {
     var rows = [
       { id: 'f1', o: 'failed', t: 'Night Ferry', ar: 'Oona Brandt', p: W, mb: 168, reason: 'Couldn’t write the file — the drive was disconnected', fixed: 'Verified after retry · 168 MB' },
       { id: 'f2', o: 'failed', t: 'First Light Transit', ar: 'Keel & Marsh', p: U, mb: 152, reason: 'File name is too long for FAT32 — rename it or retry with a shorter name', fixed: 'Copied with a shorter file name · 152 MB' },
-      { id: 's1', o: 'skipped', t: 'Brass Weather', ar: 'Keel & Marsh', p: W, reason: 'File not found in ~/Music/Recrate/' },
-      { id: 's2', o: 'skipped', t: 'Sodium Lights', ar: 'Juno Vale', p: W, reason: 'File not found in ~/Music/Recrate/' }
+      { id: 's1', o: 'skipped', t: 'Brass Weather', ar: 'Keel & Marsh', p: W, reason: 'Left out as you chose · file not found' },
+      { id: 's2', o: 'skipped', t: 'Sodium Lights', ar: 'Juno Vale', p: W, reason: 'Left out as you chose · file not found' }
     ];
     copied.forEach(function (c, i) {
       rows.push({ id: 'c' + i, o: 'copied', t: c[0], ar: c[1], p: c[2], mb: c[3], reason: 'Verified · ' + c[3] + ' MB' });

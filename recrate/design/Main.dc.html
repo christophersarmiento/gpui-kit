@@ -278,17 +278,12 @@ Split view</button>
 <span aria-hidden="true" style="display: flex; color: {{r.gripColor}};"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="12" r="1"></circle><circle cx="9" cy="5" r="1"></circle><circle cx="9" cy="19" r="1"></circle><circle cx="15" cy="12" r="1"></circle><circle cx="15" cy="5" r="1"></circle><circle cx="15" cy="19" r="1"></circle></svg></span>
 <span style="min-width: 0; display: flex; flex-direction: column; gap: 1px;">
 <span style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: 13px; font-weight: 500; color: {{r.titleColor}};">{{r.title}}</span>
-<span style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: 12px; color: #a3a3a3;">{{r.artist}}</span>
+<span style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis; font-size: 12px; color: #a3a3a3;">{{r.artist}}<sc-if value="{{r.inPlaylist}}" hint-placeholder-val="{{false}}"> · <span style="display: inline-flex; align-items: center; gap: 3px;"><svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg>In playlist</span></sc-if></span>
 </span>
 <span style="text-align: right; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 12px; font-variant-numeric: tabular-nums;">{{r.bpm}}</span>
 <span style="font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 12px;">{{r.key}}</span>
 <span style="text-align: right; font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 12px; font-variant-numeric: tabular-nums;">{{r.time}}</span>
-<sc-if value="{{r.canAdd}}" hint-placeholder-val="{{true}}">
-<button type="button" class="ghost" onClick="{{r.add}}" aria-label="Add {{r.title}} to {{plName}}" title="Add to playlist" style="width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; padding: 0; background: transparent; border: 0; border-radius: 6px; color: #fafafa;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg></button>
-</sc-if>
-<sc-if value="{{r.inPlaylist}}" hint-placeholder-val="{{false}}">
-<span title="Already in this playlist" aria-label="Already in this playlist" role="img" style="width: 28px; display: flex; justify-content: center; color: #a3a3a3;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg></span>
-</sc-if>
+<button type="button" class="ghost" onClick="{{r.add}}" aria-label="{{r.addLabel}}" title="{{r.addLabel}}" style="width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; padding: 0; background: transparent; border: 0; border-radius: 6px; color: {{r.addColor}};"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg></button>
 </div>
 </sc-for>
 <sc-if value="{{srcEmpty}}" hint-placeholder-val="{{false}}">
@@ -305,7 +300,8 @@ Split view</button>
 
 <!-- Status bar -->
 <div style="height: 28px; flex-shrink: 0; display: flex; align-items: center; gap: 16px; padding: 0 16px; background: #171717; border-top: 1px solid #262626; font-size: 12px; color: #a3a3a3;">
-<span style="flex-grow: 1; display: flex; align-items: center; gap: 8px;">{{statusText}}<sc-if value="{{canUndo}}" hint-placeholder-val="{{false}}"><button type="button" class="ghost" onClick="{{undo}}" style="height: 20px; padding: 0 6px; background: transparent; border: 0; border-radius: 3px; font-size: 12px; color: #fafafa; font-weight: 500;">Undo</button></sc-if></span>
+<sc-if value="{{dupAsking}}" hint-placeholder-val="{{false}}"><span role="alert" style="flex-grow: 1; display: flex; align-items: center; gap: 8px; color: #fafafa;">{{dupText}}<button type="button" class="ghost" onClick="{{dupAdd}}" style="height: 20px; padding: 0 6px; background: #262626; border: 0; border-radius: 3px; font-size: 12px; color: #fafafa; font-weight: 500;">Add again</button><button type="button" class="ghost" onClick="{{dupSkip}}" style="height: 20px; padding: 0 6px; background: transparent; border: 0; border-radius: 3px; font-size: 12px; color: #fafafa;">Don’t add</button></span></sc-if>
+<span style="flex-grow: 1; display: {{statusDisp}}; align-items: center; gap: 8px;">{{statusText}}<sc-if value="{{canUndo}}" hint-placeholder-val="{{false}}"><button type="button" class="ghost" onClick="{{undo}}" style="height: 20px; padding: 0 6px; background: transparent; border: 0; border-radius: 3px; font-size: 12px; color: #fafafa; font-weight: 500;">Undo</button></sc-if></span>
 <span>KINGSTON · 36.1 GB free · last exported Sep 19</span>
 </div>
 
@@ -353,7 +349,7 @@ Split view</button>
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    this.state = { sel: 0, editing: false, importOpen: false, importMenu: false, migrateOpen: false, relinkOpen: false, analysisOpen: false, smartOpen: false, settingsOpen: false, tagsOpen: false, split: !!props.sourcePane, source: 'collection', query: '', added: [], dropping: false, last: null, tags: [
+    this.state = { sel: 0, editing: false, importOpen: false, importMenu: false, migrateOpen: false, relinkOpen: false, analysisOpen: false, smartOpen: false, settingsOpen: false, tagsOpen: false, split: !!props.sourcePane, source: 'collection', query: '', added: [], dropping: false, last: null, dupAsk: null, tags: [
   ['Deep House', 'No vocals', 'Warm', 'Low', 'Warm-up'],
   ['Deep House', 'Has vocals', 'Warm', 'Low', 'Warm-up'],
   ['Melodic Techno', 'Vocal chops', 'Euphoric', 'Build'],
@@ -452,7 +448,10 @@ class Component extends DCLogic {
     ];
     var st = this.state;
     var PL_NAME = 'Warehouse — Oct 2026';
+    var BASE = data;
+    var entryOf = function (k) { return typeof k === 'string' ? BASE[+k.slice(1)] : EXTRA[k]; };
     data = data.concat(st.added.map(function (k) {
+      if (typeof k === 'string') { var b = BASE[+k.slice(1)]; return b.slice(0, 8).concat(['Today', b[9]]); }
       var e = EXTRA[k];
       return [e[0], e[1], e[2], e[3], e[4], e[5], e[6], [G], 'Today', 'AIFF · 1,411 kbps'];
     }));
@@ -487,22 +486,26 @@ class Component extends DCLogic {
     var pool = [];
     EXTRA.forEach(function (e, k) { if (st.source === 'collection' || e[7].indexOf(st.source) >= 0) pool.push({ e: e, k: k }); });
     if (st.source === 'collection') {
-      data.slice(0, 18).forEach(function (d) { pool.push({ e: d, k: -1 }); });
+      BASE.forEach(function (d, i) { pool.push({ e: d, k: 'd' + i }); });
       pool.sort(function (a, b) { return a.e[0] < b.e[0] ? -1 : 1; });
     }
     var q = st.query.toLowerCase();
     if (q) pool = pool.filter(function (p) { return (p.e[0] + ' ' + p.e[1] + ' ' + p.e[4] + ' ' + p.e[3]).toLowerCase().indexOf(q) >= 0; });
-    var addExtra = function (k) {
-      if (k < 0 || self.state.added.indexOf(k) >= 0) return;
-      self.setState({ added: self.state.added.concat([k]), last: k, dropping: false, sel: data.length });
+    // A track can occur more than once in a playlist, but only by an explicit choice.
+    var addExtra = function (k, again) {
+      if (k === undefined || k === null) return;
+      if (inPl[entryOf(k)[0]] && !again) { self.setState({ dupAsk: k, dropping: false }); return; }
+      self.setState({ added: self.state.added.concat([k]), last: k, dupAsk: null, dropping: false, sel: data.length });
     };
     var srcLabel = SOURCES.filter(function (o) { return o.id === st.source; })[0].label;
     var srcRows = pool.map(function (p) {
       var has = !!inPl[p.e[0]];
       return {
         title: p.e[0], artist: p.e[1], bpm: p.e[3] ? p.e[3].replace(/\.00$/, '') : '—', key: p.e[4] || '—', time: p.e[6],
-        canAdd: !has, inPlaylist: has, canDrag: has ? 'false' : 'true',
-        cursor: has ? 'default' : 'grab', gripColor: has ? '#404040' : '#737373', titleColor: has ? '#a3a3a3' : '#fafafa',
+        canAdd: !has, inPlaylist: has, canDrag: 'true',
+        addLabel: (has ? 'Add another copy of ' : 'Add ') + p.e[0] + ' to ' + PL_NAME,
+        addColor: has ? '#a3a3a3' : '#fafafa',
+        cursor: 'grab', gripColor: '#737373', titleColor: has ? '#a3a3a3' : '#fafafa',
         add: function () { addExtra(p.k); },
         dragStart: function (e) { self.dragging = p.k; try { e.dataTransfer.setData('text/plain', p.e[0]); e.dataTransfer.effectAllowed = 'copy'; } catch (err) {} }
       };
@@ -522,19 +525,23 @@ class Component extends DCLogic {
       query: st.query, setQuery: function (e) { self.setState({ query: e.target.value }); },
       srcPlaceholder: 'Search ' + srcLabel.toLowerCase(),
       srcRows: srcRows, srcEmpty: !!q && srcRows.length === 0,
-      srcFooter: addable ? 'Drag tracks into the playlist, or use + to add · ' + addable + ' not in this playlist' : 'Every track here is already in ' + PL_NAME,
+      srcFooter: (addable ? 'Drag tracks into the playlist, or use + to add · ' + addable + ' not in this playlist' : 'Every track here is already in ' + PL_NAME) + ' · adding one again asks first',
+      dupAsking: st.dupAsk !== null && st.dupAsk !== undefined,
+      dupText: st.dupAsk !== null && st.dupAsk !== undefined ? '“' + entryOf(st.dupAsk)[0] + '” is already in ' + PL_NAME + '. Add it again?' : '',
+      dupAdd: function () { addExtra(self.state.dupAsk, true); },
+      dupSkip: function () { self.setState({ dupAsk: null }); },
+      statusDisp: st.dupAsk !== null && st.dupAsk !== undefined ? 'none' : 'flex',
       dropping: st.dropping,
       dropBg: st.dropping ? '#3b82f619' : 'transparent',
       dropRing: st.dropping ? 'inset 0 0 0 2px #3b82f6' : 'none',
-      dragOver: function (e) { if (self.dragging !== undefined && self.dragging >= 0) { e.preventDefault(); if (!self.state.dropping) self.setState({ dropping: true }); } },
+      dragOver: function (e) { if (self.dragging !== undefined && self.dragging !== null) { e.preventDefault(); if (!self.state.dropping) self.setState({ dropping: true }); } },
       dragLeave: function (e) { if (!e.currentTarget.contains(e.relatedTarget)) self.setState({ dropping: false }); },
       drop: function (e) { e.preventDefault(); var k = self.dragging; self.dragging = undefined; addExtra(k); self.setState({ dropping: false }); },
       dragEnd: function () { self.dragging = undefined; if (self.state.dropping) self.setState({ dropping: false }); },
-      statusText: st.last !== null ? 'Added “' + EXTRA[st.last][0] + '” to ' + PL_NAME : '2,418 tracks in collection · 12 need analysis',
+      statusText: st.last !== null ? 'Added “' + entryOf(st.last)[0] + '” to ' + PL_NAME : '2,418 tracks in collection · 12 need analysis',
       canUndo: st.last !== null,
       undo: function () {
-        var k = self.state.last;
-        self.setState({ added: self.state.added.filter(function (x) { return x !== k; }), last: null, sel: 0 });
+        self.setState({ added: self.state.added.slice(0, -1), last: null, sel: 0 });
       },
       tracks: tracks,
       sel: {

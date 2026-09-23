@@ -16,7 +16,7 @@ body{margin:0}
 button:focus-visible,input:focus-visible{outline:2px solid #737373;outline-offset:1px}
 </style>
 </helmet>
-<div role="dialog" aria-modal="true" aria-labelledby="ds-title" style="width: 880px; height: 640px; box-sizing: border-box; display: flex; flex-direction: column; background: #0a0a0a; color: #fafafa; border: 1px solid #262626; border-radius: 8px; box-shadow: 0px 12px 24px -4px rgba(0,0,0,0.18); font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI Variable Text', 'Segoe UI', system-ui, sans-serif; -webkit-font-smoothing: antialiased; overflow: hidden;">
+<div role="dialog" aria-modal="true" aria-labelledby="ds-title" style="width: 880px; height: 720px; box-sizing: border-box; display: flex; flex-direction: column; background: #0a0a0a; color: #fafafa; border: 1px solid #262626; border-radius: 8px; box-shadow: 0px 12px 24px -4px rgba(0,0,0,0.18); font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI Variable Text', 'Segoe UI', system-ui, sans-serif; -webkit-font-smoothing: antialiased; overflow: hidden;">
 
 <!-- Header -->
 <div style="height: 60px; flex-shrink: 0; display: flex; align-items: center; gap: 8px; padding: 0 12px 0 24px; border-bottom: 1px solid #262626;">
@@ -50,43 +50,51 @@ button:focus-visible,input:focus-visible{outline:2px solid #737373;outline-offse
 </div>
 <div style="display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-top: 1px solid #262626; font-size: 13px;">
 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0;"><path d="M20 6 9 17l-5-5"></path></svg>
-<span>Library format recognized</span>
-<span style="color: #a3a3a3;">Recrate can read and safely add to it</span>
+<span>rekordbox 6 Device Library</span>
+<span style="color: #a3a3a3;">A version Recrate has been tested to preserve and add to</span>
 </div>
 <div style="display: flex; align-items: center; gap: 8px; padding: 8px 12px; border-top: 1px solid #262626; font-size: 13px;">
 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0;"><path d="M20 6 9 17l-5-5"></path></svg>
 <span>FAT32</span>
-<span style="flex-grow: 1; color: #a3a3a3;">Supported by the players Recrate is tested with</span>
-<button type="button" class="ghost" onClick="{{togglePlayers}}" aria-expanded="{{showPlayers}}" style="height: 24px; padding: 0 8px; background: transparent; color: #fafafa; border: 0; border-radius: 6px; font-family: inherit; font-size: 12px;">{{playersLabel}}</button>
+<span style="flex-grow: 1; color: #a3a3a3;">Writable · 36.1 GB free · tested on FAT32 for the players marked Tested</span>
 </div>
-<sc-if value="{{showPlayers}}" hint-placeholder-val="{{false}}">
-<div style="padding: 8px 12px 12px; border-top: 1px solid #262626; display: flex; flex-direction: column; gap: 6px;">
-<div role="table" aria-label="Tested players" style="display: flex; flex-direction: column; border: 1px solid #262626; border-radius: 6px; font-size: 12px;">
-<div role="row" style="height: 26px; display: grid; grid-template-columns: minmax(0, 1fr) 90px 60px 60px; column-gap: 8px; align-items: center; padding: 0 10px; background: #17171766; border-bottom: 1px solid #262626; color: #a3a3a3; font-weight: 500;"><span role="columnheader">Player</span><span role="columnheader">Firmware</span><span role="columnheader">Library</span><span role="columnheader">Plus</span></div>
-<div role="row" style="height: 26px; display: grid; grid-template-columns: minmax(0, 1fr) 90px 60px 60px; column-gap: 8px; align-items: center; padding: 0 10px; border-bottom: 1px solid #262626b3;"><span role="cell">[Player model]</span><span role="cell">[x.yz]</span><span role="cell">[Yes/No]</span><span role="cell">[Yes/No]</span></div>
-<div role="row" style="height: 26px; display: grid; grid-template-columns: minmax(0, 1fr) 90px 60px 60px; column-gap: 8px; align-items: center; padding: 0 10px;"><span role="cell">[Player model]</span><span role="cell">[x.yz]</span><span role="cell">[Yes/No]</span><span role="cell">[Yes/No]</span></div>
-</div>
-<span style="font-size: 12px; color: #a3a3a3;">Tested with Recrate [version] on FAT32 drives. Players not listed may still work.</span>
-</div>
-</sc-if>
 </section>
 
 <!-- Players -->
 <fieldset style="margin: 0; padding: 0; border: 0; min-width: 0; display: flex; flex-direction: column; gap: 8px;">
-<legend style="padding: 0 0 8px; font-size: 14px; font-weight: 600;">Which players will you use?</legend>
-<sc-for list="{{players}}" as="p" hint-placeholder-count="3">
-<button type="button" class="card" aria-pressed="{{p.pressed}}" onClick="{{p.pick}}" style="display: grid; grid-template-columns: 16px minmax(0, 1fr) auto; column-gap: 12px; row-gap: 2px; align-items: center; padding: 10px 12px; background: {{p.bg}}; box-shadow: {{p.ring}}; color: #fafafa; border: 0; border-radius: 6px; font-family: inherit; text-align: left;">
-<span aria-hidden="true" style="width: 16px; height: 16px; box-sizing: border-box; display: flex; align-items: center; justify-content: center; border-radius: 9999px; border: 1px solid {{p.dotBorder}};"><span style="width: 8px; height: 8px; border-radius: 9999px; background: {{p.dot}};"></span></span>
-<span style="font-size: 14px; font-weight: 500;">{{p.title}}</span>
-<span style="font-size: 12px; color: #a3a3a3;">{{p.writes}}</span>
+<legend style="padding: 0 0 8px; font-size: 14px; font-weight: 600;">Which players will read this drive?</legend>
+<sc-for list="{{players}}" as="p" hint-placeholder-count="4">
+<label style="display: grid; grid-template-columns: 16px minmax(0, 1fr) auto; column-gap: 12px; row-gap: 2px; align-items: center; padding: 8px 12px; background: {{p.bg}}; box-shadow: {{p.ring}}; border-radius: 6px; opacity: {{p.opacity}};">
+<input type="checkbox" checked="{{p.on}}" disabled="{{p.blocked}}" onChange="{{p.toggle}}" style="width: 16px; height: 16px; margin: 0; accent-color: #fafafa;">
+<span style="font-size: 14px; font-weight: 500;">{{p.name}} <span style="font-weight: 400; color: #a3a3a3;">· firmware {{p.fw}}</span></span>
+<span style="display: flex; align-items: center; gap: 4px; height: 20px; padding: 0 6px; border-radius: 3px; background: #262626; font-size: 12px; color: {{p.statusColor}};"><span aria-hidden="true" style="width: 6px; height: 6px; border-radius: 9999px; background: {{p.statusColor}};"></span>{{p.status}}</span>
 <span></span>
-<span style="grid-column: span 2; font-size: 13px; color: #a3a3a3; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">{{p.examples}}</span>
-</button>
+<span style="grid-column: span 2; font-size: 12px; color: #a3a3a3;">{{p.reads}}</span>
+</label>
 </sc-for>
-<div style="display: flex; align-items: center; gap: 6px; font-size: 12px; color: #a3a3a3;">
-<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg>
-<span>Examples, not a complete list. Check your player’s manual for supported formats.</span>
+<sc-if value="{{hasUntested}}" hint-placeholder-val="{{false}}">
+<div role="status" style="display: flex; align-items: flex-start; gap: 6px; font-size: 12px; color: #facc15;">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0; margin-top: 1px;"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"></path><path d="M12 9v4"></path><path d="M12 17h.01"></path></svg>
+<span>{{untestedText}}</span>
 </div>
+</sc-if>
+<div style="display: flex; align-items: flex-start; gap: 6px; font-size: 12px; color: #a3a3a3;">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0; margin-top: 1px;"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg>
+<span>Tested means Recrate exported to that player and firmware and checked browsing, loading, grids, cues, loops, waveforms and artwork. Untested players may work but nothing is promised.</span>
+</div>
+</fieldset>
+
+<!-- My Tag -->
+<fieldset style="margin: 0; padding: 0; border: 0; min-width: 0; display: flex; flex-direction: column; gap: 8px;">
+<legend style="padding: 0 0 8px; font-size: 14px; font-weight: 600;">Tag categories to show as My Tag</legend>
+<div style="display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px 12px;">
+<sc-for list="{{mytag}}" as="m" hint-placeholder-count="6">
+<label style="display: flex; align-items: center; gap: 8px; font-size: 14px; opacity: {{m.opacity}};">
+<input type="checkbox" checked="{{m.on}}" disabled="{{m.blocked}}" onChange="{{m.toggle}}" style="width: 16px; height: 16px; margin: 0; accent-color: #fafafa;">
+<span aria-hidden="true" style="width: 8px; height: 8px; border-radius: 9999px; background: {{m.color}};"></span>{{m.name}}</label>
+</sc-for>
+</div>
+<span style="font-size: 12px; color: #a3a3a3;">{{mytagNote}}</span>
 </fieldset>
 </div>
 
@@ -96,7 +104,7 @@ button:focus-visible,input:focus-visible{outline:2px solid #737373;outline-offse
 <!-- Compatibility -->
 <section aria-labelledby="cp-title" style="display: flex; flex-direction: column; gap: 8px;">
 <div style="display: flex; align-items: baseline; gap: 8px;">
-<h3 id="cp-title" style="margin: 0; flex-grow: 1; font-size: 14px; font-weight: 600;">What players will see</h3>
+<h3 id="cp-title" style="margin: 0; flex-grow: 1; font-size: 14px; font-weight: 600;">What Recrate writes</h3>
 </div>
 <div role="table" aria-labelledby="cp-title" style="display: flex; flex-direction: column; border: 1px solid #262626; border-radius: 6px; overflow: hidden; font-size: 13px;">
 <div role="row" style="height: 28px; display: grid; grid-template-columns: {{gridCols}}; column-gap: 12px; align-items: center; padding: 0 12px; background: #17171766; border-bottom: 1px solid #262626; font-size: 12px; font-weight: 500; color: #a3a3a3;">
@@ -133,7 +141,7 @@ button:focus-visible,input:focus-visible{outline:2px solid #737373;outline-offse
 </label>
 <sc-if value="{{keepOn}}" hint-placeholder-val="{{true}}">
 <ul aria-label="What keeping means" style="margin: 0 0 0 24px; padding: 10px 12px 10px 28px; display: flex; flex-direction: column; gap: 6px; border: 1px solid #262626; border-radius: 6px; font-size: 13px; color: #a3a3a3;">
-<li><span style="color: #fafafa;">The drive has one shared library, so adding playlists means rewriting it.</span> rekordbox’s 3 playlists, 137 tracks and their cues are carried over unchanged, and Recrate never removes them.</li>
+<li><span style="color: #fafafa;">Adding playlists means rewriting the drive’s library file.</span> rekordbox’s 3 playlists, 137 tracks and their cues are carried over unchanged, and Recrate never removes them.</li>
 <li><span style="color: #fafafa;">Before every export, each library and analysis file Recrate will change is backed up.</span> Afterwards the new library is read back and compared. If anything of rekordbox’s is missing or different, the export is marked failed and the backup is put back.</li>
 <li><span style="color: #fafafa;">If the drive is unplugged while its library is being written, it needs recovery.</span> Recrate can only restore the backup once the drive is connected again, and shows the drive as needing recovery until then.</li>
 <li><span style="color: #fafafa;">Recrate only writes library versions it recognizes.</span> If a future rekordbox changes the format, Recrate won’t write to the drive until it supports that version.</li>
@@ -142,9 +150,24 @@ button:focus-visible,input:focus-visible{outline:2px solid #737373;outline-offse
 </ul>
 </sc-if>
 <sc-if value="{{replaceOn}}" hint-placeholder-val="{{false}}">
-<div role="alert" style="display: flex; align-items: flex-start; gap: 8px; margin-left: 24px; font-size: 13px; color: #f87171;">
-<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0; margin-top: 2px;"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"></path><path d="M12 9v4"></path><path d="M12 17h.01"></path></svg>
-<span>The next export deletes the rekordbox playlists and their 137 tracks from KINGSTON, after backing up the drive’s library. rekordbox keeps its own copy on your computer.</span>
+<div style="margin-left: 24px; display: flex; flex-direction: column; border: 1px solid #262626; border-radius: 6px; font-size: 13px;">
+<div style="display: flex; flex-direction: column; gap: 6px; padding: 10px 12px; border-bottom: 1px solid #262626;">
+<span style="display: flex; align-items: center; gap: 6px; font-weight: 500; color: #f87171;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg>Removed from the drive’s library</span>
+<span style="color: #a3a3a3;">3 playlists, 137 track entries, and their cues, loops, beat grids and My Tags · 137 analysis files · export.pdb and exportExt.pdb are rebuilt</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px; padding: 10px 12px; border-bottom: 1px solid #262626;">
+<span style="display: flex; align-items: center; gap: 6px; font-weight: 500;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg>Kept on the drive</span>
+<span style="color: #a3a3a3;">rekordbox’s 137 audio files (21.8 GB) and their artwork. Players won’t list them, but the files stay where they are. Recrate can’t tell whether your computer still has copies of them.</span>
+</div>
+<div style="display: flex; flex-direction: column; gap: 6px; padding: 10px 12px; border-bottom: 1px solid #262626;">
+<span style="font-weight: 500;">Backed up first</span>
+<span style="color: #a3a3a3;">Both library files and the 137 analysis files, to this computer. This backup brings the playlists back; it doesn’t hold audio.</span>
+</div>
+<label style="display: grid; grid-template-columns: 16px minmax(0, 1fr); column-gap: 8px; row-gap: 4px; align-items: start; padding: 10px 12px; font-size: 14px;">
+<input type="checkbox" checked="{{mediaOn}}" onChange="{{toggleMedia}}" style="width: 16px; height: 16px; margin: 2px 0 0; accent-color: #fafafa;">
+<span>Also review rekordbox’s audio files for deletion</span>
+<span></span><span style="font-size: 12px; color: #a3a3a3;">{{mediaNote}}</span>
+</label>
 </div>
 </sc-if>
 </fieldset>
@@ -155,86 +178,126 @@ button:focus-visible,input:focus-visible{outline:2px solid #737373;outline-offse
 <div style="height: 64px; flex-shrink: 0; display: flex; align-items: center; gap: 8px; padding: 0 24px; border-top: 1px solid #262626; font-size: 14px;">
 <button type="button" class="btn" onClick="{{close}}" style="height: 32px; padding: 0 12px; background: #262626; color: #fafafa; border: 0; border-radius: 6px; font-family: inherit; font-size: 14px;">Cancel</button>
 <div role="status" style="flex-grow: 1; min-width: 0; padding: 0 8px; font-size: 13px; color: #a3a3a3; text-align: right; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">{{footerNote}}</div>
-<button type="button" onClick="{{save}}" style="height: 32px; padding: 0 16px; background: #fafafa; color: #171717; border: 0; border-radius: 6px; font-family: inherit; font-size: 14px; font-weight: 500;">Save device setup</button>
+<button type="button" onClick="{{save}}" disabled="{{noPlayers}}" style="height: 32px; padding: 0 16px; background: {{saveBg}}; color: {{saveFg}}; border: 0; border-radius: 6px; font-family: inherit; font-size: 14px; font-weight: 500;">Save device setup</button>
 </div>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"onClose":{"editor":null},"$preview":{"width":880,"height":640}}'>
+<script type="text/x-dc" data-dc-script data-props='{"onClose":{"editor":null},"$preview":{"width":880,"height":720}}'>
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    this.state = { players: 'both', existing: 'keep', saved: null, showPlayers: false };
+    this.state = { on: { cdj3000: true, nxs2: true, cdj900: false }, mytag: ['Mood', 'Energy', 'Set slot'], existing: 'keep', media: false, saved: null };
   }
   renderVals() {
     var self = this, st = this.state;
-    var P = {
-      older: { title: 'Older players', examples: 'For example CDJ-2000NXS2, XDJ-1000MK2', writes: 'Writes Device Library', formats: ['legacy'] },
-      newer: { title: 'Newer players', examples: 'For example CDJ-3000X', writes: 'Writes Device Library Plus', formats: ['plus'] },
-      both: { title: 'Both / not sure', examples: 'Uses more space on the drive and exports take longer', writes: 'Writes both libraries', formats: ['legacy', 'plus'] }
+    // Illustrative capability profiles. Real entries come from the qualification matrix.
+    var PROFILES = [
+      { id: 'cdj3000', name: 'CDJ-3000', fw: '3.30', status: 'tested', fmt: 'plus', hot: 8, mem: 10, flac: true },
+      { id: 'nxs2', name: 'CDJ-2000NXS2', fw: '1.86', status: 'tested', fmt: 'legacy', hot: 8, mem: 10, flac: true },
+      { id: 'cdj900', name: 'CDJ-900NXS', fw: '1.53', status: 'untested', fmt: 'legacy', hot: 3, mem: 10, flac: false },
+      { id: 'cdj850', name: 'CDJ-850', fw: 'any', status: 'unsupported', fmt: 'legacy', hot: 0, mem: 0, flac: false }
+    ];
+    var FNAME = { legacy: 'Device Library', plus: 'Device Library Plus' };
+    var STATUS = {
+      tested: { text: 'Tested', color: '#4ade80' },
+      untested: { text: 'Untested', color: '#facc15' },
+      unsupported: { text: 'Not supported', color: '#a3a3a3' }
     };
-    var F = {
-      legacy: {
-        name: 'Device Library',
-        format: { text: 'Device Library' },
-        hot: { text: '8 per track' },
-        memory: { text: 'Up to 10 per track · you choose which', warn: true },
-        tags: { text: 'First 4 categories' },
-        colors: { text: 'Exported' }
-      },
-      plus: {
-        name: 'Device Library Plus',
-        format: { text: 'Device Library Plus' },
-        hot: { text: '8 per track' },
-        memory: { text: 'All written · players may show fewer' },
-        tags: { text: 'First 4 categories' },
-        colors: { text: 'Exported' }
-      }
-    };
-    var chosen = P[st.players].formats;
-    var labels = [['format', 'Library format'], ['hot', 'Hot cues'], ['memory', 'Memory cues'], ['tags', 'Tags as My Tag'], ['colors', 'Track colors']];
-    var rows = labels.map(function (l) {
+    var chosenP = PROFILES.filter(function (p) { return st.on[p.id] && p.status !== 'unsupported'; });
+    var formats = ['legacy', 'plus'].filter(function (f) { return chosenP.some(function (p) { return p.fmt === f; }); });
+    var byFmt = function (f) { return chosenP.filter(function (p) { return p.fmt === f; }); };
+    var names = function (list) { return list.map(function (p) { return p.name; }).join(', '); };
+    var noFlac = chosenP.filter(function (p) { return !p.flac; });
+    var CATS = [
+      { name: 'Genre', color: '#60a5fa' }, { name: 'Vocals', color: '#c084fc' }, { name: 'Mood', color: '#facc15' },
+      { name: 'Energy', color: '#f87171' }, { name: 'Set slot', color: '#4ade80' }, { name: 'Imported tags', color: '#a3a3a3' }
+    ];
+    var TAG_MAX = 4;
+    var full = st.mytag.length >= TAG_MAX;
+    var left = CATS.filter(function (c) { return st.mytag.indexOf(c.name) < 0; }).map(function (c) { return c.name; });
+    var rows = [
+      { label: 'Read by', cell: function (f) { return { text: names(byFmt(f)) }; } },
+      { label: 'Hot cues', cell: function (f) {
+        var min = Math.min.apply(null, byFmt(f).map(function (p) { return p.hot; }));
+        var low = byFmt(f).filter(function (p) { return p.hot < 8; });
+        return low.length ? { text: min + ' on ' + names(low) + ' · the rest stay in Recrate', warn: true } : { text: '8 (A–H)' };
+      } },
+      { label: 'Memory cues', cell: function (f) {
+        var min = Math.min.apply(null, byFmt(f).map(function (p) { return p.mem; }));
+        return { text: 'Up to ' + min + ' per track, the tested limit · you choose which when a track has more', warn: true };
+      } },
+      { label: 'My Tag', cell: function () {
+        return { text: st.mytag.length ? st.mytag.join(', ') : 'None chosen' };
+      } },
+      { label: 'FLAC files', cell: function (f) {
+        var nf = byFmt(f).filter(function (p) { return !p.flac; });
+        return nf.length ? { text: 'Converted to AIFF for ' + names(nf) + ' · you confirm in review', warn: true } : { text: 'Copied as FLAC' };
+      } }
+    ].map(function (r) { return { label: r.label, cells: formats.map(function (f) { var c = r.cell(f); return { text: c.text, warn: !!c.warn }; }) }; });
+    var players = PROFILES.map(function (p) {
+      var on = !!st.on[p.id] && p.status !== 'unsupported', blocked = p.status === 'unsupported';
       return {
-        label: l[1],
-        cells: chosen.map(function (f) { var c = F[f][l[0]]; return { text: c.text, warn: !!c.warn }; })
-      };
-    });
-    var players = ['older', 'newer', 'both'].map(function (k) {
-      var on = st.players === k, p = P[k];
-      return {
-        title: p.title, examples: p.examples, writes: p.writes,
-        pressed: on ? 'true' : 'false',
+        name: p.name, fw: p.fw, on: on, blocked: blocked,
+        status: STATUS[p.status].text, statusColor: STATUS[p.status].color,
+        reads: blocked ? 'Recrate hasn’t qualified a library format this player reads, so it can’t be chosen.' : 'Reads ' + FNAME[p.fmt] + ' · ' + (p.flac ? 'plays FLAC' : 'can’t play FLAC'),
         bg: on ? '#1e40af33' : 'transparent',
         ring: on ? 'inset 0 0 0 1px #1d4ed8' : 'inset 0 0 0 1px #262626',
-        dotBorder: on ? '#fafafa' : '#525252',
-        dot: on ? '#fafafa' : 'transparent',
-        pick: function () { self.setState({ players: k, saved: null }); }
+        opacity: blocked ? 0.6 : 1,
+        toggle: function (e) { var n = Object.assign({}, self.state.on); n[p.id] = e.target.checked; self.setState({ on: n, saved: null }); }
       };
     });
-    var formatNote = chosen.length === 2
-      ? 'Newer players read Device Library Plus. Older players read Device Library.'
-      : (chosen[0] === 'legacy' ? 'Some newer players can also read this library. Check your player’s manual.' : 'Older players won’t see this library.');
+    var untested = chosenP.filter(function (p) { return p.status === 'untested'; });
+    var mytag = CATS.map(function (c) {
+      var on = st.mytag.indexOf(c.name) >= 0, blocked = !on && full;
+      return {
+        name: c.name, color: c.color, on: on, blocked: blocked, opacity: blocked ? 0.5 : 1,
+        toggle: function (e) {
+          var cur = self.state.mytag.filter(function (x) { return x !== c.name; });
+          if (e.target.checked) cur = cur.concat([c.name]);
+          self.setState({ mytag: cur, saved: null });
+        }
+      };
+    });
+    var formatNote = !formats.length ? 'Choose at least one player.'
+      : chosenP.map(function (p) { return p.name + ' reads ' + FNAME[p.fmt] + '.'; }).join(' ') +
+        (formats.length === 2 ? ' Both libraries share the audio files, so this adds library files, not a second copy of the music.' : '');
     return {
       players: players,
-      showPlayers: st.showPlayers, playersLabel: st.showPlayers ? 'Hide players' : 'Supported players',
-      togglePlayers: function () { self.setState({ showPlayers: !self.state.showPlayers }); },
-      cols: chosen.map(function (f) { return { name: F[f].name }; }),
-      gridCols: chosen.length === 2 ? '96px repeat(2, minmax(0, 1fr))' : '96px minmax(0, 1fr)',
+      hasUntested: untested.length > 0,
+      untestedText: names(untested) + ' hasn’t been tested with Recrate. Exports are written the same way, but loading, cues and waveforms aren’t verified on it.',
+      mytag: mytag,
+      mytagNote: 'These players show up to ' + TAG_MAX + ' categories.' + (left.length ? ' Not exported: ' + left.join(', ') + '. They stay in Recrate.' : ''),
+      cols: formats.map(function (f) { return { name: FNAME[f] }; }),
+      gridCols: formats.length === 2 ? '96px repeat(2, minmax(0, 1fr))' : '96px minmax(0, 1fr)',
       rows: rows,
       formatNote: formatNote,
       keepOn: st.existing === 'keep',
       replaceOn: st.existing === 'replace',
-      pickKeep: function () { self.setState({ existing: 'keep', saved: null }); },
+      pickKeep: function () { self.setState({ existing: 'keep', media: false, saved: null }); },
       pickReplace: function () { self.setState({ existing: 'replace', saved: null }); },
-      footerNote: st.saved ? st.saved : '',
+      mediaOn: st.media,
+      toggleMedia: function (e) { self.setState({ media: e.target.checked, saved: null }); },
+      mediaNote: st.media
+        ? 'Export review will list each of the 137 files. None is deleted until you tick it there, and each one is first copied to this computer (21.8 GB needed). The library backup alone can’t bring deleted audio back.'
+        : 'Off: the audio files stay on the drive. You can decide this separately later.',
+      noPlayers: !formats.length,
+      saveBg: formats.length ? '#fafafa' : '#262626', saveFg: formats.length ? '#171717' : '#a3a3a3',
+      footerNote: st.saved ? st.saved : (st.existing === 'replace' ? 'Replacing is confirmed in Export review, with the exact list of what changes' : ''),
       save: function () {
-        var note = 'Saved · next export writes ' + (chosen.length === 2 ? 'both libraries' : F[chosen[0]].name) +
-          (st.existing === 'replace' ? ' and replaces the rekordbox library' : '');
-        if (self.props.onClose) self.props.onClose({ players: st.players, existing: st.existing });
+        var result = {
+          formats: formats,
+          readers: { legacy: names(byFmt('legacy')), plus: names(byFmt('plus')) },
+          convertFor: names(noFlac), untested: names(untested),
+          mytag: st.mytag, existing: st.existing, media: st.media
+        };
+        var note = 'Saved · next export writes ' + formats.map(function (f) { return FNAME[f]; }).join(' and ') +
+          (st.existing === 'replace' ? ' and asks you to review the replacement' : '');
+        if (self.props.onClose) self.props.onClose(result);
         else self.setState({ saved: note });
       },
       close: function () {
         if (self.props.onClose) self.props.onClose(null);
-        else self.setState({ players: 'both', existing: 'keep', saved: null });
+        else self.setState({ on: { cdj3000: true, nxs2: true, cdj900: false }, existing: 'keep', media: false, saved: null });
       }
     };
   }

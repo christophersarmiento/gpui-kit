@@ -174,14 +174,14 @@ Quantize</button>
 <button type="button" class="ghost" onClick="{{addMemory}}" title="Add memory cue at playhead (M)" style="height: 24px; display: flex; align-items: center; gap: 4px; padding: 0 8px; background: transparent; border: 0; border-radius: 6px; font-size: 13px;"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg>Add at playhead</button>
 </div>
 <div style="flex-grow: 1; min-height: 0; border: 1px solid #262626; border-radius: 6px; overflow: hidden; display: flex; flex-direction: column;">
-<div style="height: 28px; flex-shrink: 0; display: grid; grid-template-columns: 20px 16px 76px 44px minmax(0, 1fr) 64px; column-gap: 10px; align-items: center; padding: 0 12px; background: #17171766; border-bottom: 1px solid #262626; font-size: 12px; font-weight: 500; color: #a3a3a3;">
-<span title="Included in Device Library (up to 10)">DL</span><span></span><span>Position</span><span>Bar</span><span>Name</span><span style="text-align: right;">Export</span>
+<div style="height: 28px; flex-shrink: 0; display: grid; grid-template-columns: 20px 16px 76px 44px minmax(0, 1fr) 100px; column-gap: 10px; align-items: center; padding: 0 12px; background: #17171766; border-bottom: 1px solid #262626; font-size: 12px; font-weight: 500; color: #a3a3a3;">
+<span title="Exported to the players set up for KINGSTON (up to 10)">Use</span><span></span><span>Position</span><span>Bar</span><span>Name</span><span style="text-align: right;">Export</span>
 </div>
 <div style="flex-grow: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column;">
 <sc-for list="{{memory}}" as="m" hint-placeholder-count="5">
 <div class="{{m.cls}}" style="height: 32px; flex-shrink: 0; display: grid; grid-template-columns: 20px minmax(0, 1fr); column-gap: 10px; align-items: center; padding: 0 0 0 12px; border-bottom: 1px solid #262626b3;">
-<input type="checkbox" checked="{{m.dl}}" disabled="{{m.dlLocked}}" onChange="{{m.toggleDl}}" aria-label="Include {{m.name}} in Device Library" title="{{m.dlTitle}}" style="width: 16px; height: 16px; margin: 0; accent-color: #fafafa;">
-<button type="button" aria-pressed="{{m.selected}}" onClick="{{m.pick}}" style="height: 32px; display: grid; grid-template-columns: 16px 76px 44px minmax(0, 1fr) 64px; column-gap: 10px; align-items: center; padding: 0 12px 0 0; background: transparent; border: 0; text-align: left; font-size: 13px;">
+<input type="checkbox" checked="{{m.dl}}" disabled="{{m.dlLocked}}" onChange="{{m.toggleDl}}" aria-label="Export {{m.name}} to KINGSTON" title="{{m.dlTitle}}" style="width: 16px; height: 16px; margin: 0; accent-color: #fafafa;">
+<button type="button" aria-pressed="{{m.selected}}" onClick="{{m.pick}}" style="height: 32px; display: grid; grid-template-columns: 16px 76px 44px minmax(0, 1fr) 100px; column-gap: 10px; align-items: center; padding: 0 12px 0 0; background: transparent; border: 0; text-align: left; font-size: 13px;">
 <svg width="12" height="10" viewBox="0 0 12 10" aria-hidden="true"><path d="M6 0 12 10H0Z" fill="{{m.color}}"></path></svg>
 <span style="font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 12px; font-variant-numeric: tabular-nums;">{{m.time}}</span>
 <span style="font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 12px; color: #a3a3a3;">{{m.bar}}</span>
@@ -370,9 +370,9 @@ class Component extends DCLogic {
       var on = sel.kind === 'memory' && i === sel.i;
       return {
         color: m.color, time: self.fmt(m.bar), bar: m.bar + '.1', name: m.name,
-        len: m.dl ? (m.loop ? 'Both · loop' : 'Both') : 'Plus only', selected: on,
+        len: m.dl ? (m.loop ? 'Exported · loop' : 'Exported') : 'Recrate only', selected: on,
         dl: !!m.dl, dlLocked: !m.dl && dlCount >= 10,
-        dlTitle: !m.dl && dlCount >= 10 ? 'Device Library already has 10. Untick another first.' : 'Include in Device Library',
+        dlTitle: !m.dl && dlCount >= 10 ? '10 are already chosen. Untick another first.' : 'Export to KINGSTON',
         toggleDl: function () {
           var mem = self.state.memory.slice();
           mem[i] = Object.assign({}, mem[i], { dl: !m.dl });
@@ -484,8 +484,8 @@ class Component extends DCLogic {
       memCount: memory.length,
       memOver: memory.length > 10 && dlCount < 10,
       memCapColor: memory.length > 10 ? '#fafafa' : '#a3a3a3',
-      memCaption: memory.length > 10 ? memory.length + ' markers · ' + dlCount + ' of 10 chosen for Device Library' : memory.length + ' markers · all fit Device Library (10 max)',
-      memTitle: 'KINGSTON gets both libraries. Device Library holds up to 10 memory cues per track, so tick the ones to keep there. Device Library Plus gets every marker.',
+      memCaption: memory.length > 10 ? memory.length + ' markers · ' + dlCount + ' of 10 chosen for KINGSTON' : memory.length + ' markers · all fit the 10-cue limit',
+      memTitle: 'The players set up for KINGSTON show up to 10 memory cues per track: CDJ-2000NXS2 through Device Library and CDJ-3000 through Device Library Plus. Tick the 10 to export. The rest stay in Recrate.',
       memory: memRows,
       addMemory: function () {
         var added = { bar: 39, name: 'Memory cue ' + (memory.length + 1), color: '#f87171', loop: false, dl: dlCount < 10 };
