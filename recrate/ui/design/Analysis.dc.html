@@ -264,7 +264,7 @@ class Component extends DCLogic {
     } else {
       cur.pct = Math.min(100, cur.pct + (fast ? 14 : 7));
       if (cur.pct >= 100) {
-        cur.status = 'done'; cur.pct = 0;
+        cur.status = cur.gridLocked ? 'locked' : 'done'; cur.pct = 0;
         var next = jobs.filter(function (j) { return j.status === 'queued'; })[0];
         if (next) { next.status = 'analyzing'; next.pct = 0; }
       }
@@ -305,17 +305,21 @@ class Component extends DCLogic {
     var nSel = selIds.length;
     var selLocked = selIds.filter(function (j) { return j.status === 'locked'; }).length;
     var selBusy = selIds.filter(function (j) { return j.status === 'analyzing' || j.status === 'queued'; }).length;
-    var selTarget = nSel - selLocked - selBusy;
     var reAny = st.re.bpm || st.re.key || st.re.wave;
+    // A grid lock protects the grid only: locked tracks can still get key or waveform reanalysis.
+    var otherParts = st.re.key || st.re.wave;
+    var selTarget = nSel - selBusy - (otherParts ? 0 : selLocked);
 
     var setRe = function (k) { return function () { var r = Object.assign({}, self.state.re); r[k] = !r[k]; self.setState({ re: r }); }; };
-    var patch = function (id, fields) {
-      self.setState({ jobs: self.state.jobs.map(function (j) { return j.id === id ? Object.assign({}, j, fields) : j; }), running: true });
+    // Row actions never resume a paused queue; only Resume does.
+    var patch = function (id, fields, note) {
+      self.setState({ jobs: self.state.jobs.map(function (j) { return j.id === id ? Object.assign({}, j, fields) : j; }), note: note || '' });
     };
+    var queuedNote = function (what) { return what + (self.state.running ? ' added to the queue' : ' added to the queue · it’s paused, so press Resume to start'); };
 
-    var warnBits = ['Beat grid edits on unlocked tracks are replaced.'];
-    if (selLocked) warnBits.push(plural(selLocked, 'locked track is', 'locked tracks are') + ' skipped.');
-    else warnBits.push('Locked tracks are skipped.');
+    var warnBits = ['Beat grid edits on unlocked tracks are replaced, and the old grids are kept so you can restore them.'];
+    if (selLocked) warnBits.push(otherParts ? plural(selLocked, 'locked track keeps its', 'locked tracks keep their') + ' beat grid; only the other parts are reanalyzed.' : plural(selLocked, 'locked track is', 'locked tracks are') + ' skipped.');
+    else warnBits.push('Locked tracks keep their beat grids.');
 
     var toolbarText = st.note || (plural(total, 'track', 'tracks') + (nSel ? ' · ' + nSel + ' selected' : ''));
 
@@ -348,7 +352,7 @@ class Component extends DCLogic {
       retryFailed: function () {
         self.setState({
           jobs: self.state.jobs.map(function (j) { return j.status === 'failed' ? Object.assign({}, j, { status: 'queued', reason: '' }) : j; }),
-          running: true, note: plural(nFailed, 'track', 'tracks') + ' added back to the queue'
+          note: queuedNote(plural(nFailed, 'track', 'tracks'))
         });
       },
       noSelection: nSel === 0,
@@ -365,13 +369,13 @@ class Component extends DCLogic {
         apply: function () {
           if (!reAny || !selTarget) return;
           var ids = {};
-          selIds.forEach(function (j) { if (j.status === 'done' || j.status === 'failed') ids[j.id] = true; });
-          var bits = [plural(selTarget, 'track', 'tracks') + ' added to the queue'];
-          if (selLocked) bits.push(plural(selLocked, 'locked track', 'locked tracks') + ' skipped');
+          selIds.forEach(function (j) { if (j.status === 'done' || j.status === 'failed' || (j.status === 'locked' && otherParts)) ids[j.id] = true; });
+          var bits = [queuedNote(plural(selTarget, 'track', 'tracks'))];
+          if (selLocked) bits.push(otherParts ? plural(selLocked, 'locked grid', 'locked grids') + ' kept' : plural(selLocked, 'locked track', 'locked tracks') + ' skipped');
           if (selBusy) bits.push(selBusy + ' already queued');
           self.setState({
-            jobs: self.state.jobs.map(function (j) { return ids[j.id] ? Object.assign({}, j, { status: 'queued', reason: '', pct: 0 }) : j; }),
-            selected: {}, reOpen: false, running: true, note: bits.join(' · ')
+            jobs: self.state.jobs.map(function (j) { return ids[j.id] ? Object.assign({}, j, { status: 'queued', reason: '', pct: 0, gridLocked: j.status === 'locked' }) : j; }),
+            selected: {}, reOpen: false, note: bits.join(' · ')
           });
         }
       },
@@ -382,6 +386,7 @@ class Component extends DCLogic {
         var analyzed = j.status === 'done' || locked;
         var detail = j.file, detailFont = "ui-monospace, 'SF Mono', Menlo, Consolas, monospace";
         if (j.status === 'failed') { detail = j.reason; detailFont = 'inherit'; }
+        if ((j.status === 'queued' || j.status === 'analyzing') && j.gridLocked) { detail = 'Beat grid stays locked · other parts reanalyzed'; detailFont = 'inherit'; }
         if (locked) { detail = j.confirm ? 'Reanalyze this track’s beat grid? Your edited grid is replaced, and kept so you can restore it.' : 'Analysis locked — your beat grid edits are protected'; detailFont = 'inherit'; }
         return {
           title: j.title, artist: j.artist, detail: detail, detailFont: detailFont,
@@ -394,10 +399,10 @@ class Component extends DCLogic {
           isAnalyzing: j.status === 'analyzing', pct: j.pct, analyzingText: st.running ? 'Analyzing ' + j.pct + '%' : 'Paused at ' + j.pct + '%',
           progressLabel: 'Analyzing ' + j.title,
           isLocked: locked && !j.confirm, isConfirm: locked && j.confirm,
-          retry: function () { patch(j.id, { status: 'queued', reason: '' }); },
+          retry: function () { patch(j.id, { status: 'queued', reason: '' }, queuedNote(j.title)); },
           askUnlock: function () { patch(j.id, { confirm: true }); },
           keepLocked: function () { patch(j.id, { confirm: false }); },
-          unlock: function () { patch(j.id, { status: 'queued', confirm: false }); }
+          unlock: function () { patch(j.id, { status: 'queued', confirm: false, gridLocked: false }, queuedNote(j.title)); }
         };
       }),
 

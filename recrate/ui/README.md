@@ -10,14 +10,14 @@ them against the product requirements.
 
 ## What takes precedence
 
-1. **[`recrate-prd.md`](recrate-prd.md)** is the source of truth for
-   behavior, scope and safety. Requirement IDs such as `SAFE-09` and `EXP-03`
-   refer to it.
-2. **The decision log (`recrate-decisions.md`)** records later approvals and
-   open gates, including the stack, scale and publication model. The PRD links
-   to it and to the library architecture, but neither is in this folder. Get
-   them from the product owner before writing an implementation
-   specification.
+1. **The PRD, [`../docs/recrate-prd.md`](../docs/recrate-prd.md)**, is the
+   source of truth for behavior, scope and safety. Requirement IDs such as
+   `SAFE-09` and `EXP-03` refer to it.
+2. **The decision log, [`../docs/recrate-decisions.md`](../docs/recrate-decisions.md)**,
+   records later approvals and open gates, including the stack, scale and
+   publication model. The architectures beside it in `../docs/`, such as
+   [`recrate-library-architecture.md`](../docs/recrate-library-architecture.md)
+   and the analysis and export architectures, refine it.
 3. **This README** summarizes how the mockups apply the PRD. Where it
    disagrees with the PRD or the decision log, they win.
 4. **The mockups** show layout, copy and interaction for the states they
@@ -128,6 +128,10 @@ screen terms. They are not additional rules.
   a + button on each row. A track already in the playlist shows "In
   playlist". Adding it again asks "Add it again?" in the status bar, so a
   duplicate occurrence is always an explicit choice. Every add can be undone.
+  An occurrence only records membership and order. Tags, metadata and
+  preparation belong to the track, so every occurrence shows the same tags.
+  Tagging one occurrence tags the track, and undoing an add leaves nothing
+  behind.
 - **Smart playlists** (`ORG-03`, `ORG-04`). Players get an ordinary playlist
   of the matches, frozen into the reviewed export plan.
 
@@ -150,17 +154,30 @@ screen terms. They are not additional rules.
 
 ### Export and recovery
 
-- **Every open decision gates export** (`EXP-03`). Missing files, cue choices
-  and removals are listed under "Needs your decision" on Export, and each is
-  a checkbox or action in Export review. Export stays disabled until all are
-  resolved. Missing tracks are left out only after "Export without these
-  tracks" is ticked.
+- **One plan carries decisions between screens** (`EXP-02`–`EXP-04`).
+  - Export builds the plan from the current selection and Device setup. The
+    plan holds the exact removal set, with shared tracks counted once, the
+    replacement scope and the formats.
+  - Review draws its rows, counts and confirmations from that plan, never
+    from sample data. Its confirmation names the playlists being removed.
+  - Back and Close keep Review's decisions. Approvals to delete only carry
+    over while the plan is the same, so a changed plan asks again.
+  - Export hands Review's decisions (tracks relinked, tracks left out, cue
+    choices) to the run record. Export's summary and Results come from that
+    record, including its formats and time.
+  - Reopening Device setup shows the drive's saved setup.
+- **Every open decision gates export** (`EXP-03`). Missing files, cue choices,
+  removals and replacement are listed under "Needs your decision" on Export,
+  and each is a checkbox or action in Export review. Export stays disabled
+  until all are resolved. Missing tracks are left out only after "Export
+  without these tracks" is ticked.
 - **Keep versus replace** (`DEV-04`, `SAFE-09`). Keep preserves the existing
   library's semantics and refuses the write if that can't be done. Replace
   shows its exact scope: what's removed from the drive's library, what's
   kept on the drive (rekordbox's audio, by default), and what's backed up.
-  Deleting that audio is a separate, unticked option. Each file is then
-  listed in Export review and copied to the computer before deletion.
+  Deleting that audio is a separate, unticked option. Replace, and audio
+  deletion if chosen, each need their own approval in Export review. Audio
+  files are listed there and copied to the computer before deletion.
   Replacing never claims the computer has another copy.
 - **Interrupted export** (`REC-03`, `REC-04`). History shows the last known
   state until a read-only check runs. Resume and Discard stay disabled until
@@ -178,19 +195,35 @@ screen terms. They are not additional rules.
 - **Disconnected during a library write** means Recovery needed (`REC-06`).
   History never claims the old library is intact. It restores from the
   verified backup and reads it back before it reports recovery.
+- **One write gate for the drive** (`SAFE-07`, Safety clarification 9). Every
+  action that writes to the drive shares the same gate. That covers Resume,
+  Discard, Restore… on any backup, Retry in a report, Eject, and a
+  confirmation that's already open. The gate is closed when:
+  - the drive isn't connected;
+  - it needs recovery or inspection;
+  - an interrupted export is still unresolved.
+
+  Unplugging invalidates an earlier check, so Resume and Discard need a new
+  check after reconnecting.
 
 ### Analysis and missing files
 
 - **Changing analysis defaults never unlocks or queues tracks** (`AN-03`).
   Reanalyzing locked tracks is a separate, scoped action in the queue, and
   the replaced grid is kept so it can be restored.
+- **A grid lock protects only the grid.** A locked track can still get
+  key-only or waveform-only reanalysis. Row actions (Unlock…, Keep locked,
+  Retry) never resume a paused queue; only Resume does.
 - **Different audio** (`HEALTH-03`). A proposed match whose audio or length
   differs asks the user to choose one of three options:
   - relink, reanalyze the grid and mark cues "Check";
   - relink and keep everything as it is;
   - import the file as a separate track.
 
-  Relink stays disabled until the user chooses.
+  Relink stays disabled until the user chooses. The results keep three
+  outcomes apart: relinked, imported as a new track, and still missing.
+  Importing the other file keeps the original missing and in its playlists.
+  The summary states what happened to preparation for each choice.
 - **Removing a missing track** from the library deletes no file, on the
   computer or on any drive (`HEALTH-04`).
 
@@ -209,8 +242,12 @@ the mockups.
   qualification matrix.
 - **Edit track info always shows both Save buttons.** It should follow the
   tag-writing policy.
-- **Choose cues…** in Export review links to the Cue editor, but the return
-  to the same review, with decisions kept and rechecked, isn't drawn.
+- **Choose cues…** in Export review links to the Cue editor. Review keeps its
+  decisions on Back and Close, but the round trip through the Cue editor and
+  the recheck on return aren't drawn.
+- **Plan freshness is by selection only.** A changed selection or setup
+  invalidates approvals to delete. Source edits and drive reconnects, which
+  should also invalidate them (`EXP-04`), aren't simulated.
 - **Progress closes by Cancel.** Closing a job without cancelling it,
   reopening its progress, and recovery after restart aren't drawn.
 - **Populated states only.** Most frames show working examples. Empty,
@@ -292,12 +329,12 @@ adding pages.
 ## Kickoff prompt for an implementing agent
 
 > Produce the technical specification and architecture for Recrate that
-> `recrate/recrate-prd.md` §14 asks for, not production code. The PRD and its
-> decision log are the authority. Ask for `recrate-decisions.md` and the
-> library architecture if they aren't available, and don't treat open gates
-> as decided. Use `recrate/README.md` to read the mockups in
-> `recrate/design/*.dc.html` as source; they don't render on their own. Map
-> each PRD requirement and each board to components, workflows and tests.
-> Treat the README's Mockup shortcuts and Not yet designed lists as known
-> gaps, not as behavior to copy. The stack is Rust, SQLite (rusqlite) and
-> `gpui-kit`. Keep application code out of `gpui-base` and `gpui-component`.
+> `docs/recrate-prd.md` §14 asks for, not production code. The PRD,
+> `docs/recrate-decisions.md` and the architectures in `docs/` are the
+> authority. Don't treat open gates as decided. Use `ui/README.md` to read the
+> mockups in `ui/design/*.dc.html` as source; they don't render on their own.
+> Map each PRD requirement and each board to components, workflows and
+> tests. Treat the README's Mockup shortcuts and Not yet designed lists as
+> known gaps, not as behavior to copy. The stack is Rust, SQLite (rusqlite)
+> and `gpui-kit`. Keep application code out of `gpui-base` and
+> `gpui-component`.

@@ -296,7 +296,7 @@ Import…</button>
 <!-- Dialogs -->
 <sc-if value="{{dlg.device}}" hint-placeholder-val="{{false}}">
 <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: #00000099;">
-<dc-import name="DeviceSetup" on-close="{{closeDevice}}" hint-size="880px,720px"></dc-import>
+<dc-import name="DeviceSetup" initial="{{setup}}" on-close="{{closeDevice}}" hint-size="880px,720px"></dc-import>
 </div>
 </sc-if>
 <sc-if value="{{dlg.relink}}" hint-placeholder-val="{{false}}">
@@ -306,12 +306,12 @@ Import…</button>
 </sc-if>
 <sc-if value="{{dlg.review}}" hint-placeholder-val="{{false}}">
 <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: #00000099;">
-<dc-import name="ExportReview" removing="{{sum.removing}}" missing-resolved="{{relinked}}" convert-for="{{setup.convertFor}}" formats-label="{{formatsLabel}}" on-close="{{closeDialog}}" on-back="{{closeDialog}}" on-export="{{exportFromReview}}" hint-size="960px,680px"></dc-import>
+<dc-import name="ExportReview" plan="{{plan}}" draft="{{reviewDraft}}" on-close="{{keepDraft}}" on-back="{{keepDraft}}" on-export="{{exportFromReview}}" hint-size="960px,680px"></dc-import>
 </div>
 </sc-if>
 <sc-if value="{{dlg.results}}" hint-placeholder-val="{{false}}">
 <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: #00000099;">
-<dc-import name="ExportResults" on-close="{{closeDialog}}" hint-size="960px,640px"></dc-import>
+<dc-import name="ExportResults" run="{{lastRun}}" on-close="{{closeDialog}}" hint-size="960px,640px"></dc-import>
 </div>
 </sc-if>
 </div>
@@ -321,8 +321,8 @@ class Component extends DCLogic {
   constructor(props) {
     super(props);
     this.state = {
-      phase: 'idle', done: 0, format: 'device', dialog: null, relinked: false,
-      setup: { formats: ['legacy', 'plus'], readers: { legacy: 'CDJ-2000NXS2', plus: 'CDJ-3000' }, convertFor: '', mytag: ['Mood', 'Energy', 'Set slot'] },
+      phase: 'idle', done: 0, format: 'device', dialog: null, relinked: false, reviewDraft: null, lastRun: null,
+      setup: { ids: ['cdj3000', 'nxs2'], formats: ['legacy', 'plus'], readers: { legacy: 'CDJ-2000NXS2', plus: 'CDJ-3000' }, convertFor: '', untested: '', mytag: ['Mood', 'Energy', 'Set slot'], existing: 'keep', media: false },
       on: { warehouse: true, rooftop: true, warmup: true, deep: false, minimal: true, edits: false }
     };
     this.timer = null;
@@ -332,11 +332,14 @@ class Component extends DCLogic {
   renderVals() {
     var self = this, st = this.state;
     var P = {
-      warehouse: { name: 'Warehouse — Oct 2026', tracks: 18, size: 2.9, onDrive: true, add: 3, addGB: 0.5, cues: 9 },
-      rooftop: { name: 'Sunday rooftop', tracks: 31, size: 4.8, onDrive: true, add: 0, addGB: 0, cues: 0 },
+      warehouse: { name: 'Warehouse — Oct 2026', tracks: 18, size: 2.9, freed: 0.9, del: 6, onDrive: true, add: 3, addGB: 0.5, cues: 9,
+        rows: [['Low Tide Signal', 'Marlow Ashe', 118, null], ['Lantern Code', 'Ama Idowu', 0, 'minimal'], ['Signal Fires', 'Keel & Marsh', 121, null]] },
+      rooftop: { name: 'Sunday rooftop', tracks: 31, size: 4.8, freed: 1.9, del: 12, onDrive: true, add: 0, addGB: 0, cues: 0,
+        rows: [['Morning Tram', 'Keel & Marsh', 0, 'minimal'], ['Tangerine Room', 'Oona Brandt', 146, null], ['Nine Rivers', 'Nadia Okoro', 151, null]] },
       warmup: { name: 'Warm-up', tracks: 14, size: 2.1, onDrive: false, add: 14, addGB: 2.1, cues: 0 },
       deep: { name: 'Deep house', tracks: 142, size: 21.3, onDrive: false, add: 142, addGB: 21.3, cues: 0 },
-      minimal: { name: 'Minimal', tracks: 88, size: 12.9, freed: 9.4, onDrive: true, add: 0, addGB: 0, cues: 0 },
+      minimal: { name: 'Minimal', tracks: 88, size: 12.9, freed: 9.4, del: 61, onDrive: true, add: 0, addGB: 0, cues: 0,
+        rows: [['Frost Pattern', 'Halden Rue', 162, null], ['Lantern Code', 'Ama Idowu', 0, 'warehouse'], ['Mercury Steps', 'Oona Brandt', 148, null], ['Morning Tram', 'Keel & Marsh', 0, 'rooftop'], ['Thin Air', 'Juno Vale', 155, null]] },
       edits: { name: 'Edits & bootlegs', tracks: 37, size: 4.1, onDrive: false, add: 37, addGB: 4.1, cues: 0 }
     };
     var busy = st.phase === 'busy';
@@ -344,8 +347,27 @@ class Component extends DCLogic {
     Object.keys(P).forEach(function (k) {
       var p = P[k];
       if (st.on[k]) { count++; add += p.add; addGB += p.addGB; cues += p.cues; }
-      else if (p.onDrive) { removeN++; removeGB += (p.freed !== undefined ? p.freed : p.size * 0.7); }
+      else if (p.onDrive) { removeN++; removeGB += p.freed; }
     });
+    // The exact removal set. Tracks shared by two removed playlists are deleted too, so they count once here.
+    var SHARED = { 'minimal|rooftop': [4, 0.6], 'minimal|warehouse': [3, 0.4], 'rooftop|warehouse': [2, 0.3] };
+    var remKeys = Object.keys(P).filter(function (k) { return !st.on[k] && P[k].onDrive; });
+    var sharedDel = 0;
+    Object.keys(SHARED).forEach(function (pair) {
+      var ks = pair.split('|');
+      if (remKeys.indexOf(ks[0]) >= 0 && remKeys.indexOf(ks[1]) >= 0) { sharedDel += SHARED[pair][0]; removeGB += SHARED[pair][1]; }
+    });
+    var removals = remKeys.map(function (k) {
+      var p = P[k];
+      return {
+        key: k, name: p.name, tracks: p.tracks, freed: p.freed,
+        rows: p.rows.map(function (r) {
+          var gone = r[3] && remKeys.indexOf(r[3]) >= 0;
+          return { t: r[0], ar: r[1], mb: r[2] || 150, keepIn: r[3] && !gone ? P[r[3]].name : null, alsoRemoved: gone ? P[r[3]].name : null };
+        })
+      };
+    });
+    var delTracks = remKeys.reduce(function (s, k) { return s + P[k].del; }, 0) + sharedDel;
     var item = function (k) {
       var p = P[k], on = st.on[k], status, color = '#fafafa', synced = false;
       if (on && p.onDrive && p.add === 0 && p.cues === 0) { status = 'Up to date'; color = '#a3a3a3'; synced = true; }
@@ -356,7 +378,7 @@ class Component extends DCLogic {
       return {
         name: p.name, tracks: p.tracks, size: self.gb(p.size), on: on,
         status: status, statusColor: color, synced: synced,
-        toggle: function () { var n = Object.assign({}, st.on); n[k] = !on; self.setState({ on: n, phase: 'idle' }); }
+        toggle: function () { var n = Object.assign({}, st.on); n[k] = !on; self.setState({ on: n, phase: 'idle', lastRun: null }); }
       };
     };
     var total = 58.9, lib = 20.6 - removeGB, free = total - lib - 2.2 - addGB;
@@ -374,9 +396,23 @@ class Component extends DCLogic {
     if (missing) why.push(missing + ' missing files');
     if (cueChoices) why.push(cueChoices + ' track over the memory-cue limit');
     if (removeN) why.push(removeN + (removeN === 1 ? ' playlist removal' : ' playlist removals'));
+    if (su.existing === 'replace') why.push(su.media ? 'replacing rekordbox’s library and deleting its audio' : 'replacing rekordbox’s library');
     var decisions = why.length;
-    var startExport = function () {
-      self.setState({ phase: 'busy', done: 0 });
+    var plan = {
+      key: remKeys.join(',') + '|' + su.existing + '|' + (su.media ? 'media' : '') + '|' + su.formats.join('+'),
+      formatsLabel: su.formats.map(function (f) { return f === 'legacy' ? 'Device Library' : 'Device Library Plus'; }).join(' and '),
+      convertFor: su.convertFor, missingResolved: st.relinked,
+      removals: removals, delTracks: delTracks, freedGB: Math.round(removeGB * 10) / 10,
+      replace: su.existing === 'replace', media: su.existing === 'replace' && su.media
+    };
+    var startExport = function (dec) {
+      dec = dec || { omitted: [], relinked: [], cueChoice: null };
+      self.setState({ phase: 'busy', done: 0, reviewDraft: null, lastRun: {
+        formatsLabel: plan.formatsLabel, when: 'Just now',
+        removed: removals.map(function (r) { return r.name; }), freedGB: plan.freedGB, delTracks: delTracks,
+        omitted: dec.omitted, relinked: dec.relinked, cueChoice: dec.cueChoice,
+        replace: plan.replace, media: plan.media
+      } });
       if (self.timer) clearInterval(self.timer);
       self.timer = setInterval(function () {
         var d = self.state.done + 1;
@@ -414,13 +450,17 @@ class Component extends DCLogic {
         needsReview: decisions > 0, direct: decisions === 0,
         btnBg: nothing || free < 0 ? '#262626' : '#fafafa',
         btnFg: nothing || free < 0 ? '#a3a3a3' : '#171717',
-        doneText: add + ' tracks copied, cues updated on ' + cues + ' tracks.' + (st.relinked ? '' : ' 2 missing tracks were left out, as you chose in review.')
+        doneText: st.lastRun ? add + ' tracks copied, cues updated on ' + cues + ' tracks.' +
+          (st.lastRun.relinked.length ? ' ' + st.lastRun.relinked.length + ' relinked in review and copied.' : '') +
+          (st.lastRun.omitted.length ? ' ' + st.lastRun.omitted.length + ' missing ' + (st.lastRun.omitted.length === 1 ? 'track was' : 'tracks were') + ' left out, as you chose in review.' : '') +
+          (st.lastRun.removed.length ? ' Removed ' + st.lastRun.removed.join(' and ') + '.' : '') : ''
       },
       prog: { done: Math.min(st.done + 1, add), total: add, pct: pct, current: names[st.done % names.length] },
       libs: libs,
       libsFooter: su.formats.length === 2 ? 'Both share the audio files and are written on every export' : 'Only this library is written',
       formatsLabel: su.formats.map(function (f) { return FNAME[f]; }).join(' and '),
-      setup: su, relinked: st.relinked, missingOn: !st.relinked,
+      setup: su, relinked: st.relinked, missingOn: !st.relinked, plan: plan, reviewDraft: st.reviewDraft, lastRun: st.lastRun,
+      keepDraft: function (draft) { self.setState({ dialog: null, reviewDraft: draft || null }); },
       mytagText: su.mytag.length ? su.mytag.join(', ') + ' · other categories aren’t exported · change in Device setup' : 'No categories chosen · choose in Device setup',
       needsConvert: !!su.convertFor, noConvert: !su.convertFor,
       convertText: '6 FLAC tracks, for ' + su.convertFor + ' · +0.9 GB · your FLAC files aren’t changed',
@@ -430,9 +470,9 @@ class Component extends DCLogic {
       openReview: function () { self.setState({ dialog: 'review' }); },
       openResults: function () { self.setState({ dialog: 'results' }); },
       closeDialog: function () { self.setState({ dialog: null }); },
-      closeDevice: function (r) { self.setState(r && r.formats ? { dialog: null, setup: r } : { dialog: null }); },
-      closeRelink: function (r) { self.setState(r === 'done' ? { dialog: null, relinked: true } : { dialog: null }); },
-      exportFromReview: function () { self.setState({ dialog: null }); startExport(); },
+      closeDevice: function (r) { self.setState(r && r.formats ? { dialog: null, setup: r, reviewDraft: null } : { dialog: null }); },
+      closeRelink: function (r) { self.setState(r && r.stillMissing === 0 ? { dialog: null, relinked: true } : { dialog: null }); },
+      exportFromReview: function (dec) { self.setState({ dialog: null }); startExport(dec); },
       start: function () { startExport(); },
       cancel: function () { if (self.timer) clearInterval(self.timer); self.timer = null; self.setState({ phase: 'idle', done: 0 }); },
       reset: function () { self.setState({ phase: 'idle', done: 0 }); }

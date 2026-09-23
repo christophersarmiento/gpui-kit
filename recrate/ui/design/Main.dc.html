@@ -427,7 +427,7 @@ class Component extends DCLogic {
     var tagColor = {};
     CATS.forEach(function (c) { c.tags.forEach(function (t) { tagColor[t] = c.color; }); });
     var chipsOf = function (list) { return list.map(function (t) { return { name: t, color: tagColor[t] || '#a3a3a3' }; }); };
-    var trackTags = this.state.tags;
+    var trackTags;
     var frac = [0.0, 0.16, 0.32, 0.62, 0.25, 0.55];
     var letters = ['A', 'B', 'C', 'D', 'E', 'F'];
     var self = this;
@@ -449,6 +449,13 @@ class Component extends DCLogic {
     var st = this.state;
     var PL_NAME = 'Warehouse — Oct 2026';
     var BASE = data;
+    // Tags belong to the track, not to a row: every occurrence of a track shows the same tags.
+    if (Array.isArray(this.state.tags)) {
+      var byTrack = {};
+      BASE.forEach(function (b, i) { byTrack[b[0]] = self.state.tags[i] || []; });
+      this.state = Object.assign({}, this.state, { tags: byTrack });
+    }
+    trackTags = this.state.tags;
     var entryOf = function (k) { return typeof k === 'string' ? BASE[+k.slice(1)] : EXTRA[k]; };
     data = data.concat(st.added.map(function (k) {
       if (typeof k === 'string') { var b = BASE[+k.slice(1)]; return b.slice(0, 8).concat(['Today', b[9]]); }
@@ -467,8 +474,8 @@ class Component extends DCLogic {
         cls: 'row' + (i % 2 === 1 ? ' even' : '') + (i === sel ? ' sel' : ''),
         pick: function () { self.setState({ sel: i, tagsOpen: false }); },
         pencilColor: i === sel ? '#fafafa' : '#a3a3a3',
-        chips: chipsOf((trackTags[i] || []).slice(0, 2)),
-        more: (trackTags[i] || []).length > 2 ? '+' + ((trackTags[i] || []).length - 2) : '',
+        chips: chipsOf((trackTags[d[0]] || []).slice(0, 2)),
+        more: (trackTags[d[0]] || []).length > 2 ? '+' + ((trackTags[d[0]] || []).length - 2) : '',
         edit: function () { self.setState({ sel: i, editing: true }); }
       };
     });
@@ -548,7 +555,7 @@ class Component extends DCLogic {
         title: d[0], artist: d[1], genre: d[2],
         bpmExact: ok ? d[3] : '—', keyLong: ok ? d[4] + ' · ' + d[5] : 'Not analyzed',
         time: d[6], file: d[9], markers: markers,
-        chips: chipsOf(trackTags[sel] || [])
+        chips: chipsOf(trackTags[data[sel][0]] || [])
       },
       tagsOpen: this.state.tagsOpen,
       toggleTags: function () { self.setState({ tagsOpen: !self.state.tagsOpen }); },
@@ -556,14 +563,15 @@ class Component extends DCLogic {
         return {
           name: c.name, color: c.color,
           tags: c.tags.map(function (t) {
-            var on = (trackTags[sel] || []).indexOf(t) >= 0;
+            var on = (trackTags[data[sel][0]] || []).indexOf(t) >= 0;
             return {
               name: t, on: on,
               bg: on ? '#fafafa' : 'transparent', fg: on ? '#171717' : '#fafafa', border: on ? '#fafafa' : '#2f2f2f',
               toggle: function () {
-                var all = self.state.tags.slice();
-                var mine = (all[sel] || []).slice();
-                all[sel] = on ? mine.filter(function (x) { return x !== t; }) : mine.concat([t]);
+                var key = data[sel][0];
+                var all = Object.assign({}, self.state.tags);
+                var mine = (all[key] || []).slice();
+                all[key] = on ? mine.filter(function (x) { return x !== t; }) : mine.concat([t]);
                 self.setState({ tags: all });
               }
             };

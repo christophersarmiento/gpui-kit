@@ -182,11 +182,18 @@ button:focus-visible,input:focus-visible{outline:2px solid #737373;outline-offse
 </div>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"onClose":{"editor":null},"$preview":{"width":880,"height":720}}'>
+<script type="text/x-dc" data-dc-script data-props='{"initial":{"editor":null},"onClose":{"editor":null},"$preview":{"width":880,"height":720}}'>
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    this.state = { on: { cdj3000: true, nxs2: true, cdj900: false }, mytag: ['Mood', 'Energy', 'Set slot'], existing: 'keep', media: false, saved: null };
+    // Reopening shows the drive's saved setup, not the defaults.
+    var init = props.initial;
+    var on = { cdj3000: true, nxs2: true, cdj900: false };
+    if (init && init.ids) { on = { cdj3000: false, nxs2: false, cdj900: false }; init.ids.forEach(function (id) { on[id] = true; }); }
+    this.state = {
+      on: on, mytag: init && init.mytag ? init.mytag.slice() : ['Mood', 'Energy', 'Set slot'],
+      existing: init && init.existing ? init.existing : 'keep', media: !!(init && init.media), saved: null
+    };
   }
   renderVals() {
     var self = this, st = this.state;
@@ -285,6 +292,7 @@ class Component extends DCLogic {
       footerNote: st.saved ? st.saved : (st.existing === 'replace' ? 'Replacing is confirmed in Export review, with the exact list of what changes' : ''),
       save: function () {
         var result = {
+          ids: chosenP.map(function (p) { return p.id; }),
           formats: formats,
           readers: { legacy: names(byFmt('legacy')), plus: names(byFmt('plus')) },
           convertFor: names(noFlac), untested: names(untested),
@@ -297,7 +305,7 @@ class Component extends DCLogic {
       },
       close: function () {
         if (self.props.onClose) self.props.onClose(null);
-        else self.setState({ on: { cdj3000: true, nxs2: true, cdj900: false }, existing: 'keep', media: false, saved: null });
+        else self.setState({ saved: null });
       }
     };
   }

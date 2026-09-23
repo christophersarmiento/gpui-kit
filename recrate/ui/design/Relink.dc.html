@@ -33,19 +33,21 @@ button:focus-visible,input:focus-visible{outline:2px solid #737373;outline-offse
 <!-- Result banner -->
 <sc-if value="{{isDone}}" hint-placeholder-val="{{false}}">
 <div role="status" style="flex-shrink: 0; display: flex; align-items: flex-start; gap: 8px; padding: 12px; border: 1px solid #262626; border-radius: 6px;">
-<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0; margin-top: 2px;"><path d="M20 6 9 17l-5-5"></path></svg>
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="{{doneColor}}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0; margin-top: 2px;"><path d="M20 6 9 17l-5-5"></path></svg>
 <div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px;">
 <span style="font-size: 14px; font-weight: 500;">{{doneTitle}}</span>
-<span style="font-size: 13px; color: #a3a3a3;">Recrate updated their file paths. Cues, beat grids and tags are unchanged.</span>
+<sc-for list="{{doneLines}}" as="l" hint-placeholder-count="2">
+<span style="font-size: 13px; color: #a3a3a3;">{{l.text}}</span>
+</sc-for>
 </div>
 </div>
 <section aria-labelledby="rd-title" style="flex-shrink: 0; display: flex; flex-direction: column; gap: 8px;">
-<h3 id="rd-title" style="margin: 0; font-size: 14px; font-weight: 600;">Relinked</h3>
+<h3 id="rd-title" style="margin: 0; font-size: 14px; font-weight: 600;">What changed</h3>
 <div style="border: 1px solid #262626; border-radius: 6px; overflow: hidden;">
 <sc-for list="{{relinked}}" as="r" hint-placeholder-count="3">
 <div style="height: 32px; display: grid; grid-template-columns: 16px minmax(0, 260px) minmax(0, 1fr); column-gap: 8px; align-items: center; padding: 0 12px; border-bottom: 1px solid #262626b3; font-size: 13px;">
-<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#4ade80" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg>
-<span style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">{{r.name}}</span>
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="{{r.color}}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg>
+<span style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">{{r.name}} <span style="color: #a3a3a3;">· {{r.outcome}}</span></span>
 <span style="font-family: ui-monospace, 'SF Mono', Menlo, Consolas, monospace; font-size: 12px; color: #a3a3a3; font-variant-numeric: tabular-nums; overflow: hidden; white-space: nowrap; text-overflow: ellipsis;">{{r.neu}}</span>
 </div>
 </sc-for>
@@ -189,7 +191,7 @@ class Component extends DCLogic {
   initial() {
     return {
       phase: 'review', folder: '/Volumes/Archive', searching: false, removed: 0,
-      relinked: [],
+      relinked: [], imported: [],
       matches: [
         { id: 'lts', title: 'Low Tide Signal', artist: 'Marlow Ashe', old: '~/Music/Recrate/Marlow Ashe/Low Tide Signal.aiff', neu: '/Volumes/Archive/Recrate/Marlow Ashe/Low Tide Signal.aiff', conf: 'strong', on: true, exporting: false },
         { id: 'lc', title: 'Lantern Code', artist: 'Ama Idowu', old: '~/Music/Recrate/Ama Idowu/Lantern Code.flac', neu: '/Volumes/Archive/Recrate/Ama Idowu/Lantern Code.flac', conf: 'strong', on: true, exporting: false },
@@ -246,7 +248,7 @@ class Component extends DCLogic {
       self.setState({ missing: list });
     };
     var missing = st.missing.map(function (x, i) {
-      var pl = x.playlists.length ? 'In ' + x.playlists.join(', ') : 'Not in any playlist';
+      var pl = (x.note ? x.note + ' · ' : '') + (x.playlists.length ? 'In ' + x.playlists.join(', ') : 'Not in any playlist');
       return {
         name: x.title + ' — ' + x.artist, old: x.old, playlists: pl,
         idle: !x.confirming, confirming: x.confirming,
@@ -268,15 +270,27 @@ class Component extends DCLogic {
     if (!stillMissing) subtitle = 'Every track in the library can be found.';
     else subtitle = (stillMissing === 1 ? '1 track can’t be found. ' : stillMissing + ' tracks can’t be found. ') +
       (exporting === 0 ? 'None are in playlists you’re exporting.' : (exporting === 1 ? '1 is in a playlist you’re exporting.' : exporting + ' are in playlists you’re exporting.'));
-    var relinkedCount = st.relinked.length;
+    // Three separate outcomes: relinked, imported as a new track (original still missing), still missing.
+    var relinkedCount = st.relinked.length, importedCount = st.imported.length;
+    var byChoice = function (c) { return st.relinked.filter(function (r) { return r.diff && r.choice === c; }); };
+    var plain = st.relinked.filter(function (r) { return !r.diff; }).length;
+    var doneLines = [];
+    if (plain) doneLines.push(this.plural(plain, 'track', 'tracks') + ': only the file path changed. Cues, beat grids and tags are unchanged.');
+    byChoice('review').forEach(function (r) { doneLines.push(r.title + ': beat grid reanalyzed (the old grid is kept so you can restore it). Cues and loops are marked “Check” until you confirm them.'); });
+    byChoice('asis').forEach(function (r) { doneLines.push(r.title + ': cues and beat grid kept as they were, by your choice, although the audio differs.'); });
+    st.imported.forEach(function (r) { doneLines.push(r.title + ': the new file was imported as a separate track with no cues. The original is still missing and stays in your playlists.'); });
     return {
       subtitle: subtitle,
       isDone: isDone, isReview: !isDone,
-      doneTitle: this.plural(relinkedCount, 'track', 'tracks') + ' relinked. ' + (stillMissing ? stillMissing + ' still missing' : 'Nothing is missing'),
+      doneTitle: [relinkedCount ? this.plural(relinkedCount, 'track', 'tracks') + ' relinked' : '', importedCount ? importedCount + ' imported as a new track' : '', stillMissing ? stillMissing + ' still missing' : 'nothing is missing'].filter(Boolean).join(' · '),
+      doneColor: stillMissing ? '#facc15' : '#4ade80',
+      doneLines: doneLines.map(function (t) { return { text: t }; }),
       relinked: st.relinked.map(function (r) {
-        var how = { review: ' · grid reanalyzed, cues marked Check', asis: ' · cues and grid unchanged, by your choice', 'new': ' · added as a separate track' };
-        return { name: r.title + ' — ' + r.artist, neu: r.neu + (r.diff && r.choice ? how[r.choice] : '') };
-      }),
+        var how = { review: 'Relinked · grid reanalyzed, cues marked Check', asis: 'Relinked · cues and grid kept, by your choice' };
+        return { name: r.title + ' — ' + r.artist, neu: r.neu, color: '#4ade80', outcome: r.diff && r.choice ? how[r.choice] : 'Relinked' };
+      }).concat(st.imported.map(function (r) {
+        return { name: r.title + ' — ' + r.artist, neu: r.neu, color: '#a3a3a3', outcome: 'Imported as a new track · original still missing' };
+      })),
       folder: st.folder,
       searching: st.searching,
       searchNote: st.searching ? 'Searching…' : '· ' + this.plural(st.matches.length, 'match', 'matches') + ' found',
@@ -305,10 +319,17 @@ class Component extends DCLogic {
       relink: function () {
         if (!n || undecided) return;
         var rest = self.state.matches.filter(function (m) { return !m.on; });
-        self.setState({ phase: 'done', relinked: self.state.relinked.concat(checked), matches: rest });
+        var imports = checked.filter(function (m) { return m.diff && m.choice === 'new'; });
+        var relinks = checked.filter(function (m) { return !(m.diff && m.choice === 'new'); });
+        // Importing the other file keeps the original record, so it goes back to the missing list.
+        var back = imports.map(function (m) {
+          return { id: m.id, title: m.title, artist: m.artist, old: m.old, found: '/Volumes/Archive/Masters/' + m.title + '.aiff', playlists: m.playlists || ['Sunday rooftop', 'Deep house'], exporting: m.exporting, confirming: false,
+            note: 'The file at ' + m.neu + ' was imported as a separate track' };
+        });
+        self.setState({ phase: 'done', relinked: self.state.relinked.concat(relinks), imported: self.state.imported.concat(imports), matches: rest, missing: self.state.missing.concat(back) });
       },
       close: function () {
-        if (self.props.onClose) self.props.onClose(isDone ? 'done' : 'cancel');
+        if (self.props.onClose) self.props.onClose(isDone ? { relinked: relinkedCount, imported: importedCount, stillMissing: stillMissing } : null);
         else self.setState(self.initial());
       }
     };

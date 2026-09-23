@@ -23,7 +23,7 @@ button:focus-visible{outline:2px solid #737373;outline-offset:1px}
 <div style="height: 60px; flex-shrink: 0; display: flex; align-items: center; gap: 8px; padding: 0 12px 0 24px; border-bottom: 1px solid #262626;">
 <div style="flex-grow: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px;">
 <h2 id="xs-title" role="status" style="margin: 0; font-size: 16px; line-height: 22px; font-weight: 600;">{{title}}</h2>
-<div style="font-size: 13px; color: #a3a3a3;">KINGSTON · Device Library and Plus · Sep 23, 21:14</div>
+<div style="font-size: 13px; color: #a3a3a3;">{{meta}}</div>
 </div>
 <button type="button" class="ghost" onClick="{{close}}" aria-label="Close" style="width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; padding: 0; background: transparent; border: 0; border-radius: 6px; color: #fafafa;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg></button>
 </div>
@@ -39,7 +39,7 @@ button:focus-visible{outline:2px solid #737373;outline-offset:1px}
 <span style="display: flex; align-items: center; gap: 8px;"><span style="display: flex; color: #facc15;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="m4.9 4.9 14.2 14.2"></path></svg></span><span style="font-variant-numeric: tabular-nums;">{{stat.skipped}}</span></span>
 <span style="display: flex; align-items: center; gap: 8px;"><span style="display: flex; color: {{stat.failColor}};"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="m15 9-6 6"></path><path d="m9 9 6 6"></path></svg></span><span style="font-variant-numeric: tabular-nums;">{{stat.failed}}</span></span>
 <div style="flex-grow: 1;"></div>
-<span style="font-size: 13px; color: #a3a3a3;">Minimal removed · 9.4 GB freed</span>
+<span style="font-size: 13px; color: #a3a3a3;">{{removedText}}</span>
 </div>
 <div role="status" style="height: 40px; display: flex; align-items: center; gap: 8px; padding: 0 12px;">
 <span style="display: flex; color: {{eject.color}};">
@@ -52,6 +52,12 @@ button:focus-visible{outline:2px solid #737373;outline-offset:1px}
 </div>
 </div>
 
+<sc-if value="{{gated}}" hint-placeholder-val="{{false}}">
+<div role="alert" style="flex-shrink: 0; display: flex; align-items: flex-start; gap: 8px; padding: 10px 12px; border: 1px solid #facc15; border-radius: 6px; font-size: 13px;">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#facc15" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" style="flex-shrink: 0; margin-top: 1px;"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3"></path><path d="M12 9v4"></path><path d="M12 17h.01"></path></svg>
+<span>{{gateText}}</span>
+</div>
+</sc-if>
 <!-- Filter and actions -->
 <div style="height: 32px; flex-shrink: 0; display: flex; align-items: center; gap: 8px;">
 <div role="group" aria-label="Show outcome" style="height: 32px; box-sizing: border-box; display: flex; gap: 2px; padding: 2px; background: #171717; border: 1px solid #262626; border-radius: 6px;">
@@ -105,7 +111,7 @@ button:focus-visible{outline:2px solid #737373;outline-offset:1px}
 </div>
 </div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props='{"onClose":{"editor":null},"$preview":{"width":960,"height":640}}'>
+<script type="text/x-dc" data-dc-script data-props='{"run":{"editor":null},"blocked":{"editor":null},"onClose":{"editor":null},"$preview":{"width":960,"height":640}}'>
 class Component extends DCLogic {
   constructor(props) {
     super(props);
@@ -128,13 +134,25 @@ class Component extends DCLogic {
       rows.push({ id: 'c' + i, o: 'copied', t: c[0], ar: c[1], p: c[2], mb: c[3], reason: 'Verified · ' + c[3] + ' MB' });
     });
     [['Low Tide Signal', 'Marlow Ashe', '4 cue edits'], ['Lantern Code', 'Ama Idowu', 'Beat grid moved'],
-     ['Concrete Choir', 'Halden Rue', '2 cue edits · Device Library got the first 10 of 14 memory cues (none chosen)'], ['Signal Fires', 'Keel & Marsh', '2 cue edits'],
+     ['Concrete Choir', 'Halden Rue', '2 cue edits · first 10 of 14 memory cues by position, as you accepted'], ['Signal Fires', 'Keel & Marsh', '2 cue edits'],
      ['Northbound', 'Juno Vale', 'Loop added'], ['Hollow Grid', 'Halden Rue', '1 cue edit · beat grid moved'],
-     ['Amber Room', 'Oona Brandt', 'Device Library got your 10 of 11 memory cues'], ['Undertow', 'Marlow Ashe', '3 cue edits'],
+     ['Amber Room', 'Oona Brandt', 'Your chosen 10 of 11 memory cues exported'], ['Undertow', 'Marlow Ashe', '3 cue edits'],
      ['Chalk Lines', 'Ama Idowu', 'Hot cue colors']].forEach(function (u, i) {
       rows.push({ id: 'u' + i, o: 'updated', t: u[0], ar: u[1], p: W, reason: u[2] });
     });
-    this.state = { rows: rows, filter: 'failed', writing: false, ejected: false, relinked: [], note: '' };
+    // A run handed over from Export describes that run, not the sample report.
+    var run = props.run;
+    if (run) {
+      rows = rows.filter(function (r) { return r.o !== 'failed' && r.o !== 'skipped'; });
+      rows.unshift({ id: 'f1c', o: 'copied', t: 'Night Ferry', ar: 'Oona Brandt', p: W, mb: 168, reason: 'Verified · 168 MB' });
+      rows.unshift({ id: 'f2c', o: 'copied', t: 'First Light Transit', ar: 'Keel & Marsh', p: U, mb: 152, reason: 'Verified · 152 MB' });
+      (run.relinked || []).forEach(function (r, i) { rows.unshift({ id: 'rl' + i, o: 'copied', t: r.t, ar: r.ar, p: r.p, reason: 'Relinked in review · verified' }); });
+      (run.omitted || []).forEach(function (r, i) { rows.unshift({ id: 'om' + i, o: 'skipped', t: r.t, ar: r.ar, p: r.p, reason: 'Left out as you chose · file not found' }); });
+      rows = rows.map(function (r) {
+        return r.t === 'Concrete Choir' && r.o === 'updated' ? Object.assign({}, r, { reason: '2 cue edits · first 10 of 14 memory cues by position, as you accepted' }) : r;
+      });
+    }
+    this.state = { rows: rows, filter: run ? 'all' : 'failed', writing: false, ejected: false, relinked: [], note: '' };
     this.timer = null;
   }
   componentWillUnmount() { if (this.timer) clearTimeout(this.timer); }
@@ -155,7 +173,10 @@ class Component extends DCLogic {
     var count = function (o) { return st.rows.filter(function (r) { return r.o === o; }).length; };
     var nFailed = count('failed'), nSkipped = count('skipped'), nCopied = count('copied'), nUpdated = count('updated');
     var failedIds = st.rows.filter(function (r) { return r.o === 'failed'; }).map(function (r) { return r.id; });
-    var locked = st.writing || st.ejected;
+    // Writing to the drive shares History's gate: no retry or eject while it's disconnected or needs recovery.
+    var gate = this.props.blocked || '';
+    var run = this.props.run;
+    var locked = st.writing || st.ejected || !!gate;
     var skippedIds = st.rows.filter(function (r) { return r.o === 'skipped'; }).map(function (r) { return r.id; });
     var allLinked = skippedIds.every(function (x) { return st.relinked.indexOf(x) >= 0; });
     var segDefs = [['failed', 'Failed', nFailed], ['skipped', 'Skipped', nSkipped], ['copied', 'Copied', nCopied], ['updated', 'Updated', nUpdated], ['all', 'All', st.rows.length]];
@@ -199,13 +220,20 @@ class Component extends DCLogic {
     var eject;
     if (st.ejected) eject = { text: 'KINGSTON ejected — you can unplug it', color: '#a3a3a3', safe: false, busy: false, gone: true, meta: '' };
     else if (st.writing) eject = { text: 'Writing to KINGSTON — don’t eject yet', color: '#facc15', safe: false, busy: true, gone: false, meta: '' };
+    else if (gate) eject = { text: 'KINGSTON can’t be written to from this report right now', color: '#facc15', safe: false, busy: true, gone: false, meta: '' };
     else eject = { text: 'Safe to eject — all writes are finished', color: '#4ade80', safe: true, busy: false, gone: false, meta: '42.9 GB free' };
     eject.disabled = locked;
     eject.bg = locked ? '#262626' : '#fafafa';
     eject.fg = locked ? '#a3a3a3' : '#171717';
     var totalCopies = nCopied + nFailed;
     return {
-      title: nFailed ? 'Export finished with ' + nFailed + (nFailed === 1 ? ' problem' : ' problems') : 'Export complete',
+      title: nFailed ? 'Export finished with ' + nFailed + (nFailed === 1 ? ' problem' : ' problems') : (nSkipped ? 'Export complete · ' + nSkipped + ' left out as you chose' : 'Export complete'),
+      meta: 'KINGSTON · ' + (run ? run.formatsLabel + ' · ' + run.when : 'Device Library and Device Library Plus · Sep 23, 21:14'),
+      removedText: run
+        ? [run.removed.length ? run.removed.join(', ') + ' removed · ' + run.freedGB.toFixed(1) + ' GB freed' : '',
+           run.replace ? 'rekordbox’s library replaced · ' + (run.media ? 'its audio backed up, then deleted' : 'its 137 audio files kept') : ''].filter(Boolean).join(' · ') || 'Nothing removed'
+        : 'Minimal removed · 9.4 GB freed',
+      gated: !!gate, gateText: gate,
       stat: {
         verified: nCopied + ' of ' + totalCopies + ' copies verified',
         verifyColor: nFailed ? '#facc15' : '#4ade80',
