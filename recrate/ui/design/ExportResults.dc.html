@@ -140,19 +140,13 @@ class Component extends DCLogic {
      ['Chalk Lines', 'Ama Idowu', 'Hot cue colors']].forEach(function (u, i) {
       rows.push({ id: 'u' + i, o: 'updated', t: u[0], ar: u[1], p: W, reason: u[2] });
     });
-    // A run handed over from Export describes that run, not the sample report.
-    var run = props.run;
-    if (run) {
-      rows = rows.filter(function (r) { return r.o !== 'failed' && r.o !== 'skipped'; });
-      rows.unshift({ id: 'f1c', o: 'copied', t: 'Night Ferry', ar: 'Oona Brandt', p: W, mb: 168, reason: 'Verified · 168 MB' });
-      rows.unshift({ id: 'f2c', o: 'copied', t: 'First Light Transit', ar: 'Keel & Marsh', p: U, mb: 152, reason: 'Verified · 152 MB' });
-      (run.relinked || []).forEach(function (r, i) { rows.unshift({ id: 'rl' + i, o: 'copied', t: r.t, ar: r.ar, p: r.p, reason: 'Relinked in review · verified' }); });
-      (run.omitted || []).forEach(function (r, i) { rows.unshift({ id: 'om' + i, o: 'skipped', t: r.t, ar: r.ar, p: r.p, reason: 'Left out as you chose · file not found' }); });
-      rows = rows.map(function (r) {
-        return r.t === 'Concrete Choir' && r.o === 'updated' ? Object.assign({}, r, { reason: '2 cue edits · first 10 of 14 memory cues by position, as you accepted' }) : r;
-      });
-    }
-    this.state = { rows: rows, filter: run ? 'all' : 'failed', writing: false, ejected: false, relinked: [], note: '' };
+    // The report shows one run record. Its owner (Export or History) passes it in and gets the updated record back.
+    var sample = { formatsLabel: 'Device Library and Device Library Plus', when: 'Sep 23, 21:14', rows: rows,
+      removedText: 'Minimal removed · 9.4 GB freed', freeText: '42.9 GB free', ejected: false };
+    var run = props.run || sample;
+    this.run = run;
+    this.state = { rows: run.rows.slice(), filter: run.rows.some(function (r) { return r.o === 'failed'; }) ? 'failed' : 'all',
+      writing: false, ejected: !!run.ejected, relinked: [], note: '' };
     this.timer = null;
   }
   componentWillUnmount() { if (this.timer) clearTimeout(this.timer); }
@@ -175,10 +169,10 @@ class Component extends DCLogic {
     var failedIds = st.rows.filter(function (r) { return r.o === 'failed'; }).map(function (r) { return r.id; });
     // Writing to the drive shares History's gate: no retry or eject while it's disconnected or needs recovery.
     var gate = this.props.blocked || '';
-    var run = this.props.run;
+    var run = this.run;
     var locked = st.writing || st.ejected || !!gate;
     var skippedIds = st.rows.filter(function (r) { return r.o === 'skipped'; }).map(function (r) { return r.id; });
-    var allLinked = skippedIds.every(function (x) { return st.relinked.indexOf(x) >= 0; });
+    var allLinked = st.rows.filter(function (r) { return r.o === 'skipped'; }).every(function (r) { return r.relinkedLater || st.relinked.indexOf(r.id) >= 0; });
     var segDefs = [['failed', 'Failed', nFailed], ['skipped', 'Skipped', nSkipped], ['copied', 'Copied', nCopied], ['updated', 'Updated', nUpdated], ['all', 'All', st.rows.length]];
     var segs = segDefs.map(function (d) {
       var on = st.filter === d[0];
@@ -193,7 +187,7 @@ class Component extends DCLogic {
       .map(function (r) {
         var id = r.id, failed = r.o === 'failed', skipped = r.o === 'skipped';
         var reason = r.reason;
-        var linked = st.relinked.indexOf(id) >= 0;
+        var linked = st.relinked.indexOf(id) >= 0 || !!r.relinkedLater;
         if (skipped && linked) reason = 'Relinked — copies on the next export';
         return {
           isFailed: failed, isSkipped: skipped, isCopied: r.o === 'copied', isUpdated: r.o === 'updated',
@@ -221,18 +215,15 @@ class Component extends DCLogic {
     if (st.ejected) eject = { text: 'KINGSTON ejected — you can unplug it', color: '#a3a3a3', safe: false, busy: false, gone: true, meta: '' };
     else if (st.writing) eject = { text: 'Writing to KINGSTON — don’t eject yet', color: '#facc15', safe: false, busy: true, gone: false, meta: '' };
     else if (gate) eject = { text: 'KINGSTON can’t be written to from this report right now', color: '#facc15', safe: false, busy: true, gone: false, meta: '' };
-    else eject = { text: 'Safe to eject — all writes are finished', color: '#4ade80', safe: true, busy: false, gone: false, meta: '42.9 GB free' };
+    else eject = { text: 'Safe to eject — all writes are finished', color: '#4ade80', safe: true, busy: false, gone: false, meta: run.freeText || '' };
     eject.disabled = locked;
     eject.bg = locked ? '#262626' : '#fafafa';
     eject.fg = locked ? '#a3a3a3' : '#171717';
     var totalCopies = nCopied + nFailed;
     return {
       title: nFailed ? 'Export finished with ' + nFailed + (nFailed === 1 ? ' problem' : ' problems') : (nSkipped ? 'Export complete · ' + nSkipped + ' left out as you chose' : 'Export complete'),
-      meta: 'KINGSTON · ' + (run ? run.formatsLabel + ' · ' + run.when : 'Device Library and Device Library Plus · Sep 23, 21:14'),
-      removedText: run
-        ? [run.removed.length ? run.removed.join(', ') + ' removed · ' + run.freedGB.toFixed(1) + ' GB freed' : '',
-           run.replace ? 'rekordbox’s library replaced · ' + (run.media ? 'its audio backed up, then deleted' : 'its 137 audio files kept') : ''].filter(Boolean).join(' · ') || 'Nothing removed'
-        : 'Minimal removed · 9.4 GB freed',
+      meta: 'KINGSTON · ' + run.formatsLabel + ' · ' + run.when,
+      removedText: run.removedText,
       gated: !!gate, gateText: gate,
       stat: {
         verified: nCopied + ' of ' + totalCopies + ' copies verified',
@@ -262,7 +253,12 @@ class Component extends DCLogic {
         self.setState({ ejected: true, note: '' });
       },
       close: function () {
-        if (self.props.onClose) self.props.onClose();
+        // Hand back what happened here: retried files, relinks and ejection belong to the run and the drive.
+        var rowsOut = self.state.rows.map(function (r) {
+          return r.o === 'skipped' && self.state.relinked.indexOf(r.id) >= 0 ? Object.assign({}, r, { reason: 'Relinked — copies on the next export', relinkedLater: true }) : r;
+        });
+        var out = Object.assign({}, run, { rows: rowsOut, ejected: self.state.ejected });
+        if (self.props.onClose) self.props.onClose(out);
         else self.setState({ note: '' });
       }
     };

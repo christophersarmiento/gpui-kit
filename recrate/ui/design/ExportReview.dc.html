@@ -69,6 +69,7 @@ button:focus-visible,input:focus-visible{outline:2px solid #737373;outline-offse
 <sc-if value="{{r.isSkip}}" hint-placeholder-val="{{false}}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#facc15" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><path d="m4.9 4.9 14.2 14.2"></path></svg></sc-if>
 <sc-if value="{{r.isRemove}}" hint-placeholder-val="{{false}}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f87171" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path></svg></sc-if>
 <sc-if value="{{r.isKeep}}" hint-placeholder-val="{{false}}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#a3a3a3" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"></path></svg></sc-if>
+<sc-if value="{{r.isPick}}" hint-placeholder-val="{{false}}"><input type="checkbox" checked="{{r.picked}}" onChange="{{r.pick}}" aria-label="{{r.pickLabel}}" style="width: 14px; height: 14px; margin: 0; accent-color: #fafafa;"></sc-if>
 <span style="color: {{r.wordColor}};">{{r.word}}</span>
 </span>
 <span role="cell" style="overflow: hidden; white-space: nowrap; text-overflow: ellipsis; color: {{r.titleColor}};">{{r.title}} <span style="color: #a3a3a3;">{{r.artistText}}</span></span>
@@ -106,6 +107,10 @@ button:focus-visible,input:focus-visible{outline:2px solid #737373;outline-offse
 <sc-if value="{{d.hasCues}}" hint-placeholder-val="{{false}}">
 <a href="CueEditor.dc.html" class="ghost" style="height: 28px; flex-shrink: 0; display: flex; align-items: center; padding: 0 8px; border-radius: 6px; font-size: 13px; color: #fafafa;">Choose cues…</a>
 </sc-if>
+<sc-if value="{{d.hasBulk}}" hint-placeholder-val="{{false}}">
+<button type="button" class="ghost" onClick="{{d.selectAll}}" style="height: 28px; flex-shrink: 0; padding: 0 8px; background: transparent; color: #fafafa; border: 0; border-radius: 6px; font-family: inherit; font-size: 13px;">Tick all 137</button>
+<button type="button" class="ghost" onClick="{{d.clearAll}}" style="height: 28px; flex-shrink: 0; padding: 0 8px; background: transparent; color: #fafafa; border: 0; border-radius: 6px; font-family: inherit; font-size: 13px;">Clear</button>
+</sc-if>
 <sc-if value="{{d.hasShow}}" hint-placeholder-val="{{true}}">
 <button type="button" class="ghost" aria-pressed="{{d.showOn}}" onClick="{{d.show}}" style="height: 28px; flex-shrink: 0; padding: 0 8px; background: transparent; color: #fafafa; border: 0; border-radius: 6px; font-family: inherit; font-size: 13px;">{{d.showLabel}}</button>
 </sc-if>
@@ -131,37 +136,6 @@ button:focus-visible,input:focus-visible{outline:2px solid #737373;outline-offse
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    var W = 'Warehouse — Oct 2026', U = 'Warm-up';
-    this.base = [
-      { id: 'c1', a: 'copy', t: 'Night Ferry', ar: 'Oona Brandt', p: W, mb: 168, note: 'New in playlist' },
-      { id: 'c2', a: 'copy', t: 'Parallel Rooms', ar: 'Sable & Finch', p: W, mb: 152, note: 'New in playlist' },
-      { id: 'c3', a: 'copy', t: 'Glass Corridor', ar: 'Oona Brandt', p: W, mb: 180, note: '12 memory cues — your 10 are exported', many: true },
-      { id: 'c4', a: 'copy', t: 'Salt Flats', ar: 'Ama Idowu', p: U, mb: 142, note: '' },
-      { id: 'c5', a: 'copy', t: 'Harbour Lights', ar: 'Sable & Finch', p: U, mb: 156, note: '' },
-      { id: 'c6', a: 'copy', t: 'Kiln', ar: 'Sable & Finch', p: U, mb: 138, note: '', flac: true },
-      { id: 'c7', a: 'copy', t: 'Slow Orbit', ar: 'Juno Vale', p: U, mb: 161, note: '' },
-      { id: 'c8', a: 'copy', t: 'Paper Lanterns', ar: 'Ama Idowu', p: U, mb: 149, note: '' },
-      { id: 'c9', a: 'copy', t: 'Tidewater', ar: 'Marlow Ashe', p: U, mb: 158, note: '' },
-      { id: 'c10', a: 'copy', t: 'Soft Machinery', ar: 'Halden Rue', p: U, mb: 144, note: '' },
-      { id: 'c11', a: 'copy', t: 'Copper Sky', ar: 'Juno Vale', p: U, mb: 152, note: '' },
-      { id: 'c12', a: 'copy', t: 'Driftwood Hymn', ar: 'Oona Brandt', p: U, mb: 147, note: '' },
-      { id: 'c13', a: 'copy', t: 'Low Sun', ar: 'Keel & Marsh', p: U, mb: 139, note: '' },
-      { id: 'c14', a: 'copy', t: 'Quiet Engines', ar: 'Halden Rue', p: U, mb: 155, note: '' },
-      { id: 'c15', a: 'copy', t: 'Pale Blue Hour', ar: 'Marlow Ashe', p: U, mb: 160, note: '' },
-      { id: 'c16', a: 'copy', t: 'Velvet Static', ar: 'Juno Vale', p: U, mb: 147, note: '' },
-      { id: 'c17', a: 'copy', t: 'First Light Transit', ar: 'Keel & Marsh', p: U, mb: 152, note: '' },
-      { id: 'u1', a: 'update', t: 'Low Tide Signal', ar: 'Marlow Ashe', p: W, note: '4 cue edits' },
-      { id: 'u2', a: 'update', t: 'Lantern Code', ar: 'Ama Idowu', p: W, note: 'Beat grid moved' },
-      { id: 'u3', a: 'update', t: 'Concrete Choir', ar: 'Halden Rue', p: W, note: '14 memory cues — choose 10 to export', many: true },
-      { id: 'u4', a: 'update', t: 'Signal Fires', ar: 'Keel & Marsh', p: W, note: '2 cue edits' },
-      { id: 'u5', a: 'update', t: 'Northbound', ar: 'Juno Vale', p: W, note: 'Loop added' },
-      { id: 'u6', a: 'update', t: 'Hollow Grid', ar: 'Halden Rue', p: W, note: '1 cue edit · beat grid moved' },
-      { id: 'u7', a: 'update', t: 'Amber Room', ar: 'Oona Brandt', p: W, note: '11 memory cues — your 10 are exported', many: true },
-      { id: 'u8', a: 'update', t: 'Undertow', ar: 'Marlow Ashe', p: W, note: '3 cue edits' },
-      { id: 'u9', a: 'update', t: 'Chalk Lines', ar: 'Ama Idowu', p: W, note: 'Hot cue colors' },
-      { id: 's1', a: 'skip', t: 'Brass Weather', ar: 'Keel & Marsh', p: W, mb: 171, note: 'File not found · last seen on MUSIC-SSD' },
-      { id: 's2', a: 'skip', t: 'Sodium Lights', ar: 'Juno Vale', p: W, mb: 149, note: 'File not found · moved or deleted' }
-    ];
     var plan = this.plan();
     // Decisions survive Back and Choose cues. Approvals of deletions only survive for the same plan.
     var d = props.draft || {};
@@ -170,12 +144,55 @@ class Component extends DCLogic {
       filter: 'all', started: false,
       relinked: d.relinked || (plan.missingResolved ? ['s1', 's2'] : []),
       missingAck: !!d.missingAck, cueAck: !!d.cueAck,
-      removeOk: same && !!d.removeOk, replaceOk: same && !!d.replaceOk, mediaOk: same && !!d.mediaOk
+      removeOk: same && !!d.removeOk, replaceOk: same && !!d.replaceOk, mediaOk: same && !!d.mediaOk,
+      mediaSel: same && d.mediaSel ? d.mediaSel : {}
     };
+  }
+  // Sample operations per playlist. Export, Review, Results and History all read these, never a fixed list.
+  opsFor(k) {
+    var W = 'Warehouse — Oct 2026', U = 'Warm-up';
+    var gen = function (seed, n, p, avg) {
+      var A = ['Amber', 'Basalt', 'Cinder', 'Delta', 'Ember', 'Fathom', 'Glacier', 'Harbor', 'Indigo', 'Juniper', 'Kestrel', 'Lumen', 'Meridian', 'Nocturne', 'Opal', 'Prism', 'Quartz', 'Riverine', 'Sable', 'Tundra', 'Umber', 'Vesper', 'Willow', 'Zephyr'];
+      var B = ['Drift', 'Signal', 'Garden', 'Circuit', 'Tide', 'Hall', 'Engine', 'Motion', 'Theory', 'Lines', 'Room', 'Pulse'];
+      var AR = ['Marlow Ashe', 'Ama Idowu', 'Halden Rue', 'Sable & Finch', 'Oona Brandt', 'Juno Vale', 'Keel & Marsh', 'Nadia Okoro', 'Kenji Moreau', 'Teo Lindqvist', 'Idris Vane'];
+      var out = [];
+      for (var i = 0; i < n; i++) out.push({ id: k + i, a: 'copy', t: A[(i + seed) % 24] + ' ' + B[(Math.floor(i / 24) + seed) % 12], ar: AR[(i * 3 + seed) % 11], p: p, mb: avg - 20 + (i * 13) % 41, note: '' });
+      return out;
+    };
+    var c = function (id, t, ar, p, mb, note, extra) { return Object.assign({ id: id, a: 'copy', t: t, ar: ar, p: p, mb: mb, note: note || '' }, extra || {}); };
+    var u = function (id, t, ar, note, extra) { return Object.assign({ id: id, a: 'update', t: t, ar: ar, p: W, note: note }, extra || {}); };
+    if (k === 'warehouse') return [
+      c('c1', 'Night Ferry', 'Oona Brandt', W, 168, 'New in playlist'), c('c2', 'Parallel Rooms', 'Sable & Finch', W, 152, 'New in playlist'),
+      c('c3', 'Glass Corridor', 'Oona Brandt', W, 180, '12 memory cues — your 10 are exported', { many: true }),
+      u('u1', 'Low Tide Signal', 'Marlow Ashe', '4 cue edits'), u('u2', 'Lantern Code', 'Ama Idowu', 'Beat grid moved'),
+      u('u3', 'Concrete Choir', 'Halden Rue', '14 memory cues — choose 10 to export', { many: true, cueDecision: true }),
+      u('u4', 'Signal Fires', 'Keel & Marsh', '2 cue edits'), u('u5', 'Northbound', 'Juno Vale', 'Loop added'),
+      u('u6', 'Hollow Grid', 'Halden Rue', '1 cue edit · beat grid moved'), u('u7', 'Amber Room', 'Oona Brandt', '11 memory cues — your 10 are exported', { many: true }),
+      u('u8', 'Undertow', 'Marlow Ashe', '3 cue edits'), u('u9', 'Chalk Lines', 'Ama Idowu', 'Hot cue colors'),
+      { id: 's1', a: 'skip', t: 'Brass Weather', ar: 'Keel & Marsh', p: W, mb: 171, note: 'File not found · last seen on MUSIC-SSD' },
+      { id: 's2', a: 'skip', t: 'Sodium Lights', ar: 'Juno Vale', p: W, mb: 149, note: 'File not found · moved or deleted' }
+    ];
+    if (k === 'warmup') return [
+      ['Salt Flats', 'Ama Idowu', 142], ['Harbour Lights', 'Sable & Finch', 156], ['Kiln', 'Sable & Finch', 138], ['Slow Orbit', 'Juno Vale', 161],
+      ['Paper Lanterns', 'Ama Idowu', 149], ['Tidewater', 'Marlow Ashe', 158], ['Soft Machinery', 'Halden Rue', 144], ['Copper Sky', 'Juno Vale', 152],
+      ['Driftwood Hymn', 'Oona Brandt', 147], ['Low Sun', 'Keel & Marsh', 139], ['Quiet Engines', 'Halden Rue', 155], ['Pale Blue Hour', 'Marlow Ashe', 160],
+      ['Velvet Static', 'Juno Vale', 147], ['First Light Transit', 'Keel & Marsh', 152]
+    ].map(function (x, i) { return c('w' + i, x[0], x[1], U, x[2], '', x[0] === 'Kiln' ? { flac: true } : null); });
+    if (k === 'deep') return gen(3, 142, 'Deep house', 150);
+    if (k === 'edits') return gen(11, 37, 'Edits & bootlegs', 111);
+    return [];
+  }
+  mediaFiles() {
+    var A = ['Aurora', 'Blue Hour', 'Canal', 'Dawn', 'Echo', 'Firefly', 'Granite', 'Hollow', 'Iris', 'Jetty', 'Kite', 'Lantern', 'Mirage', 'Neon', 'Orbit', 'Pier', 'Quiet', 'Rain', 'Solstice', 'Tram', 'Undercurrent', 'Velvet', 'Wharf'];
+    var B = ['Steps', 'Drive', 'Lights', 'Chorus', 'Loop', 'Dub', 'Mix', 'Edit'];
+    var AR = ['Kenji Moreau', 'Nadia Okoro', 'Teo Lindqvist', 'Idris Vane', 'Marlow Ashe', 'Juno Vale'];
+    var out = [];
+    for (var i = 0; i < 137; i++) out.push({ id: 'rbm' + i, a: 'media', t: A[i % 23] + ' ' + B[Math.floor(i / 23) % 8], ar: AR[i % 6], p: 'rekordbox 6', mb: 139 + (i * 17) % 40, note: 'Copied to this computer first, then deleted' });
+    return out;
   }
   plan() {
     return this.props.plan || {
-      key: 'minimal|keep||legacy+plus', formatsLabel: 'Device Library and Device Library Plus', convertFor: '', missingResolved: false,
+      key: 'warehouse,rooftop,warmup|minimal|keep||legacy+plus', ops: this.opsFor('warehouse').concat(this.opsFor('warmup')), playlists: 3, formatsLabel: 'Device Library and Device Library Plus', convertFor: '', missingResolved: false,
       removals: [{ key: 'minimal', name: 'Minimal', tracks: 88, freed: 9.4, rows: [
         { t: 'Frost Pattern', ar: 'Halden Rue', mb: 162, keepIn: null }, { t: 'Lantern Code', ar: 'Ama Idowu', mb: 150, keepIn: 'Warehouse — Oct 2026' },
         { t: 'Mercury Steps', ar: 'Oona Brandt', mb: 148, keepIn: null }, { t: 'Morning Tram', ar: 'Keel & Marsh', mb: 150, keepIn: 'Sunday rooftop' },
@@ -186,10 +203,11 @@ class Component extends DCLogic {
   gb(mb) { return (mb / 1000).toFixed(1) + ' GB'; }
   renderVals() {
     var self = this, st = this.state, plan = this.plan();
+    var mediaFiles = this.mediaFiles();
     var conv = plan.convertFor || '';
     var linked = function (r) { return st.relinked.indexOf(r.id) >= 0; };
     // Rows for this plan: copies, updates, missing files, then the exact removal and replacement set.
-    var all = this.base.map(function (r) {
+    var all = plan.ops.map(function (r) {
       if (r.a === 'skip' && linked(r)) return Object.assign({}, r, { a: 'copy', note: 'Relinked in review' });
       return r;
     });
@@ -204,15 +222,15 @@ class Component extends DCLogic {
     if (plan.replace) {
       all.push({ id: 'rb', a: 'replace', t: 'rekordbox’s library', ar: '3 playlists · 137 track entries · 137 analysis files', p: 'rekordbox 6', note: 'Removed from the drive’s library · backed up first' });
       if (plan.media) {
-        [['Aurora Steps', 'Kenji Moreau', 164], ['Blue Hour Drive', 'Nadia Okoro', 158], ['Canal Lights', 'Teo Lindqvist', 171]].forEach(function (m, i) {
-          all.push({ id: 'rbm' + i, a: 'media', t: m[0], ar: m[1], p: 'rekordbox 6', mb: m[2], note: 'Copied to this computer, then deleted' });
-        });
-        all.push({ id: 'rbmore', a: 'more', t: '134 more rekordbox audio files', p: 'rekordbox 6', note: '' });
+        // The full inventory: every rekordbox audio file, each ticked individually.
+        mediaFiles.forEach(function (m) { all.push(m); });
       } else {
         all.push({ id: 'rbkeep', a: 'keep', t: 'rekordbox’s 137 audio files', ar: '21.8 GB', p: 'rekordbox 6', note: 'Stay on the drive' });
       }
     }
     var copy = all.filter(function (r) { return r.a === 'copy'; });
+    var nMediaSel = mediaFiles.filter(function (m) { return st.mediaSel[m.id]; }).length;
+    var mediaSelMB = mediaFiles.filter(function (m) { return st.mediaSel[m.id]; }).reduce(function (s, m) { return s + m.mb; }, 0);
     var copyMB = copy.reduce(function (s, r) { return s + r.mb; }, 0);
     var nUpdate = all.filter(function (r) { return r.a === 'update'; }).length;
     var missing = all.filter(function (r) { return r.a === 'skip'; });
@@ -228,26 +246,29 @@ class Component extends DCLogic {
       if (st.filter === 'all') return true;
       if (st.filter === 'cues') return !!r.many;
       if (st.filter === 'remove') return !!destructive[r.a];
-      if (st.filter === 'media') return r.a === 'media' || r.id === 'rbmore';
+      if (st.filter === 'media') return r.a === 'media';
       return r.a === st.filter;
     };
     var words = { copy: 'Copy', update: 'Update', skip: st.missingAck ? 'Leave out' : 'Missing', remove: 'Remove', keep: 'Keep', more: '', replace: 'Replace', media: 'Delete' };
     var rows = all.filter(matches).map(function (r) {
-      var id = r.id, del = r.a === 'remove' || r.a === 'replace' || r.a === 'media';
+      var id = r.id, picked = r.a === 'media' && !!st.mediaSel[id];
+      var del = r.a === 'remove' || r.a === 'replace' || picked, kept = r.a === 'keep' || (r.a === 'media' && !picked);
       return {
-        isCopy: r.a === 'copy', isUpdate: r.a === 'update', isSkip: r.a === 'skip', isRemove: del, isKeep: r.a === 'keep',
-        word: words[r.a], wordColor: del ? '#f87171' : (r.a === 'keep' ? '#a3a3a3' : '#fafafa'),
+        isCopy: r.a === 'copy', isUpdate: r.a === 'update', isSkip: r.a === 'skip', isRemove: del, isKeep: kept,
+        word: r.a === 'media' ? (picked ? 'Delete' : 'Keep') : words[r.a], wordColor: del ? '#f87171' : (kept ? '#a3a3a3' : '#fafafa'),
         title: r.t, artistText: r.ar ? '— ' + r.ar : '', titleColor: r.a === 'more' ? '#a3a3a3' : '#fafafa', playlist: r.p,
-        size: r.mb && (r.a === 'copy' || del) ? r.mb + ' MB' : '—',
-        note: r.flac ? (conv ? 'FLAC — converted to AIFF for ' + conv : 'FLAC — copied as is') : r.note,
+        size: r.mb && (r.a === 'copy' || r.a === 'media' || del) ? r.mb + ' MB' : '—',
+        note: r.a === 'media' ? (picked ? 'Copied to this computer first, then deleted' : 'Stays on the drive') : r.flac ? (conv ? 'FLAC — converted to AIFF for ' + conv : 'FLAC — copied as is') : r.note,
         noteColor: r.a === 'skip' ? '#fafafa' : '#a3a3a3',
         locatable: r.a === 'skip',
+        isPick: r.a === 'media', picked: !!st.mediaSel[id], pickLabel: 'Delete ' + r.t + ' from KINGSTON',
+        pick: function (e) { var m = Object.assign({}, self.state.mediaSel); if (e.target.checked) m[id] = true; else delete m[id]; self.setState({ mediaSel: m, mediaOk: false }); },
         locate: function () { self.setState({ relinked: self.state.relinked.concat([id]) }); }
       };
     });
     var remNames = plan.removals.map(function (r) { return r.name; });
     var remList = remNames.length > 1 ? remNames.slice(0, -1).join(', ') + ' and ' + remNames[remNames.length - 1] : remNames[0];
-    var mediaGB = plan.media ? 21.8 : 0;
+    var mediaGB = plan.media ? mediaSelMB / 1000 : 0;
     var free = 36.1 - copyMB / 1000 + plan.freedGB + mediaGB;
     var showBtn = function (f) {
       return { hasShow: true, showOn: st.filter === f ? 'true' : 'false', showLabel: st.filter === f ? 'Show all' : 'Show tracks',
@@ -259,7 +280,8 @@ class Component extends DCLogic {
       body: 'Locate them in the table, or export without them. The drive has no copy of them, and an older copy won’t be reused in their place.',
       hasCheck: true, checked: st.missingAck, label: 'Export without ' + (nSkip === 1 ? 'this track' : 'these ' + nSkip + ' tracks') + ' · they stay in your playlists',
       toggle: function (e) { self.setState({ missingAck: e.target.checked }); } }, showBtn('skip')));
-    dec.push(Object.assign({ id: 'cues', warn: !st.cueAck, resolved: st.cueAck, danger: false, color: st.cueAck ? '#4ade80' : '#facc15', hasCues: true,
+    var cueOps = all.filter(function (r) { return r.cueDecision; });
+    if (cueOps.length) dec.push(Object.assign({ id: 'cues', warn: !st.cueAck, resolved: st.cueAck, danger: false, color: st.cueAck ? '#4ade80' : '#facc15', hasCues: true,
       title: '3 tracks have more than 10 memory cues.',
       body: 'The players set up for KINGSTON show up to 10. You chose which 10 on 2 tracks. Concrete Choir has no choice yet; its other cues stay in Recrate either way.',
       hasCheck: true, checked: st.cueAck, label: 'Use Concrete Choir’s first 10 by position (bars 1–129) · 4 later cues aren’t exported',
@@ -275,32 +297,36 @@ class Component extends DCLogic {
         (plan.media ? 'Its audio files are handled separately below.' : 'Its 137 audio files (21.8 GB) stay on the drive. Recrate can’t tell whether your computer has copies of them.'),
       hasCheck: true, checked: st.replaceOk, label: 'Replace rekordbox’s library',
       toggle: function (e) { self.setState({ replaceOk: e.target.checked }); } }, showBtn('remove')));
-    if (plan.media) dec.push(Object.assign({ id: 'media', danger: true, warn: false, resolved: false, color: '#f87171',
-      title: 'Delete rekordbox’s 137 audio files from KINGSTON.',
-      body: 'Each file is copied to ~/Music/Recrate/Device backups/KINGSTON first and checked, then deleted from the drive. This needs 21.8 GB free on this computer. The library backup alone can’t bring deleted audio back.',
-      hasCheck: true, checked: st.mediaOk, label: 'Delete these 137 audio files after they’re copied to this computer',
-      toggle: function (e) { self.setState({ mediaOk: e.target.checked }); } }, showBtn('media')));
-    dec.forEach(function (d) { d.textId = 'xr-' + d.id; if (!d.hasShow) d.hasShow = false; if (!d.hasCues) d.hasCues = false; });
+    if (plan.media) dec.push(Object.assign({ id: 'media', danger: nMediaSel > 0, warn: false, resolved: nMediaSel === 0, color: nMediaSel ? '#f87171' : '#4ade80',
+      title: nMediaSel ? 'Delete ' + nMediaSel + ' of rekordbox’s 137 audio files from KINGSTON.' : 'No rekordbox audio files are ticked for deletion.',
+      body: nMediaSel
+        ? 'Only the ticked files are deleted. Each is copied to ~/Music/Recrate/Device backups/KINGSTON and checked first, which needs ' + (mediaSelMB / 1000).toFixed(1) + ' GB free on this computer. The library backup alone can’t bring deleted audio back.'
+        : 'All 137 stay on the drive. Show the files to tick the ones to delete.',
+      hasCheck: nMediaSel > 0, checked: st.mediaOk, label: 'Delete the ' + nMediaSel + ' ticked ' + (nMediaSel === 1 ? 'file' : 'files') + ' after they’re copied to this computer',
+      toggle: function (e) { self.setState({ mediaOk: e.target.checked }); } }, showBtn('media'),
+      { hasBulk: st.filter === 'media', selectAll: function () { var m = {}; mediaFiles.forEach(function (f) { m[f.id] = true; }); self.setState({ mediaSel: m, mediaOk: false }); },
+        clearAll: function () { self.setState({ mediaSel: {}, mediaOk: false }); } }));
+    dec.forEach(function (d) { d.textId = 'xr-' + d.id; if (!d.hasShow) d.hasShow = false; if (!d.hasCues) d.hasCues = false; if (!d.hasBulk) { d.hasBulk = false; d.selectAll = d.clearAll = function () {}; } });
     // Every open decision blocks Export.
     var open = [];
     if (nSkip && !st.missingAck) open.push('the ' + nSkip + ' missing files');
-    if (!st.cueAck) open.push('Concrete Choir’s memory cues');
+    if (cueOps.length && !st.cueAck) open.push('Concrete Choir’s memory cues');
     if (nRem && !st.removeOk) open.push('removing ' + remList);
     if (plan.replace && !st.replaceOk) open.push('replacing rekordbox’s library');
-    if (plan.media && !st.mediaOk) open.push('deleting rekordbox’s audio');
+    if (plan.media && nMediaSel && !st.mediaOk) open.push('deleting ' + nMediaSel + ' rekordbox audio files');
     var hint = st.started ? 'Starting export…'
       : open.length ? 'Decide on ' + open.join(', ') + ' to export'
       : copy.length + ' copies · ' + nUpdate + ' updates' + (nRem ? ' · ' + nRem + (nRem === 1 ? ' removal' : ' removals') : '') + (plan.replace ? ' · replace' : '') + (nSkip ? ' · ' + nSkip + ' left out' : '');
     var disabled = open.length > 0 || st.started;
     var draft = function () {
       return { key: plan.key, relinked: self.state.relinked, missingAck: self.state.missingAck, cueAck: self.state.cueAck,
-        removeOk: self.state.removeOk, replaceOk: self.state.replaceOk, mediaOk: self.state.mediaOk };
+        removeOk: self.state.removeOk, replaceOk: self.state.replaceOk, mediaOk: self.state.mediaOk, mediaSel: self.state.mediaSel };
     };
     var labels = { all: 'All changes', copy: 'Tracks to copy', update: 'Tracks to update', skip: 'Missing tracks', remove: 'Removals', media: 'rekordbox audio to delete', cues: 'Tracks with more than 10 memory cues' };
     return {
       formatsLabel: plan.formatsLabel,
       chips: {
-        all: chip('all', (4 - nRem) + ' playlists'),
+        all: chip('all', plan.playlists + (plan.playlists === 1 ? ' playlist' : ' playlists')),
         copy: chip('copy', copy.length + ' tracks · ' + this.gb(copyMB)),
         update: chip('update', nUpdate + ' tracks (cues and beat grids)'),
         skip: chip('skip', nSkip ? nSkip + ' files not found' : 'Nothing'),
@@ -313,17 +339,13 @@ class Component extends DCLogic {
       decisions: dec,
       spaceColor: free < 0 ? '#f87171' : '#4ade80',
       spaceText: free.toFixed(1) + ' GB free after export.',
-      spaceMeta: 'KINGSTON has 36.1 GB free now.' + (plan.media ? ' This computer needs 21.8 GB for the audio backup.' : ''),
+      spaceMeta: 'KINGSTON has 36.1 GB free now.' + (plan.media && nMediaSel ? ' This computer needs ' + (mediaSelMB / 1000).toFixed(1) + ' GB for the audio backup.' : ''),
       hint: hint,
       exportDisabled: disabled,
       exportBg: disabled ? '#262626' : '#fafafa',
       exportFg: disabled ? '#a3a3a3' : '#171717',
       exportNow: function () {
-        var result = {
-          omitted: missing.map(function (r) { return { t: r.t, ar: r.ar, p: r.p }; }),
-          relinked: self.base.filter(function (r) { return r.a === 'skip' && linked(r); }).map(function (r) { return { t: r.t, ar: r.ar, p: r.p }; }),
-          cueChoice: 'first10'
-        };
+        var result = { relinked: self.state.relinked.slice(), mediaDeleted: plan.media ? nMediaSel : 0 };
         if (self.props.onExport) self.props.onExport(result);
         else self.setState({ started: true });
       },

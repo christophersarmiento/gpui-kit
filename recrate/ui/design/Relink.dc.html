@@ -174,7 +174,8 @@ Search again</button>
 <sc-if value="{{isDone}}" hint-placeholder-val="{{false}}">
 <div style="flex-grow: 1;"></div>
 <sc-if value="{{canRelinkMore}}" hint-placeholder-val="{{false}}">
-<button type="button" class="btn" onClick="{{relink}}" style="height: 32px; padding: 0 12px; background: #262626; color: #fafafa; border: 0; border-radius: 6px; font-family: inherit; font-size: 14px;">{{relinkLabel}}</button>
+<span role="status" style="font-size: 13px; color: #a3a3a3;">{{relinkHint}}</span>
+<button type="button" class="btn" onClick="{{relink}}" disabled="{{relinkBlocked}}" style="height: 32px; padding: 0 12px; background: #262626; color: {{moreFg}}; border: 0; border-radius: 6px; font-family: inherit; font-size: 14px;">{{relinkLabel}}</button>
 </sc-if>
 <button type="button" onClick="{{close}}" style="height: 32px; padding: 0 16px; background: #fafafa; color: #171717; border: 0; border-radius: 6px; font-family: inherit; font-size: 14px; font-weight: 500;">Done</button>
 </sc-if>
@@ -278,7 +279,12 @@ class Component extends DCLogic {
     if (plain) doneLines.push(this.plural(plain, 'track', 'tracks') + ': only the file path changed. Cues, beat grids and tags are unchanged.');
     byChoice('review').forEach(function (r) { doneLines.push(r.title + ': beat grid reanalyzed (the old grid is kept so you can restore it). Cues and loops are marked “Check” until you confirm them.'); });
     byChoice('asis').forEach(function (r) { doneLines.push(r.title + ': cues and beat grid kept as they were, by your choice, although the audio differs.'); });
-    st.imported.forEach(function (r) { doneLines.push(r.title + ': the new file was imported as a separate track with no cues. The original is still missing and stays in your playlists.'); });
+    // An original relinked after its other file was imported is no longer missing; say so.
+    var laterLinked = function (r) { return st.relinked.some(function (x) { return x.id === r.id; }); };
+    st.imported.forEach(function (r) {
+      doneLines.push(r.title + ': the new file was imported as a separate track with no cues. ' +
+        (laterLinked(r) ? 'The original was relinked afterwards, so both tracks are in your library.' : 'The original is still missing and stays in your playlists.'));
+    });
     return {
       subtitle: subtitle,
       isDone: isDone, isReview: !isDone,
@@ -289,7 +295,7 @@ class Component extends DCLogic {
         var how = { review: 'Relinked · grid reanalyzed, cues marked Check', asis: 'Relinked · cues and grid kept, by your choice' };
         return { name: r.title + ' — ' + r.artist, neu: r.neu, color: '#4ade80', outcome: r.diff && r.choice ? how[r.choice] : 'Relinked' };
       }).concat(st.imported.map(function (r) {
-        return { name: r.title + ' — ' + r.artist, neu: r.neu, color: '#a3a3a3', outcome: 'Imported as a new track · original still missing' };
+        return { name: r.title + ' — ' + r.artist, neu: r.neu, color: '#a3a3a3', outcome: 'Imported as a new track · ' + (laterLinked(r) ? 'original relinked afterwards' : 'original still missing') };
       })),
       folder: st.folder,
       searching: st.searching,
@@ -309,7 +315,13 @@ class Component extends DCLogic {
       canRelinkMore: n > 0,
       btnBg: n && !undecided ? '#fafafa' : '#262626',
       btnFg: n && !undecided ? '#171717' : '#a3a3a3',
-      relinkLabel: 'Relink ' + this.plural(n, 'track', 'tracks'),
+      relinkLabel: (function () {
+        var imp = checked.filter(function (m) { return m.diff && m.choice === 'new'; }).length, rel = n - imp;
+        if (!imp) return 'Relink ' + self.plural(rel, 'track', 'tracks');
+        if (!rel) return 'Import ' + self.plural(imp, 'track', 'tracks');
+        return 'Relink ' + rel + ' · import ' + imp;
+      })(),
+      moreFg: undecided ? '#a3a3a3' : '#fafafa',
       pickFolder: function () {
         var next = self.state.folder === '/Volumes/Archive' ? '~/Downloads' : '/Volumes/Archive';
         self.setState({ folder: next });

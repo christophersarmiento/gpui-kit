@@ -341,7 +341,7 @@ Import…</button>
 <!-- Report dialog -->
 <sc-if value="{{reportOpen}}" hint-placeholder-val="{{false}}">
 <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: #00000099;">
-<dc-import name="ExportResults" blocked="{{reportGate}}" on-close="{{closeReport}}" hint-size="960px,640px"></dc-import>
+<dc-import name="ExportResults" run="{{reportRun}}" blocked="{{reportGate}}" on-close="{{closeReport}}" hint-size="960px,640px"></dc-import>
 </div>
 </sc-if>
 
@@ -367,7 +367,7 @@ Import…</button>
 class Component extends DCLogic {
   constructor(props) {
     super(props);
-    this.state = { sel: 0, partial: 'stopped', work: null, pct: 0, checked: false, report: false, confirm: null, restored: false, recovered: false };
+    this.state = { records: {}, ejected: false, sel: 0, partial: 'stopped', work: null, pct: 0, checked: false, report: false, confirm: null, restored: false, recovered: false };
     if (props.startChecked) this.state.checked = true;
     this.timer = null;
   }
@@ -382,13 +382,74 @@ class Component extends DCLogic {
       else self.setState({ pct: p });
     }, ms);
   }
+  // Sample operations per playlist. Export, Review, Results and History all read these, never a fixed list.
+  opsFor(k) {
+    var W = 'Warehouse — Oct 2026', U = 'Warm-up';
+    var gen = function (seed, n, p, avg) {
+      var A = ['Amber', 'Basalt', 'Cinder', 'Delta', 'Ember', 'Fathom', 'Glacier', 'Harbor', 'Indigo', 'Juniper', 'Kestrel', 'Lumen', 'Meridian', 'Nocturne', 'Opal', 'Prism', 'Quartz', 'Riverine', 'Sable', 'Tundra', 'Umber', 'Vesper', 'Willow', 'Zephyr'];
+      var B = ['Drift', 'Signal', 'Garden', 'Circuit', 'Tide', 'Hall', 'Engine', 'Motion', 'Theory', 'Lines', 'Room', 'Pulse'];
+      var AR = ['Marlow Ashe', 'Ama Idowu', 'Halden Rue', 'Sable & Finch', 'Oona Brandt', 'Juno Vale', 'Keel & Marsh', 'Nadia Okoro', 'Kenji Moreau', 'Teo Lindqvist', 'Idris Vane'];
+      var out = [];
+      for (var i = 0; i < n; i++) out.push({ id: k + i, a: 'copy', t: A[(i + seed) % 24] + ' ' + B[(Math.floor(i / 24) + seed) % 12], ar: AR[(i * 3 + seed) % 11], p: p, mb: avg - 20 + (i * 13) % 41, note: '' });
+      return out;
+    };
+    var c = function (id, t, ar, p, mb, note, extra) { return Object.assign({ id: id, a: 'copy', t: t, ar: ar, p: p, mb: mb, note: note || '' }, extra || {}); };
+    var u = function (id, t, ar, note, extra) { return Object.assign({ id: id, a: 'update', t: t, ar: ar, p: W, note: note }, extra || {}); };
+    if (k === 'warehouse') return [
+      c('c1', 'Night Ferry', 'Oona Brandt', W, 168, 'New in playlist'), c('c2', 'Parallel Rooms', 'Sable & Finch', W, 152, 'New in playlist'),
+      c('c3', 'Glass Corridor', 'Oona Brandt', W, 180, '12 memory cues — your 10 are exported', { many: true }),
+      u('u1', 'Low Tide Signal', 'Marlow Ashe', '4 cue edits'), u('u2', 'Lantern Code', 'Ama Idowu', 'Beat grid moved'),
+      u('u3', 'Concrete Choir', 'Halden Rue', '14 memory cues — choose 10 to export', { many: true, cueDecision: true }),
+      u('u4', 'Signal Fires', 'Keel & Marsh', '2 cue edits'), u('u5', 'Northbound', 'Juno Vale', 'Loop added'),
+      u('u6', 'Hollow Grid', 'Halden Rue', '1 cue edit · beat grid moved'), u('u7', 'Amber Room', 'Oona Brandt', '11 memory cues — your 10 are exported', { many: true }),
+      u('u8', 'Undertow', 'Marlow Ashe', '3 cue edits'), u('u9', 'Chalk Lines', 'Ama Idowu', 'Hot cue colors'),
+      { id: 's1', a: 'skip', t: 'Brass Weather', ar: 'Keel & Marsh', p: W, mb: 171, note: 'File not found · last seen on MUSIC-SSD' },
+      { id: 's2', a: 'skip', t: 'Sodium Lights', ar: 'Juno Vale', p: W, mb: 149, note: 'File not found · moved or deleted' }
+    ];
+    if (k === 'warmup') return [
+      ['Salt Flats', 'Ama Idowu', 142], ['Harbour Lights', 'Sable & Finch', 156], ['Kiln', 'Sable & Finch', 138], ['Slow Orbit', 'Juno Vale', 161],
+      ['Paper Lanterns', 'Ama Idowu', 149], ['Tidewater', 'Marlow Ashe', 158], ['Soft Machinery', 'Halden Rue', 144], ['Copper Sky', 'Juno Vale', 152],
+      ['Driftwood Hymn', 'Oona Brandt', 147], ['Low Sun', 'Keel & Marsh', 139], ['Quiet Engines', 'Halden Rue', 155], ['Pale Blue Hour', 'Marlow Ashe', 160],
+      ['Velvet Static', 'Juno Vale', 147], ['First Light Transit', 'Keel & Marsh', 152]
+    ].map(function (x, i) { return c('w' + i, x[0], x[1], U, x[2], '', x[0] === 'Kiln' ? { flac: true } : null); });
+    if (k === 'deep') return gen(3, 142, 'Deep house', 150);
+    if (k === 'edits') return gen(11, 37, 'Edits & bootlegs', 111);
+    return [];
+  }
+  // One run record per export, in the same shape Export hands to Results. Reports open the selected run's record.
+  record(i) {
+    var W = 'Warehouse — Oct 2026', U = 'Warm-up', self = this;
+    var both = 'Device Library and Device Library Plus';
+    var toRows = function (ops) {
+      return ops.filter(function (o) { return o.a !== 'skip'; }).map(function (o) {
+        return o.a === 'copy' ? { id: o.id, o: 'copied', t: o.t, ar: o.ar, p: o.p, mb: o.mb, reason: 'Verified · ' + o.mb + ' MB' }
+          : { id: o.id, o: 'updated', t: o.t, ar: o.ar, p: o.p, reason: o.note };
+      });
+    };
+    var gen = function (seed, n, p, avg) { return toRows(self.opsFor(seed === 3 ? 'deep' : 'edits').slice(0, n).map(function (o) { return Object.assign({}, o, { id: 'r' + i + o.id, p: p }); })); };
+    if (i === 0) return { formatsLabel: both, when: 'Sep 23, 22:10', rows: toRows(this.opsFor('warehouse').concat(this.opsFor('warmup'))), removedText: 'Minimal removed · 9.4 GB freed', freeText: '42.9 GB free', ejected: false };
+    if (i === 1) {
+      var rows = [
+        { id: 'f1', o: 'failed', t: 'Night Ferry', ar: 'Oona Brandt', p: W, mb: 168, reason: 'Couldn’t write the file — the drive was disconnected', fixed: 'Verified after retry · 168 MB' },
+        { id: 'f2', o: 'failed', t: 'First Light Transit', ar: 'Keel & Marsh', p: U, mb: 152, reason: 'File name is too long for FAT32 — rename it or retry with a shorter name', fixed: 'Copied with a shorter file name · 152 MB' },
+        { id: 's1', o: 'skipped', t: 'Brass Weather', ar: 'Keel & Marsh', p: W, reason: 'Left out as you chose · file not found' },
+        { id: 's2', o: 'skipped', t: 'Sodium Lights', ar: 'Juno Vale', p: W, reason: 'Left out as you chose · file not found' }
+      ].concat(toRows(this.opsFor('warehouse').concat(this.opsFor('warmup'))).filter(function (r) { return r.t !== 'Night Ferry' && r.t !== 'First Light Transit'; }));
+      return { formatsLabel: both, when: 'Sep 23, 21:14', rows: rows, removedText: 'Nothing removed', freeText: '42.9 GB free', ejected: false };
+    }
+    if (i === 2) return { formatsLabel: both, when: 'Sep 19, 23:41', rows: gen(3, 24, 'Deep house', 150).concat(gen(11, 6, W, 111).map(function (r) { return Object.assign({}, r, { o: 'updated', reason: 'Cue edits' }); })), removedText: 'Nothing removed', freeText: '52.1 GB free', ejected: false };
+    if (i === 3) return { formatsLabel: 'Device Library', when: 'Sep 12, 18:05', rows: gen(11, 8, W, 111).concat([{ id: 'k1', o: 'skipped', t: 'Kiln', ar: 'Sable & Finch', p: U, reason: 'File not found · relinked Sep 13, copied in the next export', relinkedLater: true }]), removedText: 'Nothing removed', freeText: '55.8 GB free', ejected: false };
+    return { formatsLabel: both, when: 'Sep 12, 17:48', rows: gen(3, 96, 'Deep house', 150), removedText: 'Nothing removed · rekordbox’s 3 playlists kept', freeText: '56.9 GB free', ejected: false };
+  }
   renderVals() {
     var self = this, st = this.state;
     var partial = st.partial;
     var scen = this.props.scenario || 'copy';
-    var connected = this.props.driveConnected === undefined ? true : !!this.props.driveConnected;
+    // An eject from any report is the drive's state, so it counts as disconnected here too.
+    var connected = (this.props.driveConnected === undefined ? true : !!this.props.driveConnected) && !st.ejected;
     // Unplugging invalidates an earlier check: it has to run again after reconnecting.
     if (!connected && st.checked) { this.state = Object.assign({}, this.state, { checked: false }); st = this.state; }
+    var recOf = function (i) { return st.records[i] || self.record(i); };
     var runs = [
       partial === 'stopped'
         ? (scen === 'libwrite'
@@ -397,11 +458,15 @@ class Component extends DCLogic {
         : partial === 'resumed'
           ? { status: 'Complete · resumed', when: 'Sep 23, 22:10', summary: '17 copied · 9 updated · 1 playlist removed', kind: 'ok', backup: true }
           : { status: 'Discarded', when: 'Sep 23, 22:10', summary: '11 files this export created deleted · drive matches Sep 23, 21:14', kind: 'ok', backup: true },
-      { status: 'Finished with 2 problems', when: 'Sep 23, 21:14', summary: '15 copied · 9 updated · 2 failed · 2 skipped', kind: 'warn', backup: true },
-      { status: 'Complete', when: 'Sep 19, 23:41', summary: '24 copied · 6 updated', kind: 'ok', backup: true },
-      { status: 'Complete · 1 skipped', when: 'Sep 12, 18:05', summary: '8 copied · 1 skipped (missing file)', kind: 'ok', backup: true },
-      { status: 'Complete · first export', when: 'Sep 12, 17:48', summary: '96 copied · 3 playlists added next to rekordbox’s', kind: 'ok', backup: true }
-    ];
+    ].concat([1, 2, 3, 4].map(function (i) {
+      var rec = recOf(i), n = function (o) { return rec.rows.filter(function (x) { return x.o === o; }).length; };
+      var f = n('failed'), sk = n('skipped');
+      return {
+        status: f ? 'Finished with ' + f + (f === 1 ? ' problem' : ' problems') : sk ? 'Complete · ' + sk + ' skipped' : (i === 4 ? 'Complete · first export' : 'Complete'),
+        when: rec.when, kind: f ? 'warn' : 'ok', backup: true,
+        summary: [n('copied') + ' copied', n('updated') ? n('updated') + ' updated' : '', f ? f + ' failed' : '', sk ? sk + ' skipped' : ''].filter(Boolean).join(' · ')
+      };
+    }));
     var runVals = runs.map(function (r, i) {
       var on = i === st.sel;
       return {
@@ -424,6 +489,12 @@ class Component extends DCLogic {
     if (partial === 'discarded') FIN[0] = { stats: [['Copied', '0'], ['Deleted', '11 files'], ['Failed', '0'], ['Skipped', '6']], note: 'The 11 files this export created were rechecked and deleted. Nothing else on the drive changed. Players see the playlists from Sep 23, 21:14.' };
     var isPartial = st.sel === 0 && partial === 'stopped';
     var fin = FIN[st.sel];
+    // Stats come from the run record, so retries made from a report show up here.
+    if (fin && !(st.sel === 0 && partial !== 'resumed')) {
+      var rec0 = recOf(st.sel), cnt = function (o) { return String(rec0.rows.filter(function (x) { return x.o === o; }).length); };
+      fin = Object.assign({}, fin, { stats: [['Copied', cnt('copied')], ['Updated', cnt('updated')], ['Failed', cnt('failed')], ['Skipped', cnt('skipped')]] });
+      if (st.sel === 1 && cnt('failed') === '0') fin.problems = '2 were skipped because their files are missing. The 2 failed copies were retried and verified.';
+    }
     var T = [
       ['Copied', 'Low Tide Signal', 'Marlow Ashe', 'Warehouse — Oct 2026', '118 MB'],
       ['Copied', 'Parallel Rooms', 'Sable & Finch', 'Warehouse — Oct 2026', '71 MB'],
@@ -449,7 +520,8 @@ class Component extends DCLogic {
     };
     // One gate for every entry point that writes to KINGSTON: Restore, Retry in a report, Resume and Discard.
     var unresolved = partial === 'stopped' && !(scen === 'libwrite' && st.recovered);
-    var gate = !connected ? 'KINGSTON isn’t connected. Nothing is written to it until it’s plugged in and checked again.'
+    var gate = st.ejected ? 'KINGSTON was ejected. Nothing is written to it until it’s plugged in and checked again.'
+      : !connected ? 'KINGSTON isn’t connected. Nothing is written to it until it’s plugged in and checked again.'
       : !unresolved ? ''
       : scen === 'libwrite' ? 'KINGSTON needs recovery. Other restores and retries stay off until Check and restore finishes.'
       : (scen === 'unexpected' || scen === 'unproven') && ck ? 'KINGSTON needs inspection. Nothing is written to it until a new check matches what Recrate expects.'
@@ -461,7 +533,7 @@ class Component extends DCLogic {
       runs: runVals,
       d: {
         title: r.status, meta: r.when + ' · ' + (st.sel === 3 ? 'Device Library' : 'Device Library and Device Library Plus') + ' · 4 playlists',
-        canOpen: !isPartial && st.sel <= 2,
+        canOpen: !isPartial && !(st.sel === 0 && partial === 'discarded'),
         isPartial: isPartial, isFinished: !isPartial,
         stats: fin ? fin.stats.map(function (k) { return { label: k[0], value: k[1] }; }) : [],
         hasProblems: !!(fin && fin.problems), problemText: fin && fin.problems ? fin.problems : '',
@@ -539,8 +611,13 @@ class Component extends DCLogic {
       closeConfirm: function () { self.setState({ confirm: null }); },
       reportOpen: st.report,
       openReport: function () { self.setState({ report: true }); },
-      closeReport: function () { self.setState({ report: false }); },
-      statusRight: partial === 'stopped' ? (scen === 'libwrite' ? (st.recovered ? 'KINGSTON · recovered' : 'KINGSTON · recovery needed') : 'KINGSTON · last export stopped Sep 23, 22:10') : 'KINGSTON · up to date'
+      reportRun: recOf(st.sel),
+      closeReport: function (run) {
+        if (!run) { self.setState({ report: false }); return; }
+        var recs = Object.assign({}, self.state.records); recs[self.state.sel] = run;
+        self.setState({ report: false, records: recs, ejected: self.state.ejected || !!run.ejected });
+      },
+      statusRight: st.ejected ? 'KINGSTON · ejected' : partial === 'stopped' ? (scen === 'libwrite' ? (st.recovered ? 'KINGSTON · recovered' : 'KINGSTON · recovery needed') : 'KINGSTON · last export stopped Sep 23, 22:10') : 'KINGSTON · up to date'
     };
   }
 }

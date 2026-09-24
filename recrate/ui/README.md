@@ -156,15 +156,23 @@ screen terms. They are not additional rules.
 
 - **One plan carries decisions between screens** (`EXP-02`–`EXP-04`).
   - Export builds the plan from the current selection and Device setup. The
-    plan holds the exact removal set, with shared tracks counted once, the
-    replacement scope and the formats.
-  - Review draws its rows, counts and confirmations from that plan, never
-    from sample data. Its confirmation names the playlists being removed.
+    plan holds every operation for the selected playlists (copies, updates,
+    missing files, cue decisions), the exact removal set with shared tracks
+    counted once, the replacement scope and the formats.
+  - Review draws its rows, counts, decisions and confirmations from that
+    plan. Its confirmation names the playlists being removed.
   - Back and Close keep Review's decisions. Approvals to delete only carry
-    over while the plan is the same, so a changed plan asks again.
-  - Export hands Review's decisions (tracks relinked, tracks left out, cue
-    choices) to the run record. Export's summary and Results come from that
-    record, including its formats and time.
+    over while the plan is the same. Any change to what's selected, removed
+    or replaced makes a new plan and asks again.
+  - Exporting turns the plan and Review's decisions into a run record, one
+    row per operation. Export's summary, Results and History all read run
+    records in that one shape.
+  - Results hands its changes back to the record's owner (Export or
+    History) when it closes: retried files, relinks and ejection. Reopening
+    a report shows those changes, and History's stats and statuses follow
+    them.
+  - History opens the selected run's own report. Ejecting from any report
+    ejects the drive for every screen, which closes the write gate.
   - Reopening Device setup shows the drive's saved setup.
 - **Every open decision gates export** (`EXP-03`). Missing files, cue choices,
   removals and replacement are listed under "Needs your decision" on Export,
@@ -176,8 +184,10 @@ screen terms. They are not additional rules.
   shows its exact scope: what's removed from the drive's library, what's
   kept on the drive (rekordbox's audio, by default), and what's backed up.
   Deleting that audio is a separate, unticked option. Replace, and audio
-  deletion if chosen, each need their own approval in Export review. Audio
-  files are listed there and copied to the computer before deletion.
+  deletion if chosen, each need their own approval in Export review. Review
+  lists all 137 audio files, each with its own checkbox and none ticked. Only
+  ticked files are deleted, after each is copied to the computer. With none
+  ticked, all of them stay.
   Replacing never claims the computer has another copy.
 - **Interrupted export** (`REC-03`, `REC-04`). History shows the last known
   state until a read-only check runs. Resume and Discard stay disabled until
@@ -223,7 +233,11 @@ screen terms. They are not additional rules.
   Relink stays disabled until the user chooses. The results keep three
   outcomes apart: relinked, imported as a new track, and still missing.
   Importing the other file keeps the original missing and in its playlists.
-  The summary states what happened to preparation for each choice.
+  The summary states what happened to preparation for each choice. If the
+  original is relinked later, the outcome says so. The action button names
+  what it will do ("Relink 2 tracks", "Import 1 track"), and it stays
+  disabled on the results screen too while a different-audio choice is
+  open.
 - **Removing a missing track** from the library deletes no file, on the
   computer or on any drive (`HEALTH-04`).
 

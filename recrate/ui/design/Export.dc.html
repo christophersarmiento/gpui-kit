@@ -290,7 +290,7 @@ Import…</button>
 <!-- Status bar -->
 <div style="height: 28px; flex-shrink: 0; display: flex; align-items: center; gap: 16px; padding: 0 16px; background: #171717; border-top: 1px solid #262626; font-size: 12px; color: #a3a3a3;">
 <span style="flex-grow: 1;">2,418 tracks in collection · 12 need analysis</span>
-<span>KINGSTON · {{storage.freeNow}} free</span>
+<span>{{driveStatus}}</span>
 </div>
 
 <!-- Dialogs -->
@@ -311,7 +311,7 @@ Import…</button>
 </sc-if>
 <sc-if value="{{dlg.results}}" hint-placeholder-val="{{false}}">
 <div style="position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; background: #00000099;">
-<dc-import name="ExportResults" run="{{lastRun}}" on-close="{{closeDialog}}" hint-size="960px,640px"></dc-import>
+<dc-import name="ExportResults" run="{{lastRun}}" on-close="{{closeResults}}" hint-size="960px,640px"></dc-import>
 </div>
 </sc-if>
 </div>
@@ -321,7 +321,7 @@ class Component extends DCLogic {
   constructor(props) {
     super(props);
     this.state = {
-      phase: 'idle', done: 0, format: 'device', dialog: null, relinked: false, reviewDraft: null, lastRun: null,
+      phase: 'idle', done: 0, format: 'device', dialog: null, relinked: false, reviewDraft: null, lastRun: null, ejected: false,
       setup: { ids: ['cdj3000', 'nxs2'], formats: ['legacy', 'plus'], readers: { legacy: 'CDJ-2000NXS2', plus: 'CDJ-3000' }, convertFor: '', untested: '', mytag: ['Mood', 'Energy', 'Set slot'], existing: 'keep', media: false },
       on: { warehouse: true, rooftop: true, warmup: true, deep: false, minimal: true, edits: false }
     };
@@ -329,6 +329,40 @@ class Component extends DCLogic {
   }
   componentWillUnmount() { if (this.timer) clearInterval(this.timer); }
   gb(v) { return v.toFixed(1) + ' GB'; }
+  // Sample operations per playlist. Export, Review, Results and History all read these, never a fixed list.
+  opsFor(k) {
+    var W = 'Warehouse — Oct 2026', U = 'Warm-up';
+    var gen = function (seed, n, p, avg) {
+      var A = ['Amber', 'Basalt', 'Cinder', 'Delta', 'Ember', 'Fathom', 'Glacier', 'Harbor', 'Indigo', 'Juniper', 'Kestrel', 'Lumen', 'Meridian', 'Nocturne', 'Opal', 'Prism', 'Quartz', 'Riverine', 'Sable', 'Tundra', 'Umber', 'Vesper', 'Willow', 'Zephyr'];
+      var B = ['Drift', 'Signal', 'Garden', 'Circuit', 'Tide', 'Hall', 'Engine', 'Motion', 'Theory', 'Lines', 'Room', 'Pulse'];
+      var AR = ['Marlow Ashe', 'Ama Idowu', 'Halden Rue', 'Sable & Finch', 'Oona Brandt', 'Juno Vale', 'Keel & Marsh', 'Nadia Okoro', 'Kenji Moreau', 'Teo Lindqvist', 'Idris Vane'];
+      var out = [];
+      for (var i = 0; i < n; i++) out.push({ id: k + i, a: 'copy', t: A[(i + seed) % 24] + ' ' + B[(Math.floor(i / 24) + seed) % 12], ar: AR[(i * 3 + seed) % 11], p: p, mb: avg - 20 + (i * 13) % 41, note: '' });
+      return out;
+    };
+    var c = function (id, t, ar, p, mb, note, extra) { return Object.assign({ id: id, a: 'copy', t: t, ar: ar, p: p, mb: mb, note: note || '' }, extra || {}); };
+    var u = function (id, t, ar, note, extra) { return Object.assign({ id: id, a: 'update', t: t, ar: ar, p: W, note: note }, extra || {}); };
+    if (k === 'warehouse') return [
+      c('c1', 'Night Ferry', 'Oona Brandt', W, 168, 'New in playlist'), c('c2', 'Parallel Rooms', 'Sable & Finch', W, 152, 'New in playlist'),
+      c('c3', 'Glass Corridor', 'Oona Brandt', W, 180, '12 memory cues — your 10 are exported', { many: true }),
+      u('u1', 'Low Tide Signal', 'Marlow Ashe', '4 cue edits'), u('u2', 'Lantern Code', 'Ama Idowu', 'Beat grid moved'),
+      u('u3', 'Concrete Choir', 'Halden Rue', '14 memory cues — choose 10 to export', { many: true, cueDecision: true }),
+      u('u4', 'Signal Fires', 'Keel & Marsh', '2 cue edits'), u('u5', 'Northbound', 'Juno Vale', 'Loop added'),
+      u('u6', 'Hollow Grid', 'Halden Rue', '1 cue edit · beat grid moved'), u('u7', 'Amber Room', 'Oona Brandt', '11 memory cues — your 10 are exported', { many: true }),
+      u('u8', 'Undertow', 'Marlow Ashe', '3 cue edits'), u('u9', 'Chalk Lines', 'Ama Idowu', 'Hot cue colors'),
+      { id: 's1', a: 'skip', t: 'Brass Weather', ar: 'Keel & Marsh', p: W, mb: 171, note: 'File not found · last seen on MUSIC-SSD' },
+      { id: 's2', a: 'skip', t: 'Sodium Lights', ar: 'Juno Vale', p: W, mb: 149, note: 'File not found · moved or deleted' }
+    ];
+    if (k === 'warmup') return [
+      ['Salt Flats', 'Ama Idowu', 142], ['Harbour Lights', 'Sable & Finch', 156], ['Kiln', 'Sable & Finch', 138], ['Slow Orbit', 'Juno Vale', 161],
+      ['Paper Lanterns', 'Ama Idowu', 149], ['Tidewater', 'Marlow Ashe', 158], ['Soft Machinery', 'Halden Rue', 144], ['Copper Sky', 'Juno Vale', 152],
+      ['Driftwood Hymn', 'Oona Brandt', 147], ['Low Sun', 'Keel & Marsh', 139], ['Quiet Engines', 'Halden Rue', 155], ['Pale Blue Hour', 'Marlow Ashe', 160],
+      ['Velvet Static', 'Juno Vale', 147], ['First Light Transit', 'Keel & Marsh', 152]
+    ].map(function (x, i) { return c('w' + i, x[0], x[1], U, x[2], '', x[0] === 'Kiln' ? { flac: true } : null); });
+    if (k === 'deep') return gen(3, 142, 'Deep house', 150);
+    if (k === 'edits') return gen(11, 37, 'Edits & bootlegs', 111);
+    return [];
+  }
   renderVals() {
     var self = this, st = this.state;
     var P = {
@@ -368,6 +402,9 @@ class Component extends DCLogic {
       };
     });
     var delTracks = remKeys.reduce(function (s, k) { return s + P[k].del; }, 0) + sharedDel;
+    var selKeys = Object.keys(P).filter(function (k) { return st.on[k]; });
+    var selOps = [];
+    selKeys.forEach(function (k) { selOps = selOps.concat(self.opsFor(k)); });
     var item = function (k) {
       var p = P[k], on = st.on[k], status, color = '#fafafa', synced = false;
       if (on && p.onDrive && p.add === 0 && p.cues === 0) { status = 'Up to date'; color = '#a3a3a3'; synced = true; }
@@ -391,7 +428,8 @@ class Component extends DCLogic {
       return { name: FNAME[f], for: 'for ' + su.readers[f], note: 'Up to 10 memory cues per track, the tested limit. You choose which when a track has more' };
     });
     // Everything that needs a decision before export, not only removals.
-    var missing = st.relinked ? 0 : 2, cueChoices = 1;
+    var missing = st.relinked ? 0 : selOps.filter(function (o) { return o.a === 'skip'; }).length;
+    var cueChoices = selOps.filter(function (o) { return o.cueDecision; }).length;
     var why = [];
     if (missing) why.push(missing + ' missing files');
     if (cueChoices) why.push(cueChoices + ' track over the memory-cue limit');
@@ -399,19 +437,33 @@ class Component extends DCLogic {
     if (su.existing === 'replace') why.push(su.media ? 'replacing rekordbox’s library and deleting its audio' : 'replacing rekordbox’s library');
     var decisions = why.length;
     var plan = {
-      key: remKeys.join(',') + '|' + su.existing + '|' + (su.media ? 'media' : '') + '|' + su.formats.join('+'),
+      // Any change to what's selected, removed or replaced makes this a different plan.
+      key: selKeys.join(',') + '|' + remKeys.join(',') + '|' + su.existing + '|' + (su.media ? 'media' : '') + '|' + su.formats.join('+'),
+      ops: selOps, playlists: selKeys.length,
       formatsLabel: su.formats.map(function (f) { return f === 'legacy' ? 'Device Library' : 'Device Library Plus'; }).join(' and '),
       convertFor: su.convertFor, missingResolved: st.relinked,
       removals: removals, delTracks: delTracks, freedGB: Math.round(removeGB * 10) / 10,
       replace: su.existing === 'replace', media: su.existing === 'replace' && su.media
     };
     var startExport = function (dec) {
-      dec = dec || { omitted: [], relinked: [], cueChoice: null };
+      dec = dec || { relinked: [], mediaDeleted: 0 };
+      // The run record lists what this export did, operation by operation. Results reads and updates it.
+      var rows = [];
+      selOps.forEach(function (o) {
+        var base = { id: o.id, t: o.t, ar: o.ar, p: o.p, mb: o.mb };
+        if (o.a === 'copy') rows.push(Object.assign(base, { o: 'copied', reason: 'Verified · ' + o.mb + ' MB' + (o.flac && su.convertFor ? ' · converted to AIFF' : '') }));
+        else if (o.a === 'update') rows.push(Object.assign(base, { o: 'updated', reason: o.cueDecision ? '2 cue edits · first 10 of 14 memory cues by position, as you accepted' : o.note }));
+        else if (o.a === 'skip') {
+          var fixed = st.relinked || dec.relinked.indexOf(o.id) >= 0;
+          rows.push(Object.assign(base, fixed ? { o: 'copied', reason: 'Relinked · verified · ' + o.mb + ' MB' } : { o: 'skipped', reason: 'Left out as you chose · file not found' }));
+        }
+      });
+      var removedBits = [];
+      if (removals.length) removedBits.push(removals.map(function (r) { return r.name; }).join(', ') + ' removed · ' + plan.freedGB.toFixed(1) + ' GB freed');
+      if (plan.replace) removedBits.push('rekordbox’s library replaced · ' + (plan.media ? dec.mediaDeleted + ' of its audio files backed up, then deleted' : 'its 137 audio files kept'));
       self.setState({ phase: 'busy', done: 0, reviewDraft: null, lastRun: {
-        formatsLabel: plan.formatsLabel, when: 'Just now',
-        removed: removals.map(function (r) { return r.name; }), freedGB: plan.freedGB, delTracks: delTracks,
-        omitted: dec.omitted, relinked: dec.relinked, cueChoice: dec.cueChoice,
-        replace: plan.replace, media: plan.media
+        formatsLabel: plan.formatsLabel, when: 'Just now', rows: rows,
+        removedText: removedBits.join(' · ') || 'Nothing removed', freeText: '36.1 GB free', ejected: false
       } });
       if (self.timer) clearInterval(self.timer);
       self.timer = setInterval(function () {
@@ -446,34 +498,38 @@ class Component extends DCLogic {
         decide: decisions ? why.join(' · ') : 'Nothing',
         decideColor: decisions ? '#facc15' : '#fafafa',
         reviewWhy: 'Export stays off until you’ve decided on these in review.',
-        nothing: nothing || free < 0,
+        nothing: nothing || free < 0 || st.ejected,
         needsReview: decisions > 0, direct: decisions === 0,
         btnBg: nothing || free < 0 ? '#262626' : '#fafafa',
         btnFg: nothing || free < 0 ? '#a3a3a3' : '#171717',
-        doneText: st.lastRun ? add + ' tracks copied, cues updated on ' + cues + ' tracks.' +
-          (st.lastRun.relinked.length ? ' ' + st.lastRun.relinked.length + ' relinked in review and copied.' : '') +
-          (st.lastRun.omitted.length ? ' ' + st.lastRun.omitted.length + ' missing ' + (st.lastRun.omitted.length === 1 ? 'track was' : 'tracks were') + ' left out, as you chose in review.' : '') +
-          (st.lastRun.removed.length ? ' Removed ' + st.lastRun.removed.join(' and ') + '.' : '') : ''
+        doneText: st.lastRun ? (function (rows) {
+          var n = function (o) { return rows.filter(function (r) { return r.o === o; }).length; };
+          return n('copied') + ' tracks copied and verified, ' + n('updated') + ' updated.' +
+            (n('skipped') ? ' ' + n('skipped') + ' missing ' + (n('skipped') === 1 ? 'track was' : 'tracks were') + ' left out, as you chose in review.' : '') +
+            (st.lastRun.removedText !== 'Nothing removed' ? ' ' + st.lastRun.removedText + '.' : '');
+        })(st.lastRun.rows) : ''
       },
       prog: { done: Math.min(st.done + 1, add), total: add, pct: pct, current: names[st.done % names.length] },
       libs: libs,
       libsFooter: su.formats.length === 2 ? 'Both share the audio files and are written on every export' : 'Only this library is written',
       formatsLabel: su.formats.map(function (f) { return FNAME[f]; }).join(' and '),
       setup: su, relinked: st.relinked, missingOn: !st.relinked, plan: plan, reviewDraft: st.reviewDraft, lastRun: st.lastRun,
+      driveStatus: st.ejected ? 'KINGSTON ejected · plug it back in to export again' : 'KINGSTON · 36.1 GB free',
       keepDraft: function (draft) { self.setState({ dialog: null, reviewDraft: draft || null }); },
+      closeResults: function (run) { self.setState(run ? { dialog: null, lastRun: run, ejected: !!run.ejected } : { dialog: null }); },
       mytagText: su.mytag.length ? su.mytag.join(', ') + ' · other categories aren’t exported · change in Device setup' : 'No categories chosen · choose in Device setup',
       needsConvert: !!su.convertFor, noConvert: !su.convertFor,
       convertText: '6 FLAC tracks, for ' + su.convertFor + ' · +0.9 GB · your FLAC files aren’t changed',
       dlg: { device: st.dialog === 'device', relink: st.dialog === 'relink', review: st.dialog === 'review', results: st.dialog === 'results' },
       openDevice: function () { self.setState({ dialog: 'device' }); },
       openRelink: function () { self.setState({ dialog: 'relink' }); },
-      openReview: function () { self.setState({ dialog: 'review' }); },
+      openReview: function () { if (!self.state.ejected) self.setState({ dialog: 'review' }); },
       openResults: function () { self.setState({ dialog: 'results' }); },
       closeDialog: function () { self.setState({ dialog: null }); },
       closeDevice: function (r) { self.setState(r && r.formats ? { dialog: null, setup: r, reviewDraft: null } : { dialog: null }); },
       closeRelink: function (r) { self.setState(r && r.stillMissing === 0 ? { dialog: null, relinked: true } : { dialog: null }); },
       exportFromReview: function (dec) { self.setState({ dialog: null }); startExport(dec); },
-      start: function () { startExport(); },
+      start: function () { if (!self.state.ejected) startExport(); },
       cancel: function () { if (self.timer) clearInterval(self.timer); self.timer = null; self.setState({ phase: 'idle', done: 0 }); },
       reset: function () { self.setState({ phase: 'idle', done: 0 }); }
     };
